@@ -8,9 +8,9 @@ completion_contract:
   load: HH_EVENT_STATE_LOAD_COMPLETED
 status: IN_PROGRESS
 host:
-  contract_gate: NOT_RUN
-  quick_menu_regression: NOT_RUN
-  bridge_lifecycle: NOT_RUN
+  contract_gate: PASS
+  quick_menu_regression: PASS
+  bridge_lifecycle: PASS
   feature_off_android_configuration: NOT_RUN
 device:
   apk_identity: NOT_RUN
