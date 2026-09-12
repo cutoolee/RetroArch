@@ -1,0 +1,156 @@
+schema: p2.1-input-audit/v1
+date: 2026-09-12
+target_device: GR0006
+status: DEVICE_EVIDENCE_BLOCKED
+device_evidence:
+  adb_available: false
+  host_error: "adb: command not found"
+  physical_linux_events: unknown
+  android_input_device: unknown
+  android_keylayout: unknown
+  android_vid_pid: unknown
+  do_not_infer_physical_mapping: true
+
+source_chain:
+  kernel_to_android:
+    status: unverified_on_target
+    expected_boundary: "Linux input event -> Android InputReader/InputDispatcher -> AInputEvent"
+    evidence: "Android NativeActivity input queue; no direct evdev reader in Android input driver"
+  android_to_retroarch:
+    source: input/drivers/android_input.c
+    key_event: "AInputQueue_getEvent -> AKeyEvent_getKeyCode/action -> android_key_state[port]"
+    motion_event: "AInputQueue_getEvent -> engine_handle_dpad -> hat_state/analog_state"
+  retroarch_to_quick_menu:
+    source: runloop.c
+    interception: "runloop.c:6268-6305"
+    dispatch: "input_driver_state_wrapper rising edges -> hh_bridge_input"
+  menu_toggle:
+    source: runloop.c
+    handler: "runloop.c:6691-6720"
+    running_content: "toggle hh_bridge_global"
+    no_content: "toggle native RetroArch menu"
+
+actions:
+  - physical_button: MENU
+    linux_event: unknown
+    android_keycode: unknown
+    android_candidates:
+      - name: AKEYCODE_MENU
+        value: 82
+        qualification: "candidate only; source does not bind this for Android Gamepad"
+      - name: AKEYCODE_BACK
+        value: 4
+        qualification: "candidate only; Android back handling is not proof of GR0006 MENU"
+      - name: vendor_or_custom
+        value: unknown
+        qualification: "must be obtained from dumpsys input/getevent"
+    retroarch_logical_action: RARCH_MENU_TOGGLE
+    built_in_android_gamepad_profile: unbound
+    default_keyboard_profile: "RETROK_SPACE"
+    current_behavior: "unknown until target key is captured and binding is inspected"
+    recommended_interception: "after input_driver_collect_system_input, before runloop menu hotkey handling"
+    risk: high
+
+  - physical_button: UP
+    linux_event: unknown
+    android_keycode: unknown
+    android_candidates:
+      - name: AKEYCODE_DPAD_UP
+        value: 19
+        qualification: "keyboard key-map candidate; not target-device evidence"
+      - name: hat_0_y_negative
+        value: -1
+        qualification: "literal Android Gamepad h0up source mapping"
+    retroarch_logical_action: RETRO_DEVICE_ID_JOYPAD_UP
+    quick_menu_action: HH_QUICK_MENU_INPUT_UP
+    current_behavior: "rising edge dispatched by runloop handheld block"
+    recommended_interception: "existing runloop.c:6275-6288 boundary"
+    risk: high_if_core_input_not_blocked
+
+  - physical_button: DOWN
+    linux_event: unknown
+    android_keycode: unknown
+    android_candidates:
+      - name: AKEYCODE_DPAD_DOWN
+        value: 20
+        qualification: "keyboard key-map candidate; not target-device evidence"
+      - name: hat_0_y_positive
+        value: 1
+        qualification: "literal Android Gamepad h0down source mapping"
+    retroarch_logical_action: RETRO_DEVICE_ID_JOYPAD_DOWN
+    quick_menu_action: HH_QUICK_MENU_INPUT_DOWN
+    current_behavior: "rising edge dispatched by runloop handheld block"
+    recommended_interception: "existing runloop.c:6275-6290 boundary"
+    risk: high_if_core_input_not_blocked
+
+  - physical_button: LEFT
+    linux_event: unknown
+    android_keycode: unknown
+    android_candidates:
+      - name: AKEYCODE_DPAD_LEFT
+        value: 21
+        qualification: "keyboard key-map candidate; not target-device evidence"
+      - name: hat_0_x_negative
+        value: -1
+        qualification: "literal Android Gamepad h0left source mapping"
+    retroarch_logical_action: RETRO_DEVICE_ID_JOYPAD_LEFT
+    quick_menu_action: HH_QUICK_MENU_INPUT_LEFT
+    current_behavior: "rising edge dispatched by runloop handheld block"
+    recommended_interception: "existing runloop.c:6275-6292 boundary"
+    risk: high_if_core_input_not_blocked
+
+  - physical_button: RIGHT
+    linux_event: unknown
+    android_keycode: unknown
+    android_candidates:
+      - name: AKEYCODE_DPAD_RIGHT
+        value: 22
+        qualification: "keyboard key-map candidate; not target-device evidence"
+      - name: hat_0_x_positive
+        value: 1
+        qualification: "literal Android Gamepad h0right source mapping"
+    retroarch_logical_action: RETRO_DEVICE_ID_JOYPAD_RIGHT
+    quick_menu_action: HH_QUICK_MENU_INPUT_RIGHT
+    current_behavior: "rising edge dispatched by runloop handheld block"
+    recommended_interception: "existing runloop.c:6275-6294 boundary"
+    risk: high_if_core_input_not_blocked
+
+  - physical_button: CONFIRM
+    linux_event: unknown
+    android_keycode: unknown
+    android_candidates:
+      - name: android_gamepad_profile_logical_A
+        value: 97
+        qualification: "literal RetroArch Android Gamepad joykey for logical A"
+      - name: AKEYCODE_ENTER
+        value: 66
+        qualification: "keyboard candidate; not target-device evidence"
+    retroarch_logical_action: RETRO_DEVICE_ID_JOYPAD_A
+    quick_menu_action: HH_QUICK_MENU_INPUT_CONFIRM
+    current_behavior: "rising edge dispatched by runloop handheld block"
+    recommended_interception: "existing runloop.c:6275-6296 boundary"
+    risk: high_if_core_input_not_blocked
+
+  - physical_button: BACK
+    linux_event: unknown
+    android_keycode: unknown
+    android_candidates:
+      - name: android_gamepad_profile_logical_B
+        value: 96
+        qualification: "literal RetroArch Android Gamepad joykey for logical B"
+      - name: AKEYCODE_BACK
+        value: 4
+        qualification: "special Android back candidate; target behavior unverified"
+    retroarch_logical_action: RETRO_DEVICE_ID_JOYPAD_B
+    quick_menu_action: HH_QUICK_MENU_INPUT_BACK
+    current_behavior: "rising edge dispatched by runloop handheld block when seen as logical B"
+    recommended_interception: "existing runloop.c:6275-6298 boundary"
+    risk: high_if_core_input_not_blocked
+
+quick_menu_consume:
+  dispatch_edge: rising_only
+  translated_buttons: "UP/DOWN/LEFT/RIGHT/A/B"
+  current_bits_after_dispatch: "cleared, except RARCH_MENU_TOGGLE is restored"
+  core_input_block_proven: false
+  blocking_dependency: "Agent 0 must ensure custom Quick Menu lifetime blocks core input"
+  menu_toggle_close_edge: "preserved for runloop.c:6691-6720"

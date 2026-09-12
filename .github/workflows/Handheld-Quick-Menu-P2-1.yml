@@ -1,0 +1,49 @@
+name: Handheld Quick Menu P2.1
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  bridge-and-ui:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install Android SDK 36, Build Tools 36 and NDK 29
+        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;29.0.14206865"
+      - name: Prepare RetroArch frontend assets
+        run: |
+          ANDROID_ASSETS_DIR="$GITHUB_WORKSPACE/pkg/android/phoenix/assets" \
+            handheld/distribution/prepare_android_assets.sh
+      - name: Validate P2.1 host contracts
+        run: |
+          validation/p2-1/scripts/check-evidence.sh
+          validation/p2-1/scripts/run-validation.sh
+      - name: Validate UI boundary and layout
+        run: validation/p2/tests/test_quick_menu.sh
+      - name: Validate runtime bridge lifecycle
+        run: validation/p2.1/tests/test_bridge.sh
+      - name: Build Quick Menu enabled AArch64 APK
+        working-directory: pkg/android/phoenix
+        run: |
+          ./gradlew clean assembleAarch64Debug --no-daemon \
+            -PHAVE_HANDHELD_RUNTIME=1 \
+            -PHAVE_HANDHELD_QUICK_MENU=1
+      - name: Validate feature-off Android configuration
+        working-directory: pkg/android/phoenix
+        run: ./gradlew assembleAarch64Debug --no-daemon -PHAVE_HANDHELD_RUNTIME=0 -PHAVE_HANDHELD_QUICK_MENU=0
+      - name: Verify APK assets
+        run: |
+          find pkg/android/phoenix/build/outputs -type f -name '*.apk' -print
+          test -n "$(find pkg/android/phoenix/build/outputs -type f -name '*.apk' -print -quit)"

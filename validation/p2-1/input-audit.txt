@@ -1,0 +1,117 @@
+P2.1 Agent C - physical input to Quick Menu audit
+
+Date: 2026-09-12
+Target device: GR0006
+Status: SOURCE_AUDIT_COMPLETE; DEVICE_EVIDENCE_BLOCKED
+
+The host has no adb executable (`adb: command not found`), so the physical
+GR0006 MENU event and its Linux/Android numeric mapping cannot be verified.
+The report deliberately leaves those device-specific fields unknown. The
+source findings below are deterministic from the current tree.
+
+1. Source-level event path
+
+Android does not use RetroArch's Linux evdev reader for this build. The Android
+input driver waits on the Android looper, reads an `AInputEvent` from the
+`AInputQueue`, obtains its source/device id/action and, for key events, calls
+`AKeyEvent_getKeyCode()` (`input/drivers/android_input.c:2275-2345` and
+`:2348-2428`). Android's InputReader/InputDispatcher layer between the kernel
+and that queue is therefore the missing Physical MENU -> Linux event ->
+Android keycode/scancode evidence.
+
+For a registered non-keyboard device, `handle_hotplug()` calls
+`input_autoconfigure_connect()` with the Android joypad driver and the
+device's Android name/VID/PID (`input/drivers/android_input.c:2140-2166`). A
+key event is stored as a raw Android keycode bit in the per-port
+`android_key_state` array (`:1619-1685`). D-pad motion events instead reach
+`engine_handle_dpad()`; the Android joypad driver reads hat state or analog
+state (`input/drivers_joypad/android_joypad.c:31-103`).
+
+2. Built-in Android mappings
+
+The built-in `Android Gamepad` profile currently binds:
+
+  logical A  -> joykey 97
+  logical B  -> joykey 96
+  logical X  -> joykey 100
+  logical Y  -> joykey 99
+  logical START -> joykey 108
+  logical SELECT -> joykey 109
+  UP/DOWN/LEFT/RIGHT -> h0up/h0down/h0left/h0right
+  L/R/L2/R2/L3/R3 -> 102/103/104/105/106/107
+
+This is the literal RetroArch profile in `input/input_autodetect_builtin.c:155-180`.
+The Android joypad driver treats non-hat joykeys as raw Android keycode bits
+and hat bindings as `hat_state` values (`input/drivers_joypad/android_joypad.c:31-61`).
+The profile has no `menu_toggle` entry. The separate XPERIA Play profile has
+`menu_toggle -> 82`, but no source evidence identifies GR0006 as that profile.
+
+The normal keyboard default is `RETROK_SPACE -> RARCH_MENU_TOGGLE`, with no
+default joykey (`config.def.keybinds.h:248-260`). Android's keyboard key map
+does translate Android DPAD_UP/DOWN/LEFT/RIGHT to RETROK_UP/DOWN/LEFT/RIGHT,
+and AKEYCODE_ENTER to RETROK_RETURN (`input/input_keymaps.c:1552-1635`), but it
+does not establish a GR0006 physical mapping. `AKEYCODE_DPAD_CENTER` is
+aliased to ENTER in the raw Android state path (`android_input.c:1637-1645`).
+
+3. MENU path and current Ozone/Quick Menu trigger
+
+`input_keys_pressed()` detects a configured menu joykey/key separately from
+ordinary gamepad buttons. It uses `INP_FLAG_MENU_PRESS_PENDING`, emits the
+menu bit on release, and cancels it when another hotkey conflicts
+(`input/input_driver.c:6911-6961` and `:7155-7194`). This is why a correctly
+configured physical MENU normally produces a release-edge
+`RARCH_MENU_TOGGLE`, rather than a held game input.
+
+After `input_driver_collect_system_input()`, the current handheld block is in
+`runloop.c:6268-6305`. When the custom Quick Menu is open it:
+
+  - samples UP/DOWN/LEFT/RIGHT/A/B via `input_driver_state_wrapper()`;
+  - sends only rising edges to `hh_bridge_input()`;
+  - translates A to `HH_QUICK_MENU_INPUT_CONFIRM` and B to
+    `HH_QUICK_MENU_INPUT_BACK`;
+  - clears `current_bits` and restores only an already-produced
+    `RARCH_MENU_TOGGLE` bit.
+
+The menu hotkey handler at `runloop.c:6691-6720` consumes a fresh menu bit:
+with a running non-dummy core it toggles `hh_bridge_global`; without a running
+content core it falls through to the native RetroArch menu. Thus the intended
+behavior is `content + MENU -> Quick Menu`, and `no content + MENU -> native
+RetroArch menu`, provided the physical button has first been bound to
+`RARCH_MENU_TOGGLE`.
+
+The minimum existing interception point for GameGo input is the block at
+`runloop.c:6268`, after Android input has already become RetroArch logical
+input and before the menu hotkey handler. If GR0006's physical MENU is not
+already represented by `RARCH_MENU_TOGGLE`, Agent 0 must add the smallest
+device-specific translation at the input/system-input boundary after the
+actual device keycode is captured. This audit does not select a numeric key or
+modify product code.
+
+4. Quick Menu consume rule and risk
+
+The custom overlay's `current_bits` clear is sufficient to keep the cleared
+bits out of the runloop's system/hotkey decisions, but it is not by itself a
+core-input block. `input_state_internal()` considers libretro input blocked
+when the native menu is alive or `INP_FLAG_BLOCK_LIBRETRO_INPUT` is set
+(`input/input_driver.c:2366-2372`); opening the custom hh bridge does not set
+either condition in the current source. Therefore the current code does not
+prove the required invariant “Quick Menu responds and the game does not
+respond”. This is a high-risk integration dependency for Agent 0: the final
+implementation must make the custom Quick Menu own/block the core input for
+its lifetime, while preserving the menu toggle edge needed to close it.
+
+The bridge's A/B mapping is only sampled on a rising edge, so a held button is
+not repeatedly dispatched to the Quick Menu. There is no corresponding source
+evidence that the same held direction/A/B is prevented from reaching the core.
+
+5. Device evidence required to close the audit
+
+On GR0006, capture `getevent -lt` while pressing each physical control and
+`dumpsys input` for the matching InputDevice. Record for every control:
+
+  physical button -> Linux type/code/value -> Android keycode/scancode/source
+  -> Android device name/VID/PID -> RetroArch logical action -> current
+  behavior -> recommended interception point -> risk
+
+The device run must also verify MENU press/release, Quick Menu UP/DOWN/LEFT/
+RIGHT/CONFIRM/BACK consumption, and the native Ozone Back-to-Game path.
