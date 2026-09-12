@@ -32,6 +32,17 @@ if (!(handheldRuntimeFlag in ["0", "1"])) {
   throw new GradleException("HAVE_HANDHELD_RUNTIME must be 0 or 1")
 }
 
+def handheldRuntimeHarnessFlag = project.findProperty("HAVE_HANDHELD_RUNTIME_TEST_HARNESS")
+if (handheldRuntimeHarnessFlag == null) {
+  handheldRuntimeHarnessFlag = System.getenv("HAVE_HANDHELD_RUNTIME_TEST_HARNESS") ?: "0"
+}
+if (!(handheldRuntimeHarnessFlag in ["0", "1"])) {
+  throw new GradleException("HAVE_HANDHELD_RUNTIME_TEST_HARNESS must be 0 or 1")
+}
+if (handheldRuntimeHarnessFlag == "1" && handheldRuntimeFlag != "1") {
+  throw new GradleException("HAVE_HANDHELD_RUNTIME_TEST_HARNESS requires HAVE_HANDHELD_RUNTIME=1")
+}
+
 android {
   namespace "com.retroarch"
 
@@ -53,9 +64,11 @@ android {
     externalNativeBuild {
       ndkBuild {
         arguments "-j${Runtime.runtime.availableProcessors()}",
-                  "HAVE_HANDHELD_RUNTIME=${handheldRuntimeFlag}"
+                  "HAVE_HANDHELD_RUNTIME=${handheldRuntimeFlag}",
+                  "HAVE_HANDHELD_RUNTIME_TEST_HARNESS=${handheldRuntimeHarnessFlag}"
       }
     }
+    manifestPlaceholders.p1b2HarnessEnabled = handheldRuntimeHarnessFlag == "1" ? "true" : "false"
     versionCode = (System.currentTimeMillis() / 1000).toInteger()
     versionName "${getManifestAttribute("versionName")}_GIT"
   }
@@ -148,6 +161,10 @@ android {
       jniLibs.srcDir '../phoenix-common/libs'
       jni.srcDirs = []
       res.srcDirs = ['res', '../phoenix-common/res']
+    }
+    debug {
+      manifest.srcFile 'src/debug/AndroidManifest.xml'
+      java.srcDirs += ['src/debug']
     }
     normal {
       java.srcDirs += ['../play-core-stub']

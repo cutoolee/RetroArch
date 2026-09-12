@@ -15,6 +15,15 @@ HAVE_BUILTINSMBCLIENT := 1
 # P1 Handheld Runtime is enabled for the custom Android build by default.
 # Pass HAVE_HANDHELD_RUNTIME=0 to retain an upstream-compatible build.
 HAVE_HANDHELD_RUNTIME ?= 1
+# P1-B2's JNI test entry is validation-only and stays disabled by default.
+HAVE_HANDHELD_RUNTIME_TEST_HARNESS ?= 0
+
+ifeq ($(HAVE_HANDHELD_RUNTIME_TEST_HARNESS),1)
+ifeq ($(HAVE_HANDHELD_RUNTIME),1)
+else
+$(error HAVE_HANDHELD_RUNTIME_TEST_HARNESS requires HAVE_HANDHELD_RUNTIME=1)
+endif
+endif
 
 INCFLAGS    :=
 DEFINES     :=
@@ -182,6 +191,11 @@ DEFINES += -DRARCH_MOBILE \
 
 ifeq ($(HAVE_HANDHELD_RUNTIME),1)
 DEFINES += -DHAVE_HANDHELD_RUNTIME=1
+endif
+
+ifeq ($(HAVE_HANDHELD_RUNTIME_TEST_HARNESS),1)
+DEFINES += -DHAVE_HANDHELD_RUNTIME_TEST_HARNESS=1
+LOCAL_SRC_FILES += $(RARCH_DIR)/handheld/test/p1-b2/hh_runtime_test_harness.c
 endif
 
 ifeq ($(HAVE_GFX_WIDGETS),1)
