@@ -31,6 +31,7 @@ jobs:
       - name: Build AArch64 APK with Runtime flag ${{ matrix.runtime }}
         working-directory: pkg/android/phoenix
         run: |
+          set -o pipefail
           ./gradlew clean assembleAarch64Debug --no-daemon --info \
             -PHAVE_HANDHELD_RUNTIME=${{ matrix.runtime }} \
             2>&1 | tee "../../../p1-b1-build-runtime-${{ matrix.runtime }}.log"
@@ -38,12 +39,64 @@ jobs:
         env:
           RUNTIME_FLAG: ${{ matrix.runtime }}
         run: |
-          mkdir -p "p1-b1-artifacts/runtime-${RUNTIME_FLAG}"
-          apk="pkg/android/phoenix/build/outputs/apk/aarch64/debug/phoenix-aarch64-debug.apk"
-          cp "$apk" "p1-b1-artifacts/runtime-${RUNTIME_FLAG}/"
-          evidence="p1-b1-artifacts/runtime-${RUNTIME_FLAG}/RUNTIME_LINK_EVIDENCE.txt"
+          set -euo pipefail
+          outputs_root="pkg/android/phoenix/build/outputs"
+          echo "Gradle APK outputs (diagnostic):"
+          if [ -d "$outputs_root" ]; then
+            find "$outputs_root" -type f \
+              \( -name "*.apk" -o -name "output-metadata.json" \) \
+              -print | sort
+          else
+            echo "MISSING $outputs_root"
+          fi
+          echo "All APKs under the Android build directory (diagnostic):"
+          find pkg/android/phoenix/build -type f -name "*.apk" -print 2>/dev/null | sort || true
+
+          mapfile -t apk_candidates < <(python3 - "$outputs_root" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          outputs_root = Path(sys.argv[1])
+          candidates = []
+          for metadata_path in sorted(outputs_root.rglob("output-metadata.json")):
+              try:
+                  metadata = json.loads(metadata_path.read_text())
+              except (OSError, json.JSONDecodeError) as exc:
+                  print(f"Unable to parse {metadata_path}: {exc}", file=sys.stderr)
+                  continue
+              if metadata.get("variantName") != "aarch64Debug":
+                  continue
+              for element in metadata.get("elements", []):
+                  output_file = element.get("outputFile")
+                  if output_file:
+                      candidates.append(metadata_path.parent / output_file)
+
+          if len(candidates) != 1:
+              print(
+                  f"Expected exactly one aarch64Debug APK, found {len(candidates)}:",
+                  file=sys.stderr,
+              )
+              for candidate in candidates:
+                  print(candidate, file=sys.stderr)
+              raise SystemExit(1)
+
+          print(candidates[0])
+          PY
+          )
+          apk="${apk_candidates[0]}"
+          test -f "$apk"
+
+          staging="handheld-dist/runtime-${RUNTIME_FLAG}"
+          mkdir -p "$staging"
+          if [ "$RUNTIME_FLAG" = "1" ]; then
+            staged_apk="$staging/RetroArch-runtime-enabled.apk"
+          else
+            staged_apk="$staging/RetroArch-runtime-disabled.apk"
+          fi
+          cp "$apk" "$staged_apk"
+          evidence="$staging/RUNTIME_LINK_EVIDENCE.txt"
           : > "$evidence"
-          set -o pipefail
           echo "HAVE_HANDHELD_RUNTIME=${RUNTIME_FLAG}" >> "$evidence"
           echo "Expected compile define: -DHAVE_HANDHELD_RUNTIME=${RUNTIME_FLAG}" >> "$evidence"
           if [ "$RUNTIME_FLAG" = "1" ]; then
@@ -59,11 +112,11 @@ jobs:
             echo "Runtime symbols intentionally absent because feature flag is disabled" >> "$evidence"
           fi
           handheld/test/validation/p1-b1/generate_build_manifest.sh \
-            "$RUNTIME_FLAG" "$apk" \
-            "p1-b1-artifacts/runtime-${RUNTIME_FLAG}/BUILD_MANIFEST.json" \
+            "$RUNTIME_FLAG" "$staged_apk" \
+            "$staging/BUILD_MANIFEST.json" \
             "$evidence" "p1-b1-build-runtime-${RUNTIME_FLAG}.log"
-          cp "p1-b1-build-runtime-${RUNTIME_FLAG}.log" "p1-b1-artifacts/runtime-${RUNTIME_FLAG}/"
+          cp "p1-b1-build-runtime-${RUNTIME_FLAG}.log" "$staging/"
       - uses: actions/upload-artifact@v4
         with:
           name: handheld-p1-b1-runtime-${{ matrix.runtime }}
-          path: p1-b1-artifacts/runtime-${{ matrix.runtime }}
+          path: handheld-dist/runtime-${{ matrix.runtime }}

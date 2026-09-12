@@ -222,6 +222,7 @@ LOCAL_CFLAGS := $(subst -O3,-O2,$(LOCAL_CFLAGS))
 
 LOCAL_LDLIBS	 := -landroid -lEGL $(GLES_LIB) $(LOGGER_LDLIBS) -ldl
 LOCAL_C_INCLUDES := \
+		    $(LOCAL_PATH)/$(RARCH_DIR) \
 		    $(LOCAL_PATH)/$(RARCH_DIR)/libretro-common/include \
 		    $(LOCAL_PATH)/$(RARCH_DIR)/deps \
 		    $(LOCAL_PATH)/$(RARCH_DIR)/deps/stb
