@@ -33,6 +33,12 @@ compilers use C99 with declaration-after-statement warnings treated as errors.
   callbacks. Colors are RRGGBBAA. Text callbacks must clip or ellipsize UTF-8
   text to the supplied bounds. No font loading, disk access or graphics backend
   is embedded. A missing/failed/disabled preview uses `No Preview`.
+- The default presentation uses a dimmed viewport, a bounded panel shadow,
+  header rule and muted list cards. Focus, disabled, pending, success and error
+  use separate visual treatments without changing action semantics.
+- Layout keeps the panel and all child bounds inside the viewport at 640×480,
+  1280×720 and 1920×1080. The scale is derived from the smaller viewport axis,
+  preserving the handheld-safe margins and readable type hierarchy.
 - Open/close transitions use the original explicit finish calls; no animation
   thread or timed transition was added. `CLOSED` emits no drawing commands.
 
