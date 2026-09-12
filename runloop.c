@@ -126,6 +126,10 @@ bool android_get_vfs_authorized_locations(
 #include "record/record_driver.h"
 #include "msg_hash_lbl_str.h"
 
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME
+#include "handheld/runtime/hh_runtime.h"
+#endif
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -8084,6 +8088,12 @@ int runloop_iterate(void)
     * which a core enters from within retro_run(), so the save it asks for
     * is performed here instead of where the command arrives. */
    android_input_flush_pending_state();
+#endif
+
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME
+   /* Runtime commands submitted by non-owner callers are consumed only on
+    * the ra-main/runloop owner thread. */
+   hh_runtime_owner_tick();
 #endif
 
 #if defined(HAVE_DYNAMIC) && defined(HAVE_MENU)

@@ -24,6 +24,14 @@ allprojects {
 
 apply plugin: 'com.android.application'
 
+def handheldRuntimeFlag = project.findProperty("HAVE_HANDHELD_RUNTIME")
+if (handheldRuntimeFlag == null) {
+  handheldRuntimeFlag = System.getenv("HAVE_HANDHELD_RUNTIME") ?: "1"
+}
+if (!(handheldRuntimeFlag in ["0", "1"])) {
+  throw new GradleException("HAVE_HANDHELD_RUNTIME must be 0 or 1")
+}
+
 android {
   namespace "com.retroarch"
 
@@ -44,7 +52,8 @@ android {
     targetSdkVersion 36
     externalNativeBuild {
       ndkBuild {
-        arguments "-j${Runtime.runtime.availableProcessors()}"
+        arguments "-j${Runtime.runtime.availableProcessors()}",
+                  "HAVE_HANDHELD_RUNTIME=${handheldRuntimeFlag}"
       }
     }
     versionCode = (System.currentTimeMillis() / 1000).toInteger()

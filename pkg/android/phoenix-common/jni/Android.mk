@@ -12,6 +12,9 @@ HAVE_FILE_LOGGER := 1
 HAVE_GFX_WIDGETS := 1
 HAVE_SAF := 1
 HAVE_BUILTINSMBCLIENT := 1
+# P1 Handheld Runtime is enabled for the custom Android build by default.
+# Pass HAVE_HANDHELD_RUNTIME=0 to retain an upstream-compatible build.
+HAVE_HANDHELD_RUNTIME ?= 1
 
 INCFLAGS    :=
 DEFINES     :=
@@ -176,6 +179,10 @@ DEFINES += -DRARCH_MOBILE \
 	   -DHAVE_XDELTA \
 	   -DHAVE_CORE_INFO_CACHE \
 	   -DHAVE_BUILTINMBEDTLS -DHAVE_SSL
+
+ifeq ($(HAVE_HANDHELD_RUNTIME),1)
+DEFINES += -DHAVE_HANDHELD_RUNTIME=1
+endif
 
 ifeq ($(HAVE_GFX_WIDGETS),1)
 DEFINES += -DHAVE_GFX_WIDGETS

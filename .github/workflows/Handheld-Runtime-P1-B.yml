@@ -1,0 +1,69 @@
+name: Handheld Runtime P1-B Android Integration
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  p1-b1-build:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: ["1", "0"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install Android SDK 36, Build Tools 36 and NDK 29
+        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;29.0.14206865"
+      - name: Verify Android build environment
+        run: handheld/test/validation/p1-b1/check_android_environment.sh pkg/android/phoenix/gradlew
+      - name: Build AArch64 APK with Runtime flag ${{ matrix.runtime }}
+        working-directory: pkg/android/phoenix
+        run: |
+          ./gradlew clean assembleAarch64Debug --no-daemon --info \
+            -PHAVE_HANDHELD_RUNTIME=${{ matrix.runtime }} \
+            2>&1 | tee "../../../p1-b1-build-runtime-${{ matrix.runtime }}.log"
+      - name: Collect APK, SHA256 and Runtime link evidence
+        env:
+          RUNTIME_FLAG: ${{ matrix.runtime }}
+        run: |
+          mkdir -p "p1-b1-artifacts/runtime-${RUNTIME_FLAG}"
+          apk="pkg/android/phoenix/build/outputs/apk/aarch64/debug/phoenix-aarch64-debug.apk"
+          cp "$apk" "p1-b1-artifacts/runtime-${RUNTIME_FLAG}/"
+          evidence="p1-b1-artifacts/runtime-${RUNTIME_FLAG}/RUNTIME_LINK_EVIDENCE.txt"
+          : > "$evidence"
+          set -o pipefail
+          echo "HAVE_HANDHELD_RUNTIME=${RUNTIME_FLAG}" >> "$evidence"
+          echo "Expected compile define: -DHAVE_HANDHELD_RUNTIME=${RUNTIME_FLAG}" >> "$evidence"
+          if [ "$RUNTIME_FLAG" = "1" ]; then
+            grep -E "griffin\.c|HAVE_HANDHELD_RUNTIME=1" "p1-b1-build-runtime-${RUNTIME_FLAG}.log" >> "$evidence"
+            nm_tool="${ANDROID_NDK_ROOT:-$ANDROID_HOME/ndk/29.0.14206865}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-nm"
+            test -x "$nm_tool"
+            find pkg/android/phoenix/build -type f -name 'libretro-activity.so' -print -exec "$nm_tool" -g {} \; | grep -E 'hh_runtime_(init|submit_command|owner_tick)' >> "$evidence"
+          else
+            if grep -E -- "-DHAVE_HANDHELD_RUNTIME=1" "p1-b1-build-runtime-${RUNTIME_FLAG}.log"; then
+              echo "Runtime define unexpectedly present in disabled build" >&2
+              exit 1
+            fi
+            echo "Runtime symbols intentionally absent because feature flag is disabled" >> "$evidence"
+          fi
+          handheld/test/validation/p1-b1/generate_build_manifest.sh \
+            "$RUNTIME_FLAG" "$apk" \
+            "p1-b1-artifacts/runtime-${RUNTIME_FLAG}/BUILD_MANIFEST.json" \
+            "$evidence" "p1-b1-build-runtime-${RUNTIME_FLAG}.log"
+          cp "p1-b1-build-runtime-${RUNTIME_FLAG}.log" "p1-b1-artifacts/runtime-${RUNTIME_FLAG}/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: handheld-p1-b1-runtime-${{ matrix.runtime }}
+          path: p1-b1-artifacts/runtime-${{ matrix.runtime }}
