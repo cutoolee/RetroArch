@@ -26,6 +26,28 @@ jobs:
         run: |
           ANDROID_ASSETS_DIR="$GITHUB_WORKSPACE/pkg/android/phoenix/assets" \
             handheld/distribution/prepare_android_assets.sh
+      - name: Prepare stable development signing
+        env:
+          DEV_KEYSTORE_B64: ${{ secrets.RETROARCH_DEV_KEYSTORE_B64 }}
+          DEV_STORE_PASSWORD: ${{ secrets.RETROARCH_DEV_STORE_PASSWORD }}
+          DEV_KEY_ALIAS: ${{ secrets.RETROARCH_DEV_KEY_ALIAS }}
+          DEV_KEY_PASSWORD: ${{ secrets.RETROARCH_DEV_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -n "$DEV_KEYSTORE_B64" ] && [ -n "$DEV_STORE_PASSWORD" ] \
+              && [ -n "$DEV_KEY_ALIAS" ] && [ -n "$DEV_KEY_PASSWORD" ]; then
+            dev_store="$RUNNER_TEMP/retroarch-development.jks"
+            printf '%s' "$DEV_KEYSTORE_B64" | base64 --decode > "$dev_store"
+            {
+              echo "DEV_STORE_FILE=$dev_store"
+              echo "DEV_STORE_PASSWORD=$DEV_STORE_PASSWORD"
+              echo "DEV_KEY_ALIAS=$DEV_KEY_ALIAS"
+              echo "DEV_KEY_PASSWORD=$DEV_KEY_PASSWORD"
+            } >> "$GITHUB_ENV"
+            echo 'DEVELOPMENT_SIGNING=STABLE_SECRET' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'DEVELOPMENT_SIGNING=NOT_CONFIGURED (debug fallback; device install blocked)' >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Validate P2.1 host contracts
         run: |
           validation/p2-1/scripts/check-evidence.sh
@@ -40,6 +62,29 @@ jobs:
           ./gradlew clean assembleAarch64Debug --no-daemon \
             -PHAVE_HANDHELD_RUNTIME=1 \
             -PHAVE_HANDHELD_QUICK_MENU=1
+      - name: Capture enabled APK evidence
+        run: |
+          set -euo pipefail
+          apk="$(find pkg/android/phoenix/build/outputs -type f -name '*.apk' | head -n 1)"
+          test -n "$apk"
+          mkdir -p handheld-dist/p2-1
+          cp "$apk" handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk
+          sha256sum handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \
+            | tee handheld-dist/p2-1/APK_SHA256.txt
+          build_tools="${ANDROID_HOME}/build-tools/36.0.0"
+          "$build_tools/aapt2" dump packagename \
+            handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \
+            | tee handheld-dist/p2-1/APPLICATION_ID.txt
+          test "$(cat handheld-dist/p2-1/APPLICATION_ID.txt)" = "com.retroarch.aarch64"
+          ! grep -q 'com.retroarch.aarch64.p1b2' \
+            handheld-dist/p2-1/APPLICATION_ID.txt
+          if [ -x "$build_tools/apksigner" ]; then
+            "$build_tools/apksigner" verify --print-certs \
+              handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \
+              | tee handheld-dist/p2-1/SIGNING_CERTIFICATE.txt
+          else
+            echo 'APKSIGNER=NOT_FOUND' | tee handheld-dist/p2-1/SIGNING_CERTIFICATE.txt
+          fi
       - name: Validate feature-off Android configuration
         working-directory: pkg/android/phoenix
         run: ./gradlew assembleAarch64Debug --no-daemon -PHAVE_HANDHELD_RUNTIME=0 -PHAVE_HANDHELD_QUICK_MENU=0
@@ -47,3 +92,7 @@ jobs:
         run: |
           find pkg/android/phoenix/build/outputs -type f -name '*.apk' -print
           test -n "$(find pkg/android/phoenix/build/outputs -type f -name '*.apk' -print -quit)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: handheld-p2-1-aarch64
+          path: handheld-dist/p2-1
