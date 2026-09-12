@@ -5,14 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.retroarch.BuildConfig;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class InstalledCoresReceiver extends BroadcastReceiver
 {
-   public static final String ACTION_QUERY = "com.retroarch.QUERY_INSTALLED_CORES";
-   public static final String ACTION_RESULT = "com.retroarch.INSTALLED_CORES_RESULT";
+   public static final String ACTION_QUERY = BuildConfig.APPLICATION_ID + ".QUERY_INSTALLED_CORES";
+   public static final String ACTION_RESULT = BuildConfig.APPLICATION_ID + ".INSTALLED_CORES_RESULT";
    public static final String EXTRA_CORES = "CORES";
 
    @Override
@@ -43,6 +45,7 @@ public class InstalledCoresReceiver extends BroadcastReceiver
       Log.i("RetroArch", "InstalledCoresReceiver: found " + result.length + " cores");
 
       Intent resultIntent = new Intent(ACTION_RESULT);
+      resultIntent.setPackage(context.getPackageName());
       resultIntent.putExtra(EXTRA_CORES, result);
       context.sendBroadcast(resultIntent);
    }

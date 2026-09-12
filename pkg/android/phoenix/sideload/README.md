@@ -35,6 +35,7 @@ adb shell am start -n <package>/com.retroarch.browser.debug.CoreSideloadActivity
 Where `<package>` is the target RetroArch app package name :
   - `com.retroarch` (RetroArch)
   - `com.retroarch.aarch64` (RetroArch64)
+  - `com.cutoolee.gamego` (GameGo)
 `<content>` is the path to the content to load (on your device) (optional)
 and `<core>` is the path to the core to sideload (on your computer).
 

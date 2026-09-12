@@ -525,14 +525,14 @@ Android is the best remote target of the three, because `adb` closes most of
 the gaps that make iOS awkward: you can relaunch the app, keep the screen
 on, and read a full native backtrace without touching the device.
 
-**Before you start.** Find the package — the flavour determines it:
+**Before you start.** The GameGo product package is fixed:
 
 ```sh
-adb shell pm list packages | grep retroarch
+adb shell pm list packages | grep -E 'cutoolee|retroarch'
 ```
 
-`com.retroarch`, `com.retroarch.aarch64` or `com.retroarch.ra32`, per the
-`applicationIdSuffix` in `pkg/android/phoenix/build.gradle`. Then:
+Use `com.cutoolee.gamego` for GameGo device validation. Official RetroArch
+packages remain separate. Then:
 
 ```sh
 adb shell ip route                     # the device's IP on your network
@@ -546,10 +546,10 @@ death.
 ```sh
 python3 tools/ra_stress.py \
   --host 192.168.1.57 \
-  --core    /data/data/com.retroarch/cores/fbneo_libretro_android.so \
-  --content "/storage/emulated/0/RetroArch/roms/FBNeo - Arcade Games/galaxian.zip" \
+  --core    /data/data/com.cutoolee.gamego/cores/fbneo_libretro_android.so \
+  --content "/storage/emulated/0/GameGo/roms/FBNeo - Arcade Games/galaxian.zip" \
   --input \
-  --relaunch-cmd 'adb shell am start -n com.retroarch/com.retroarch.browser.mainmenu.MainMenuActivity' \
+  --relaunch-cmd 'adb shell am start -n com.cutoolee.gamego/com.retroarch.browser.mainmenu.MainMenuActivity' \
   --mode fuzz --fuzz-runs 50
 ```
 

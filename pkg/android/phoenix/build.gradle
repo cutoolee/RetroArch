@@ -54,6 +54,14 @@ if (handheldRuntimeHarnessFlag == "1" && handheldRuntimeFlag != "1") {
   throw new GradleException("HAVE_HANDHELD_RUNTIME_TEST_HARNESS requires HAVE_HANDHELD_RUNTIME=1")
 }
 
+def gamegoProductFlag = project.findProperty("GAMEGO_PRODUCT")
+if (gamegoProductFlag == null) {
+  gamegoProductFlag = System.getenv("GAMEGO_PRODUCT") ?: "0"
+}
+if (!(gamegoProductFlag in ["0", "1"])) {
+  throw new GradleException("GAMEGO_PRODUCT must be 0 or 1")
+}
+
 def p1b2ValidationApkFlag = project.findProperty("P1B2_VALIDATION_APK")
 if (p1b2ValidationApkFlag == null) {
   p1b2ValidationApkFlag = System.getenv("P1B2_VALIDATION_APK") ?: "0"
@@ -63,6 +71,9 @@ if (!(p1b2ValidationApkFlag in ["0", "1"])) {
 }
 if (p1b2ValidationApkFlag == "1" && handheldRuntimeHarnessFlag != "1") {
   throw new GradleException("P1B2_VALIDATION_APK requires HAVE_HANDHELD_RUNTIME_TEST_HARNESS=1")
+}
+if (gamegoProductFlag == "1" && p1b2ValidationApkFlag == "1") {
+  throw new GradleException("GAMEGO_PRODUCT cannot use P1B2_VALIDATION_APK")
 }
 
 def developmentStoreFile = project.findProperty("DEV_STORE_FILE")
@@ -110,6 +121,7 @@ android {
         arguments "-j${Runtime.runtime.availableProcessors()}",
                   "HAVE_HANDHELD_RUNTIME=${handheldRuntimeFlag}",
                   "HAVE_HANDHELD_QUICK_MENU=${handheldQuickMenuFlag}",
+                  "HAVE_GAMEGO_PRODUCT=${gamegoProductFlag}",
                   "HAVE_HANDHELD_RUNTIME_TEST_HARNESS=${handheldRuntimeHarnessFlag}"
       }
     }
@@ -134,8 +146,11 @@ android {
       dimension "variant"
     }
     aarch64 {
-      applicationIdSuffix p1b2ValidationApkFlag == "1" ? '.aarch64.p1b2' : '.aarch64'
-      resValue "string", "app_name", "RetroArch (AArch64)"
+      if (gamegoProductFlag == "1")
+        applicationId "com.cutoolee.gamego"
+      else
+        applicationIdSuffix p1b2ValidationApkFlag == "1" ? '.aarch64.p1b2' : '.aarch64'
+      resValue "string", "app_name", gamegoProductFlag == "1" ? "GameGo" : "RetroArch (AArch64)"
       buildConfigField "boolean", "PLAY_STORE_BUILD", "false"
 
       dimension "variant"

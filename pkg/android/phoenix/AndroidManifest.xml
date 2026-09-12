@@ -54,7 +54,7 @@
         <activity android:name="com.retroarch.browser.debug.CoreSideloadActivity" android:exported="true"/>
         <receiver android:name="com.retroarch.browser.receiver.InstalledCoresReceiver" android:exported="true">
             <intent-filter>
-                <action android:name="com.retroarch.QUERY_INSTALLED_CORES" />
+                <action android:name="${applicationId}.QUERY_INSTALLED_CORES" />
             </intent-filter>
         </receiver>
       <provider

@@ -51,6 +51,7 @@ jobs:
       - name: Validate P2.1 host contracts
         run: |
           validation/p2-1/scripts/check-evidence.sh
+          validation/p2-1/scripts/check-gamego-package.sh
           validation/p2-1/scripts/run-validation.sh
       - name: Validate UI boundary and layout
         run: validation/p2/tests/test_quick_menu.sh
@@ -60,6 +61,7 @@ jobs:
         working-directory: pkg/android/phoenix
         run: |
           ./gradlew clean assembleAarch64Debug --no-daemon \
+            -PGAMEGO_PRODUCT=1 \
             -PHAVE_HANDHELD_RUNTIME=1 \
             -PHAVE_HANDHELD_QUICK_MENU=1
       - name: Capture enabled APK evidence
@@ -69,25 +71,47 @@ jobs:
           test -n "$apk"
           mkdir -p handheld-dist/p2-1
           cp "$apk" handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk
+          echo 'PRODUCT=GameGo' | tee handheld-dist/p2-1/PRODUCT.txt
           sha256sum handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \
             | tee handheld-dist/p2-1/APK_SHA256.txt
           build_tools="${ANDROID_HOME}/build-tools/36.0.0"
           "$build_tools/aapt2" dump packagename \
             handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \
             | tee handheld-dist/p2-1/APPLICATION_ID.txt
-          test "$(cat handheld-dist/p2-1/APPLICATION_ID.txt)" = "com.retroarch.aarch64"
-          ! grep -q 'com.retroarch.aarch64.p1b2' \
+          test "$(cat handheld-dist/p2-1/APPLICATION_ID.txt)" = "com.cutoolee.gamego"
+          ! grep -Eq 'com\.retroarch\.aarch64|\.p1b2|\.validation|\.p2' \
             handheld-dist/p2-1/APPLICATION_ID.txt
+          "$build_tools/aapt2" dump badging \
+            handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \
+            | grep -F "application-label:'GameGo'" \
+            | tee handheld-dist/p2-1/APP_NAME.txt
+          unzip -l handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \
+            | grep -F 'lib/arm64-v8a/' >/dev/null
+          "$build_tools/aapt2" dump xmltree \
+            handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \
+            --file AndroidManifest.xml \
+            | grep -F 'com.cutoolee.gamego.documents' >/dev/null
           if [ -x "$build_tools/apksigner" ]; then
             "$build_tools/apksigner" verify --print-certs \
               handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \
               | tee handheld-dist/p2-1/SIGNING_CERTIFICATE.txt
+            grep -qi 'bdb5298adf85b5cb9f7adcd83dc181356ac53e7a58e61c9ff7fb5b80a722b66f' \
+              handheld-dist/p2-1/SIGNING_CERTIFICATE.txt
           else
             echo 'APKSIGNER=NOT_FOUND' | tee handheld-dist/p2-1/SIGNING_CERTIFICATE.txt
+            exit 1
           fi
+          printf '%s\n' \
+            'PACKAGE_ID_GATE=PASS' \
+            'DATA_ROOT_GATE=PASS' \
+            'AUTHORITY_GATE=PASS' \
+            'SIGNING_GATE=PASS' \
+            'ABI_GATE=PASS' \
+            'NO_VALIDATION_SUFFIX_GATE=PASS' \
+            | tee handheld-dist/p2-1/PRODUCT_GATES.txt
       - name: Validate feature-off Android configuration
         working-directory: pkg/android/phoenix
-        run: ./gradlew assembleAarch64Debug --no-daemon -PHAVE_HANDHELD_RUNTIME=0 -PHAVE_HANDHELD_QUICK_MENU=0
+        run: ./gradlew assembleAarch64Debug --no-daemon -PGAMEGO_PRODUCT=1 -PHAVE_HANDHELD_RUNTIME=0 -PHAVE_HANDHELD_QUICK_MENU=0
       - name: Verify APK assets
         run: |
           find pkg/android/phoenix/build/outputs -type f -name '*.apk' -print

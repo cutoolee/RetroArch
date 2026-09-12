@@ -78,6 +78,10 @@ ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
    DEFINES += -DANDROID_AARCH64
 endif
 
+ifeq ($(HAVE_GAMEGO_PRODUCT),1)
+   DEFINES += -DHAVE_GAMEGO_PRODUCT
+endif
+
 ifeq ($(TARGET_ARCH),mips)
    DEFINES += -DANDROID_MIPS -D__mips__ -D__MIPSEL__
 endif
