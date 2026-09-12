@@ -28,6 +28,17 @@ jobs:
         run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;29.0.14206865"
       - name: Verify Android build environment
         run: handheld/test/validation/p1-b1/check_android_environment.sh pkg/android/phoenix/gradlew
+      - name: Prepare RetroArch Frontend Assets
+        env:
+          RUNTIME_FLAG: ${{ matrix.runtime }}
+        run: |
+          set -euo pipefail
+          staging="handheld-dist/runtime-${RUNTIME_FLAG}"
+          mkdir -p "$staging"
+          cp handheld/distribution/resources.lock "$staging/resources.lock"
+          ANDROID_ASSETS_DIR="$GITHUB_WORKSPACE/pkg/android/phoenix/assets" \
+            handheld/distribution/prepare_android_assets.sh \
+            | tee "$staging/ASSET_PREPARE_EVIDENCE.txt"
       - name: Build AArch64 APK with Runtime flag ${{ matrix.runtime }}
         working-directory: pkg/android/phoenix
         run: |
@@ -95,6 +106,10 @@ jobs:
             staged_apk="$staging/RetroArch-runtime-disabled.apk"
           fi
           cp "$apk" "$staged_apk"
+          handheld/distribution/verify_android_apk_assets.sh \
+            "$staged_apk" \
+            "handheld/distribution/resources.lock" \
+            "$staging/APK_ASSET_EVIDENCE.txt"
           evidence="$staging/RUNTIME_LINK_EVIDENCE.txt"
           : > "$evidence"
           echo "HAVE_HANDHELD_RUNTIME=${RUNTIME_FLAG}" >> "$evidence"
