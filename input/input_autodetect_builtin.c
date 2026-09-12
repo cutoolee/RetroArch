@@ -179,6 +179,10 @@ DECL_AXIS(r_x_minus, -2) \
 DECL_AXIS(r_y_plus,  -3) \
 DECL_AXIS(r_y_minus, +3)
 
+#define GR0006_DEFAULT_BINDS \
+ANDROID_DEFAULT_BINDS \
+DECL_MENU(110)
+
 #define XPERIA_PLAY_DEFAULT_BINDS \
 DECL_BTN_EX(a, 4, "Circle") \
 DECL_BTN_EX(b, 23, "Cross") \
@@ -790,6 +794,7 @@ const char* const input_builtin_autoconfs[] =
    DECL_AUTOCONF_DEVICE("Dingux Gamepad", "sdl_dingux", DINGUX_SDL_DEFAULT_BINDS),
 #endif
 #if defined(ANDROID)
+   DECL_AUTOCONF_PID(2809, 1133, "android", GR0006_DEFAULT_BINDS),
    DECL_AUTOCONF_DEVICE("Android Gamepad", "android", ANDROID_DEFAULT_BINDS),
    DECL_AUTOCONF_DEVICE("XPERIA Play", "android", XPERIA_PLAY_DEFAULT_BINDS),
 #endif

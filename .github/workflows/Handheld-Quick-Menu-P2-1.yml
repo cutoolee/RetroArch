@@ -57,6 +57,8 @@ jobs:
         run: validation/p2/tests/test_quick_menu.sh
       - name: Validate runtime bridge lifecycle
         run: validation/p2.1/tests/test_bridge.sh
+      - name: Validate GR0006 physical menu profile
+        run: validation/p2.1/tests/test_gr0006_menu_profile.sh
       - name: Build Quick Menu enabled AArch64 APK
         working-directory: pkg/android/phoenix
         run: |
