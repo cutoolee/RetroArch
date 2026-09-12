@@ -174,6 +174,7 @@ jobs:
           ./gradlew clean assembleAarch64Debug --no-daemon --info \
             -PHAVE_HANDHELD_RUNTIME=1 \
             -PHAVE_HANDHELD_RUNTIME_TEST_HARNESS=1 \
+            -PP1B2_VALIDATION_APK=1 \
             2>&1 | tee "../../../p1-b2-harness-build.log"
       - name: Collect P1-B2 APK and validation evidence
         run: |
@@ -204,6 +205,10 @@ jobs:
           staging="handheld-dist/p1-b2-harness"
           staged_apk="$staging/RetroArch-runtime-p1b2-test.apk"
           cp "$apk" "$staged_apk"
+          aapt2="${ANDROID_HOME}/build-tools/36.0.0/aapt2"
+          test -x "$aapt2"
+          application_id="$($aapt2 dump packagename "$staged_apk" | tr -d '\r\n')"
+          test "$application_id" = "com.retroarch.aarch64.p1b2"
           handheld/distribution/verify_android_apk_assets.sh \
             "$staged_apk" handheld/distribution/resources.lock \
             "$staging/APK_ASSET_EVIDENCE.txt"
@@ -219,6 +224,8 @@ jobs:
             echo "COMMIT=$commit"
             echo "HAVE_HANDHELD_RUNTIME=1"
             echo "HAVE_HANDHELD_RUNTIME_TEST_HARNESS=1"
+            echo "P1B2_VALIDATION_APK=1"
+            echo "APPLICATION_ID=$application_id"
             echo "APK_FILENAME=$(basename "$staged_apk")"
             echo "APK_SHA256=$apk_sha256"
             echo "APK_ASSETS_GATE=PASS"

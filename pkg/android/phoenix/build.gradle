@@ -43,6 +43,17 @@ if (handheldRuntimeHarnessFlag == "1" && handheldRuntimeFlag != "1") {
   throw new GradleException("HAVE_HANDHELD_RUNTIME_TEST_HARNESS requires HAVE_HANDHELD_RUNTIME=1")
 }
 
+def p1b2ValidationApkFlag = project.findProperty("P1B2_VALIDATION_APK")
+if (p1b2ValidationApkFlag == null) {
+  p1b2ValidationApkFlag = System.getenv("P1B2_VALIDATION_APK") ?: "0"
+}
+if (!(p1b2ValidationApkFlag in ["0", "1"])) {
+  throw new GradleException("P1B2_VALIDATION_APK must be 0 or 1")
+}
+if (p1b2ValidationApkFlag == "1" && handheldRuntimeHarnessFlag != "1") {
+  throw new GradleException("P1B2_VALIDATION_APK requires HAVE_HANDHELD_RUNTIME_TEST_HARNESS=1")
+}
+
 android {
   namespace "com.retroarch"
 
@@ -89,7 +100,7 @@ android {
       dimension "variant"
     }
     aarch64 {
-      applicationIdSuffix '.aarch64'
+      applicationIdSuffix p1b2ValidationApkFlag == "1" ? '.aarch64.p1b2' : '.aarch64'
       resValue "string", "app_name", "RetroArch (AArch64)"
       buildConfigField "boolean", "PLAY_STORE_BUILD", "false"
 
