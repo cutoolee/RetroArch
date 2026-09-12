@@ -103,7 +103,7 @@ jobs:
             grep -E "griffin\.c|HAVE_HANDHELD_RUNTIME=1" "p1-b1-build-runtime-${RUNTIME_FLAG}.log" >> "$evidence"
             nm_tool="${ANDROID_NDK_ROOT:-$ANDROID_HOME/ndk/29.0.14206865}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-nm"
             test -x "$nm_tool"
-            find pkg/android/phoenix/build -type f -name 'libretro-activity.so' -print -exec "$nm_tool" -g {} \; | grep -E 'hh_runtime_(init|submit_command|owner_tick)' >> "$evidence"
+            find pkg/android/phoenix/build -type f -name 'libretroarch-activity.so' -print -exec "$nm_tool" -g {} \; | grep -E 'hh_runtime_(init|submit_command|owner_tick)' >> "$evidence"
           else
             if grep -E -- "-DHAVE_HANDHELD_RUNTIME=1" "p1-b1-build-runtime-${RUNTIME_FLAG}.log"; then
               echo "Runtime define unexpectedly present in disabled build" >&2
