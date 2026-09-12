@@ -6196,9 +6196,6 @@ static enum runloop_state_enum runloop_check_state(
       bool netplay_allow_timeskip)
 {
    input_bits_t current_bits;
-#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
-   bool hh_quick_menu_blocks_core_input = false;
-#endif
 #ifdef HAVE_MENU
    static input_bits_t last_input      = {{0}};
 #endif
@@ -6273,7 +6270,6 @@ static enum runloop_state_enum runloop_check_state(
     * toggle bit so the menu hotkey handler can close it. */
    if (hh_bridge_global_ready && hh_bridge_is_open(&hh_bridge_global))
    {
-      hh_quick_menu_blocks_core_input = true;
       unsigned buttons = 0;
       bool menu_pressed = BIT256_GET(current_bits, RARCH_MENU_TOGGLE);
       if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
@@ -8447,7 +8443,7 @@ int runloop_iterate(void)
    }
 
 #if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
-   if (hh_quick_menu_blocks_core_input)
+   if (input_st->flags & INP_FLAG_BLOCK_LIBRETRO_INPUT)
       input_st->flags &= ~INP_FLAG_BLOCK_LIBRETRO_INPUT;
 #endif
 
