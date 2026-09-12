@@ -1,0 +1,15 @@
+run: 34681143020
+commit: 6c6a01dda22c566fd158b931ec327254037b120a
+validation_package_fix_commit: 6c6a01dda22c566fd158b931ec327254037b120a
+device: 2419TNW44608
+application_id: com.retroarch.aarch64.p1b2
+apk_sha256: c68a502140c7c48b8da38bcfb6739741b4226671e61ad5655a77e415989efbd4
+push: PASS
+ci: PASS
+package_coexistence: PASS
+install: PASS
+p1_b2: PASS
+p1_b: PASS
+p2_1: NOT_STARTED
+adb_uninstall: false
+pm_clear: false

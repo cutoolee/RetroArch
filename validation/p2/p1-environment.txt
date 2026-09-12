@@ -1,0 +1,4 @@
+MISSING Java Runtime: java is absent or cannot start a JVM
+MISSING adb: adb
+PASS Gradle Wrapper: pkg/android/phoenix/gradlew
+MISSING Android SDK: set ANDROID_SDK_ROOT or ANDROID_HOME

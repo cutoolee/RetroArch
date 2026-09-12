@@ -1,0 +1,2 @@
+--- crash/ANR scan ---
+No crash/ANR signatures found in the post-smoke device logcat.

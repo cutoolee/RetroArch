@@ -1,0 +1,13 @@
+P1-B2 request/event audit
+=========================
+Status: PASS against the CI harness APK.
+The validation receiver was exercised on-device after installing
+com.retroarch.aarch64.p1b2. Init, snapshot, reset, pause, resume, slot change,
+save, load, screenshot, RA menu, close content, and repeated/burst submissions
+returned OK where content state permitted. Request IDs 1 through 20 were
+monotonic; each accepted request had a matching completion event. The expected
+no-content RA menu toggle returned INVALID_STATE and did not crash.
+
+The public snapshot reports operation_busy=NOT_EXPOSED_PUBLIC_API; therefore
+busy was checked indirectly through rapid queue submissions and final recovery,
+not by claiming an unavailable field.

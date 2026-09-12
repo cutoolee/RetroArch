@@ -7,6 +7,68 @@
 #define HH_QUICK_MENU_ITEM_COUNT 6
 #define HH_QUICK_MENU_LABEL_MAX 32
 #define HH_QUICK_MENU_MESSAGE_MAX 64
+#define HH_QUICK_MENU_TEXT_MAX 128
+#define HH_QUICK_MENU_SLOT_COUNT 10
+
+typedef enum hh_quick_menu_page
+{
+   HH_QUICK_MENU_PAGE_MAIN = 0,
+   HH_QUICK_MENU_PAGE_SAVE,
+   HH_QUICK_MENU_PAGE_LOAD
+} hh_quick_menu_page_t;
+
+typedef enum hh_quick_menu_item_state
+{
+   HH_QUICK_MENU_ITEM_NORMAL = 0,
+   HH_QUICK_MENU_ITEM_FOCUSED,
+   HH_QUICK_MENU_ITEM_DISABLED,
+   HH_QUICK_MENU_ITEM_PENDING
+} hh_quick_menu_item_state_t;
+
+typedef enum hh_quick_menu_feedback
+{
+   HH_QUICK_MENU_FEEDBACK_NONE = 0,
+   HH_QUICK_MENU_SAVE_SUCCESS,
+   HH_QUICK_MENU_LOAD_SUCCESS,
+   HH_QUICK_MENU_ACTION_SUCCESS,
+   HH_QUICK_MENU_ACTION_ERROR
+} hh_quick_menu_feedback_t;
+
+typedef enum hh_quick_menu_input
+{
+   HH_QUICK_MENU_INPUT_UP = 0,
+   HH_QUICK_MENU_INPUT_DOWN,
+   HH_QUICK_MENU_INPUT_LEFT,
+   HH_QUICK_MENU_INPUT_RIGHT,
+   HH_QUICK_MENU_INPUT_CONFIRM,
+   HH_QUICK_MENU_INPUT_BACK
+} hh_quick_menu_input_t;
+
+typedef struct hh_quick_menu_game
+{
+   char title[HH_QUICK_MENU_TEXT_MAX];
+   char platform[HH_QUICK_MENU_TEXT_MAX];
+   char subtitle[HH_QUICK_MENU_TEXT_MAX];
+} hh_quick_menu_game_t;
+
+typedef struct hh_quick_menu_slot
+{
+   int index;
+   bool occupied;
+   bool preview_available;
+   bool disabled;
+   char timestamp[HH_QUICK_MENU_MESSAGE_MAX];
+   char label[HH_QUICK_MENU_TEXT_MAX];
+} hh_quick_menu_slot_t;
+
+typedef struct hh_quick_menu_capabilities
+{
+   bool save_enabled;
+   bool load_enabled;
+   bool screenshot_enabled;
+   bool advanced_menu_enabled;
+   bool reset_enabled;
+} hh_quick_menu_capabilities_t;
 
 typedef enum hh_quick_menu_state
 {
@@ -52,6 +114,8 @@ typedef struct hh_quick_menu_dialog
    hh_ui_action_t action;
    bool confirm_selected;
    char message[HH_QUICK_MENU_MESSAGE_MAX];
+   char detail[HH_QUICK_MENU_TEXT_MAX];
+   char confirm_label[HH_QUICK_MENU_LABEL_MAX];
 } hh_quick_menu_dialog_t;
 
 typedef struct hh_quick_menu_view
@@ -64,6 +128,13 @@ typedef struct hh_quick_menu_view
    hh_quick_menu_dialog_t dialog;
    bool busy;
    char message[HH_QUICK_MENU_MESSAGE_MAX];
+   hh_quick_menu_page_t page;
+   hh_quick_menu_game_t game;
+   hh_quick_menu_slot_t slots[HH_QUICK_MENU_SLOT_COUNT];
+   hh_quick_menu_capabilities_t capabilities;
+   hh_quick_menu_feedback_t feedback;
+   hh_ui_action_t pending_action;
+   int pending_slot;
 } hh_quick_menu_view_t;
 
 #endif
