@@ -40,6 +40,11 @@ hh_result_t hh_runtime_init(void)
    hh_runtime_state.initialized = true;
    hh_runtime_state.shutting_down = false;
    hh_runtime_state.operation_busy = false;
+   hh_runtime_state.state_task_busy = false;
+   hh_runtime_state.state_task_binding = false;
+   hh_runtime_state.state_task_attached = false;
+   hh_runtime_state.state_task_done = false;
+   hh_runtime_state.state_task_result = HH_OK;
    hh_runtime_state.owner_thread_id = 0;
    hh_runtime_state.next_request_id = 1;
    hh_runtime_state.last_error = HH_OK;
@@ -63,6 +68,7 @@ void hh_runtime_deinit(void)
    if (!hh_runtime_state.lock)
       return;
 
+   hh_runtime_state_task_cancel(HH_ERR_NOT_INITIALIZED);
    slock_lock(hh_runtime_state.lock);
    hh_runtime_state.shutting_down = true;
    for (i = 0; i < HH_RUNTIME_QUEUE_CAPACITY; i++)
@@ -77,6 +83,9 @@ void hh_runtime_deinit(void)
    }
    hh_runtime_state.operation_busy = false;
    hh_runtime_state.initialized = false;
+   hh_runtime_state.state_task_busy = false;
+   hh_runtime_state.state_task_binding = false;
+   hh_runtime_state.state_task_attached = false;
    hh_runtime_state.owner_thread_id = 0;
    hh_runtime_state.snapshot.initialized = false;
    hh_runtime_state.snapshot.content_loaded = false;

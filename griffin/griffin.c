@@ -1909,6 +1909,15 @@ SMB CLIENT
 #include "../handheld/runtime/hh_runtime_command.c"
 #include "../handheld/runtime/hh_runtime_save.c"
 #include "../handheld/runtime/hh_runtime_menu.c"
+#include "../handheld/runtime/hh_runtime_task.c"
 #include "../handheld/runtime/hh_runtime_queue.c"
 #include "../handheld/runtime/hh_runtime.c"
+#if defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+#include "../handheld/ui/hh_quick_menu.c"
+#include "../handheld/ui/hh_quick_menu_actions.c"
+#include "../handheld/ui/hh_quick_menu_layout.c"
+#include "../handheld/ui/hh_quick_menu_render.c"
+#include "../handheld/ui/hh_quick_menu_state.c"
+#include "../handheld/bridge/hh_bridge.c"
+#endif
 #endif

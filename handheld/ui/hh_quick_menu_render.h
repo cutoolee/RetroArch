@@ -19,6 +19,7 @@ typedef struct hh_quick_menu_theme
    unsigned long focus, danger;
    float spacing_small, spacing_medium, spacing_large;
    float radius, font_small, font_body, font_title;
+   unsigned long panel_shadow, surface_muted, success, pending;
 } hh_quick_menu_theme_t;
 
 typedef struct hh_quick_menu_layout

@@ -17,6 +17,7 @@
 
 #include <retro_atomic.h>
 #include <retro_miscellaneous.h>
+#include <string.h>
 
 #ifdef HAVE_CONFIG_H
 #include "../config.h"
@@ -42,6 +43,11 @@
 
 #include "../tasks/task_content.h"
 #include "../tasks/tasks_internal.h"
+
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+#include "../handheld/bridge/hh_bridge.h"
+#include "../handheld/ui/hh_quick_menu_render.h"
+#endif
 
 #define BASE_FONT_SIZE      32.0f
 #define MSG_QUEUE_FONT_SIZE 20.0f
@@ -1820,6 +1826,76 @@ bool gfx_widgets_visible(void *data)
    return false;
 }
 
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+typedef struct hh_widget_paint_context
+{
+   video_frame_info_t *video_info;
+   gfx_display_t *display;
+   dispgfx_widget_t *widgets;
+} hh_widget_paint_context_t;
+
+static void hh_widget_color(unsigned long value, float *out)
+{
+   unsigned i;
+   float channels[4];
+   channels[0] = ((value >> 24) & 0xff) / 255.0f;
+   channels[1] = ((value >> 16) & 0xff) / 255.0f;
+   channels[2] = ((value >> 8) & 0xff) / 255.0f;
+   channels[3] = (value & 0xff) / 255.0f;
+   for (i = 0; i < 16; i++)
+      out[i] = channels[i & 3];
+}
+
+static void hh_widget_rect(void *userdata, hh_ui_rect_t bounds,
+      unsigned long fill, unsigned long border, float radius,
+      float border_width)
+{
+   hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
+   float color[16];
+   (void)border;
+   (void)radius;
+   (void)border_width;
+   hh_widget_color(fill, color);
+   gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+         ctx->video_info->width, ctx->video_info->height,
+         (int)bounds.x, (int)bounds.y, (unsigned)bounds.width,
+         (unsigned)bounds.height, ctx->video_info->width,
+         ctx->video_info->height, color, NULL);
+}
+
+static void hh_widget_text(void *userdata, hh_ui_rect_t bounds,
+      const char *text, unsigned long color, float size, bool emphasized)
+{
+   hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
+   gfx_widget_font_data_t *font = emphasized
+      ? &ctx->widgets->gfx_widget_fonts.bold
+      : &ctx->widgets->gfx_widget_fonts.regular;
+   (void)size;
+   gfx_widgets_draw_text(font, text, bounds.x, bounds.y,
+         (int)bounds.width, (int)bounds.height, (uint32_t)color,
+         TEXT_ALIGN_LEFT, false);
+}
+
+static void hh_widget_render_quick_menu(video_frame_info_t *video_info,
+      gfx_display_t *display, dispgfx_widget_t *widgets)
+{
+   hh_bridge_t *bridge = hh_bridge_active();
+   hh_widget_paint_context_t context;
+   hh_quick_menu_painter_t painter;
+   if (!bridge || !hh_bridge_is_open(bridge))
+      return;
+   context.video_info = video_info;
+   context.display = display;
+   context.widgets = widgets;
+   memset(&painter, 0, sizeof(painter));
+   painter.userdata = &context;
+   painter.rect = hh_widget_rect;
+   painter.text = hh_widget_text;
+   hh_quick_menu_render(hh_bridge_menu(bridge), video_info->width,
+         video_info->height, NULL, &painter);
+}
+#endif
+
 void gfx_widgets_frame(void *data)
 {
    size_t i;
@@ -2143,6 +2219,10 @@ void gfx_widgets_frame(void *data)
       if (widget->frame)
          widget->frame(data, p_dispwidget);
    }
+
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   hh_widget_render_quick_menu(video_info, p_disp, p_dispwidget);
+#endif
 
    /* Draw all messages */
    if (p_dispwidget->current_msgs_size)

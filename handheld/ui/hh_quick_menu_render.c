@@ -35,7 +35,8 @@ static const hh_quick_menu_theme_t hh_quick_menu_theme =
    0x071018d9UL, 0x15232effUL, 0x29473fffUL,
    0xf4f7f5ffUL, 0xb6c7cbffUL, 0x829397ffUL,
    0xa3efb4ffUL, 0xffb3a7ffUL,
-   4.0f, 12.0f, 20.0f, 10.0f, 14.0f, 20.0f, 24.0f
+   4.0f, 12.0f, 20.0f, 10.0f, 14.0f, 20.0f, 24.0f,
+   0x00000066UL, 0x1d2e38ffUL, 0x9df2b4ffUL, 0xffd27dffUL
 };
 
 const hh_quick_menu_theme_t *hh_quick_menu_default_theme(void)
@@ -61,6 +62,16 @@ static hh_ui_rect_t hh_quick_menu_line(hh_ui_rect_t rect,
    return rect;
 }
 
+static hh_ui_rect_t hh_quick_menu_expand(hh_ui_rect_t rect,
+      float amount)
+{
+   rect.x -= amount;
+   rect.y -= amount;
+   rect.width += amount * 2.0f;
+   rect.height += amount * 2.0f;
+   return rect;
+}
+
 static void hh_quick_menu_paint_text(const hh_quick_menu_painter_t *p,
       hh_ui_rect_t rect, const char *text, unsigned long color,
       float size, bool bold)
@@ -76,8 +87,10 @@ static void hh_quick_menu_paint_row(const hh_quick_menu_painter_t *p,
    bool pending = state == HH_QUICK_MENU_ITEM_PENDING;
    bool disabled = state == HH_QUICK_MENU_ITEM_DISABLED;
    unsigned long color = disabled ? t->text_disabled : t->text_primary;
+   unsigned long status_color = disabled ? t->text_disabled :
+      pending ? t->pending : color;
    float inset = t->spacing_medium * scale;
-   p->rect(p->userdata, rect, focused ? t->surface_focused : t->surface,
+   p->rect(p->userdata, rect, focused ? t->surface_focused : t->surface_muted,
          focused ? t->focus : 0, t->radius * scale, focused ? 2 * scale : 0);
    text.x += inset;
    text.width = 24 * scale;
@@ -89,7 +102,7 @@ static void hh_quick_menu_paint_row(const hh_quick_menu_painter_t *p,
    text.x = rect.x + rect.width - inset - 80 * scale;
    text.width = 80 * scale;
    hh_quick_menu_paint_text(p, text, pending ? "处理中…" : disabled ? "不可用" : "",
-         color, t->font_small * scale, false);
+         status_color, t->font_small * scale, pending || disabled);
 }
 
 static void hh_quick_menu_paint_slots(const hh_quick_menu_t *menu,
@@ -171,7 +184,10 @@ void hh_quick_menu_render(const hh_quick_menu_t *menu, float width,
    s = l.scale;
    pending = menu->state == HH_QUICK_MENU_ACTION_PENDING || menu->view.busy;
    p->rect(p->userdata, l.viewport, t->background, 0, 0, 0);
-   p->rect(p->userdata, l.panel, t->surface, 0, t->radius * s, 0);
+   p->rect(p->userdata, hh_quick_menu_expand(l.panel, 6.0f * s),
+         t->panel_shadow, 0, (t->radius + 4.0f) * s, 0);
+   p->rect(p->userdata, l.panel, t->surface, t->surface_muted,
+         t->radius * s, s);
    hh_quick_menu_paint_text(p, hh_quick_menu_line(l.header, 0, 16, s),
          "GAMEGO  /  快捷菜单", t->focus, t->font_small * s, true);
    hh_quick_menu_paint_text(p, hh_quick_menu_line(l.header, 18, 28, s),
@@ -181,6 +197,10 @@ void hh_quick_menu_render(const hh_quick_menu_t *menu, float width,
          menu->view.game.platform, t->text_secondary, t->font_small * s, false);
    hh_quick_menu_paint_text(p, hh_quick_menu_line(l.header, 68, 16, s),
          menu->view.game.subtitle, t->text_secondary, t->font_small * s, false);
+   rect = l.header;
+   rect.y += rect.height - s;
+   rect.height = s;
+   p->rect(p->userdata, rect, t->surface_muted, 0, 0, 0);
    if (menu->view.page == HH_QUICK_MENU_PAGE_MAIN)
    {
       for (i = 0; i < menu->view.item_count && i < HH_QUICK_MENU_ITEM_COUNT; i++)
@@ -192,15 +212,18 @@ void hh_quick_menu_render(const hh_quick_menu_t *menu, float width,
    if (pending || menu->view.feedback != HH_QUICK_MENU_FEEDBACK_NONE)
    {
       bool error = menu->view.feedback == HH_QUICK_MENU_ACTION_ERROR;
+      bool complete = menu->view.feedback != HH_QUICK_MENU_FEEDBACK_NONE;
+      unsigned long feedback_color = error ? t->danger :
+         pending ? t->pending : t->success;
       p->rect(p->userdata, l.feedback, t->surface_focused,
-            error ? t->danger : t->focus, t->radius * s, s);
+            feedback_color, t->radius * s, s);
       rect = l.feedback;
       rect.x += t->spacing_medium * s;
       rect.width -= 2 * t->spacing_medium * s;
       hh_quick_menu_paint_text(p, rect, pending ? "… 处理中，请稍候" :
-            error ? "! 操作失败" : "✓ 操作完成", error ? t->danger : t->focus,
+            error ? "! 操作失败" : "✓ 操作完成", feedback_color,
             t->font_small * s, true);
-      if (!pending)
+      if (complete)
       {
          rect.x += 116 * s;
          rect.width -= 116 * s;
@@ -215,7 +238,9 @@ void hh_quick_menu_render(const hh_quick_menu_t *menu, float width,
    if (menu->state != HH_QUICK_MENU_CONFIRM_DIALOG || !menu->view.dialog.visible)
       return;
    p->rect(p->userdata, l.viewport, t->background, 0, 0, 0);
-   p->rect(p->userdata, l.dialog, t->surface, t->danger, t->radius * s, s);
+   p->rect(p->userdata, hh_quick_menu_expand(l.dialog, 4.0f * s),
+         t->panel_shadow, 0, (t->radius + 3.0f) * s, 0);
+   p->rect(p->userdata, l.dialog, t->surface, t->danger, t->radius * s, 2 * s);
    rect = l.dialog;
    rect.x += t->spacing_large * s;
    rect.width -= 2 * t->spacing_large * s;

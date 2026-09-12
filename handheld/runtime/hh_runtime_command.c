@@ -59,6 +59,7 @@ hh_result_t hh_runtime_execute_command(
          command_ok = command_event(CMD_EVENT_RESET, NULL);
          break;
       case HH_CMD_CLOSE_CONTENT:
+         hh_runtime_state_task_cancel(HH_ERR_NO_CONTENT);
          command_ok = command_event(CMD_EVENT_CLOSE_CONTENT, NULL);
          break;
       case HH_CMD_SET_STATE_SLOT:

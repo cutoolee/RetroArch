@@ -50,6 +50,15 @@
 #include "../verbosity.h"
 #include "tasks_internal.h"
 
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME
+#include "../handheld/runtime/hh_runtime_task.h"
+#define HH_STATE_ATTACH() hh_runtime_state_task_attach()
+#define HH_STATE_COMPLETE(token, success) hh_runtime_state_task_complete(token, success)
+#else
+#define HH_STATE_ATTACH() NULL
+#define HH_STATE_COMPLETE(token, success) ((void)(token))
+#endif
+
 #ifdef __EMSCRIPTEN__
 /* Use huge chunks since each read/write is a possible suspend to
    JS code */
@@ -402,7 +411,8 @@ static void task_save_handler_finished(retro_task_t *task,
     * (serialize failure, or the open itself). */
    if (state->file)
    {
-      intfstream_close(state->file);
+      if (intfstream_close(state->file) != 0 && !task_get_error(task))
+         task_set_error(task, strdup("State stream close failed"));
       free(state->file);
    }
 
@@ -692,22 +702,18 @@ static void task_save_handler(retro_task_t *task)
       size_t _len = 0;
       state->data = content_get_serialized_data(&_len);
       state->size = (ssize_t)_len;
+   }
 
-      /* A failed serialize used to leave data NULL and size 0, and
-       * every test below then read as success: remaining was 0, so
-       * written == remaining, and written == size, so the handler
-       * reported a COMPLETED save of a zero-byte file.  The user got
-       * a 'state saved' notification and an empty slot. */
-      if (!state->data || state->size <= 0)
-      {
-         RARCH_ERR("[State] save task could not serialize core state "
-               "for slot %d, path \"%s\".\n",
-               state->state_slot, state->path);
-         task_set_error(task, strdup(
-               msg_hash_to_str(MSG_FAILED_TO_SAVE_STATE_TO)));
-         task_save_handler_finished(task, state);
-         return;
-      }
+   /* A missing or empty serialization is not a completed save. */
+   if (!state->data || state->size <= 0)
+   {
+      RARCH_ERR("[State] save task could not serialize core state "
+            "for slot %d, path \"%s\".\n",
+            state->state_slot, state->path);
+      task_set_error(task, strdup(
+            msg_hash_to_str(MSG_FAILED_TO_SAVE_STATE_TO)));
+      task_save_handler_finished(task, state);
+      return;
    }
 
    if (!state->file)
@@ -921,7 +927,8 @@ static void task_load_handler_finished(retro_task_t *task,
 
    if (state->file)
    {
-      intfstream_close(state->file);
+      if (intfstream_close(state->file) != 0 && !task_get_error(task))
+         task_set_error(task, strdup("State stream close failed"));
       free(state->file);
    }
 
@@ -1333,7 +1340,10 @@ static void content_load_state_cb(retro_task_t *task,
     * the task error (set by the handler) surfaces the failure
     * to the user. */
    if (!load_data)
+   {
+      HH_STATE_COMPLETE(user_data, false);
       return;
+   }
 
    _len = load_data->size;
    buf  = load_data->data;
@@ -1349,7 +1359,7 @@ static void content_load_state_cb(retro_task_t *task,
          (unsigned)_len,
          msg_hash_to_str(MSG_BYTES));
 
-   if (_len < 0 || !buf)
+   if (error || task_get_error(task) || _len < 0 || !buf)
       goto error;
 
    /* This means we're backing up the file in memory,
@@ -1447,12 +1457,16 @@ static void content_load_state_cb(retro_task_t *task,
    if (!ret)
       goto error;
 
+   HH_STATE_COMPLETE(user_data, true);
    free(buf);
    free(load_data);
 
    return;
 
 error:
+   if (!task_get_error(task))
+      task_set_error(task, strdup(msg_hash_to_str(MSG_FAILED_TO_LOAD_STATE)));
+   HH_STATE_COMPLETE(user_data, false);
    RARCH_ERR("[State] %s \"%s\".\n",
          msg_hash_to_str(MSG_FAILED_TO_LOAD_STATE),
          load_data->path);
@@ -1475,6 +1489,7 @@ static void save_state_cb(retro_task_t *task,
     * the task_data copy on OOM and leave it NULL.  Skip the
     * screenshot hook and free(state) on NULL - free(NULL) is a
     * no-op but we can't read state->path / state->flags. */
+   HH_STATE_COMPLETE(user_data, state && !error && !task_get_error(task));
    if (!state)
       return;
 #ifdef HAVE_SCREENSHOTS
@@ -1499,7 +1514,8 @@ static void save_state_cb(retro_task_t *task,
  *
  * Create a new task to save the content state.
  **/
-static void task_push_save_state(const char *path, void *data, size_t len, bool autosave)
+static void task_push_save_state(const char *path, void *data, size_t len,
+      bool autosave, void *completion_token)
 {
    settings_t     *settings        = config_get_ptr();
    retro_task_t       *task        = task_init();
@@ -1533,6 +1549,7 @@ static void task_push_save_state(const char *path, void *data, size_t len, bool 
    if (!settings->bools.notification_show_save_state)
       state->flags              |= SAVE_TASK_FLAG_MUTE;
 
+   task->user_data               = completion_token;
    task->type                    = TASK_TYPE_BLOCKING;
    task->state                   = state;
    task->handler                 = task_save_handler;
@@ -1546,6 +1563,7 @@ static void task_push_save_state(const char *path, void *data, size_t len, bool 
 
    if (!task_queue_push(task))
    {
+      HH_STATE_COMPLETE(completion_token, false);
       /* Another blocking task is already active. */
       if (data)
          free(data);
@@ -1558,6 +1576,7 @@ static void task_push_save_state(const char *path, void *data, size_t len, bool 
    return;
 
 error:
+   HH_STATE_COMPLETE(completion_token, false);
    if (data)
       free(data);
    if (state)
@@ -1591,9 +1610,10 @@ static void content_load_and_save_state_cb(retro_task_t *task,
     * NULL-safe no-op to content_load_state_cb (which already
     * handles NULL via its own guard) and skip the subsequent
     * save push which would NULL-deref ->path / ->undo_data. */
-   if (!load_data)
+   if (!load_data || error || task_get_error(task) || !load_data->data)
    {
-      content_load_state_cb(task, task_data, user_data, error);
+      HH_STATE_COMPLETE(user_data, false);
+      content_load_state_cb(task, task_data, NULL, error);
       return;
    }
 
@@ -1602,9 +1622,15 @@ static void content_load_and_save_state_cb(retro_task_t *task,
    size     = load_data->undo_size;
    autosave = (load_data->flags & SAVE_TASK_FLAG_AUTOSAVE) ? true : false;
 
-   content_load_state_cb(task, task_data, user_data, error);
+   content_load_state_cb(task, task_data, NULL, error);
 
-   task_push_save_state(path, data, size, autosave);
+   if (path && !task_get_error(task))
+      task_push_save_state(path, data, size, autosave, user_data);
+   else
+   {
+      free(data);
+      HH_STATE_COMPLETE(user_data, false);
+   }
 
    free(path);
 }
@@ -1658,6 +1684,7 @@ static void task_push_load_and_save_state(const char *path, void *data,
    if (!settings->bools.notification_show_save_state)
       state->flags             |= SAVE_TASK_FLAG_MUTE;
 
+   task->user_data              = HH_STATE_ATTACH();
    task->state                  = state;
    task->type                   = TASK_TYPE_BLOCKING;
    task->handler                = task_load_handler;
@@ -1673,6 +1700,7 @@ static void task_push_load_and_save_state(const char *path, void *data,
 
    if (!task_queue_push(task))
    {
+      HH_STATE_COMPLETE(task->user_data, false);
       /* Another blocking task is already active.  No callback will
        * run for this task, so clear the flag here. */
       load_state_task_pending   = false;
@@ -1857,7 +1885,7 @@ bool content_save_state(const char *path, bool save_to_disk)
       task_push_load_and_save_state(path, data, _len, true, false);
    }
    else
-      task_push_save_state(path, data, _len, false);
+      task_push_save_state(path, data, _len, false, HH_STATE_ATTACH());
 
    return true;
 }
@@ -1981,6 +2009,7 @@ bool content_load_state(const char *path,
    if (!settings->bools.notification_show_save_state)
       state->flags             |= SAVE_TASK_FLAG_MUTE;
 
+   task->user_data              = HH_STATE_ATTACH();
    task->type                   = TASK_TYPE_BLOCKING;
    task->state                  = state;
    task->handler                = task_load_handler;
@@ -1994,7 +2023,13 @@ bool content_load_state(const char *path,
    else
       task->flags               &= ~RETRO_TASK_FLG_MUTE;
 
-   task_queue_push(task);
+   if (!task_queue_push(task))
+   {
+      load_state_task_pending = false;
+      HH_STATE_COMPLETE(task->user_data, false);
+      task_free_title(task);
+      goto error;
+   }
 
    return true;
 

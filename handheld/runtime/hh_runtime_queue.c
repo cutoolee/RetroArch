@@ -122,12 +122,7 @@ hh_result_t hh_runtime_submit_command(
       slock_unlock(hh_runtime_state.lock);
       return HH_ERR_NOT_INITIALIZED;
    }
-   id = hh_runtime_state.next_request_id++;
-   if (!id)
-      id = hh_runtime_state.next_request_id++;
-   *request_id = id;
-
-   if (hh_runtime_command_is_state_io(type) && hh_runtime_state.operation_busy)
+   if (hh_runtime_command_is_state_io(type) && (hh_runtime_state.operation_busy || hh_runtime_state.state_task_busy))
    {
       slock_unlock(hh_runtime_state.lock);
       return HH_ERR_BUSY;
@@ -139,6 +134,10 @@ hh_result_t hh_runtime_submit_command(
       slock_unlock(hh_runtime_state.lock);
       return HH_ERR_BUSY;
    }
+   id = hh_runtime_state.next_request_id++;
+   if (!id)
+      id = hh_runtime_state.next_request_id++;
+   *request_id = id;
    memset(request, 0, sizeof(*request));
    request->in_use = true;
    request->queued = true;
@@ -189,8 +188,13 @@ void hh_runtime_dispatch_pending(void)
       hh_runtime_state.processing_count++;
       slock_unlock(hh_runtime_state.lock);
 
+      if (hh_runtime_command_is_state_io(local.type))
+         hh_runtime_state_task_begin(local.request_id, local.type);
       result = hh_runtime_execute_command(local.type, local.int_arg);
       hh_runtime_finish_request(request, result);
+      if (hh_runtime_command_is_state_io(local.type))
+         hh_runtime_state_task_end(result);
+      hh_runtime_state_task_publish();
    }
 }
 
@@ -207,6 +211,7 @@ void hh_runtime_owner_tick(void)
    if (!hh_runtime_state.owner_thread_id)
       hh_runtime_state.owner_thread_id = sthread_get_current_thread_id();
    slock_unlock(hh_runtime_state.lock);
+   hh_runtime_state_task_publish();
    hh_runtime_dispatch_pending();
 }
 

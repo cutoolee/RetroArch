@@ -93,7 +93,11 @@ typedef enum hh_event_type
    HH_EVENT_RA_MENU_OPENED,
    HH_EVENT_RA_MENU_CLOSED,
    HH_EVENT_ERROR,
-   HH_EVENT_STATE_SLOT_CHANGED
+   HH_EVENT_STATE_SLOT_CHANGED,
+   /* ACCEPTED events above are queue acknowledgement only. These are emitted
+    * by the state task callbacks after the final save/load result is known. */
+   HH_EVENT_STATE_SAVE_COMPLETED,
+   HH_EVENT_STATE_LOAD_COMPLETED
 } hh_event_type_t;
 
 /* P1 compatibility names; these events mean upstream command acceptance,
@@ -105,6 +109,8 @@ typedef struct hh_runtime_event
 {
    uint64_t request_id;
    hh_event_type_t type;
+   /* COMPLETED events carry the final task result; ACCEPTED events carry
+    * HH_OK only for queue acceptance. */
    hh_result_t result;
    hh_runtime_snapshot_t snapshot;
 } hh_runtime_event_t;

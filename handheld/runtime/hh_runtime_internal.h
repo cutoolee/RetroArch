@@ -33,6 +33,14 @@ typedef struct hh_runtime_state
    bool initialized;
    bool shutting_down;
    bool operation_busy;
+   bool state_task_busy;
+   bool state_task_binding;
+   bool state_task_attached;
+   bool state_task_done;
+   uint64_t state_task_id;
+   uint64_t state_task_generation;
+   hh_command_type_t state_task_type;
+   hh_result_t state_task_result;
    uintptr_t owner_thread_id;
    uint64_t next_request_id;
    hh_result_t last_error;
@@ -56,5 +64,10 @@ void hh_runtime_emit_event(uint64_t request_id,
       hh_event_type_t type, hh_result_t result);
 void hh_runtime_set_last_error(hh_result_t result);
 bool hh_runtime_command_is_state_io(hh_command_type_t type);
+
+void hh_runtime_state_task_begin(uint64_t id, hh_command_type_t type);
+void hh_runtime_state_task_end(hh_result_t result);
+void hh_runtime_state_task_publish(void);
+void hh_runtime_state_task_cancel(hh_result_t result);
 
 #endif

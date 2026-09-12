@@ -128,6 +128,12 @@ bool android_get_vfs_authorized_locations(
 
 #if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME
 #include "handheld/runtime/hh_runtime.h"
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+#include "handheld/bridge/hh_bridge.h"
+static hh_bridge_t hh_bridge_global;
+static bool hh_bridge_global_ready;
+static unsigned hh_bridge_buttons_previous;
+#endif
 #endif
 
 #ifdef HAVE_CONFIG_H
@@ -6190,6 +6196,9 @@ static enum runloop_state_enum runloop_check_state(
       bool netplay_allow_timeskip)
 {
    input_bits_t current_bits;
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   bool hh_quick_menu_blocks_core_input = false;
+#endif
 #ifdef HAVE_MENU
    static input_bits_t last_input      = {{0}};
 #endif
@@ -6258,6 +6267,48 @@ static enum runloop_state_enum runloop_check_state(
       input_st->flags |= INP_FLAG_BLOCK_HOTKEY;
 
    input_driver_collect_system_input(input_st, settings, &current_bits);
+
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   /* The handheld overlay owns the frame's input while visible. Keep the
+    * toggle bit so the menu hotkey handler can close it. */
+   if (hh_bridge_global_ready && hh_bridge_is_open(&hh_bridge_global))
+   {
+      hh_quick_menu_blocks_core_input = true;
+      unsigned buttons = 0;
+      bool menu_pressed = BIT256_GET(current_bits, RARCH_MENU_TOGGLE);
+      if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
+               RETRO_DEVICE_ID_JOYPAD_UP)) buttons |= 1U << 0;
+      if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
+               RETRO_DEVICE_ID_JOYPAD_DOWN)) buttons |= 1U << 1;
+      if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
+               RETRO_DEVICE_ID_JOYPAD_LEFT)) buttons |= 1U << 2;
+      if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
+               RETRO_DEVICE_ID_JOYPAD_RIGHT)) buttons |= 1U << 3;
+      if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
+               RETRO_DEVICE_ID_JOYPAD_A)) buttons |= 1U << 4;
+      if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
+               RETRO_DEVICE_ID_JOYPAD_B)) buttons |= 1U << 5;
+      if ((buttons & (1U << 0)) && !(hh_bridge_buttons_previous & (1U << 0)))
+         hh_bridge_input(&hh_bridge_global, HH_QUICK_MENU_INPUT_UP);
+      if ((buttons & (1U << 1)) && !(hh_bridge_buttons_previous & (1U << 1)))
+         hh_bridge_input(&hh_bridge_global, HH_QUICK_MENU_INPUT_DOWN);
+      if ((buttons & (1U << 2)) && !(hh_bridge_buttons_previous & (1U << 2)))
+         hh_bridge_input(&hh_bridge_global, HH_QUICK_MENU_INPUT_LEFT);
+      if ((buttons & (1U << 3)) && !(hh_bridge_buttons_previous & (1U << 3)))
+         hh_bridge_input(&hh_bridge_global, HH_QUICK_MENU_INPUT_RIGHT);
+      if ((buttons & (1U << 4)) && !(hh_bridge_buttons_previous & (1U << 4)))
+         hh_bridge_input(&hh_bridge_global, HH_QUICK_MENU_INPUT_CONFIRM);
+      if ((buttons & (1U << 5)) && !(hh_bridge_buttons_previous & (1U << 5)))
+         hh_bridge_input(&hh_bridge_global, HH_QUICK_MENU_INPUT_BACK);
+      hh_bridge_buttons_previous = buttons;
+      BIT256_CLEAR_ALL(current_bits);
+      if (menu_pressed)
+         BIT256_SET(current_bits, RARCH_MENU_TOGGLE);
+      input_st->flags |= INP_FLAG_BLOCK_LIBRETRO_INPUT;
+   }
+   else
+      hh_bridge_buttons_previous = 0;
+#endif
 
 #ifdef HAVE_MENU
    last_input                       = current_bits;
@@ -6649,17 +6700,29 @@ static enum runloop_state_enum runloop_check_state(
       bool pressed            = BIT256_GET(current_bits, RARCH_MENU_TOGGLE)
          && memcmp(settings->arrays.menu_driver, "null", 5) != 0;
       bool core_type_is_dummy = runloop_st->current_core_type == CORE_TYPE_DUMMY;
+      bool handheld_handled  = false;
 
       if (pressed && !old_pressed)
       {
          bool core_is_running    = runloop_st->flags & RUNLOOP_FLAG_CORE_RUNNING;
 
-         if (menu_st->flags & MENU_ST_FLAG_ALIVE)
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+         if (core_is_running && !core_type_is_dummy)
+         {
+            if (hh_bridge_is_open(&hh_bridge_global))
+               hh_bridge_close(&hh_bridge_global);
+            else
+               hh_bridge_open(&hh_bridge_global);
+            handheld_handled = true;
+         }
+#endif
+
+         if (!handheld_handled && (menu_st->flags & MENU_ST_FLAG_ALIVE))
          {
             if (rarch_is_initialized && !core_type_is_dummy && core_is_running)
                retroarch_menu_running_finished(false);
          }
-         else
+         else if (!handheld_handled)
             retroarch_menu_running();
       }
       /* Initial menu toggle on startup */
@@ -8091,6 +8154,20 @@ int runloop_iterate(void)
 #endif
 
 #if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME
+ #if defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   if (!hh_bridge_global_ready)
+   {
+      hh_bridge_init(&hh_bridge_global);
+      hh_bridge_global_ready = true;
+   }
+   if ((runloop_st->flags & RUNLOOP_FLAG_SHUTDOWN_INITIATED)
+         && hh_bridge_global_ready)
+   {
+      hh_bridge_deinit(&hh_bridge_global);
+      hh_bridge_global_ready = false;
+   }
+   hh_bridge_tick(&hh_bridge_global);
+ #endif
    /* Runtime commands submitted by non-owner callers are consumed only on
     * the ra-main/runloop owner thread. */
    hh_runtime_owner_tick();
@@ -8368,6 +8445,11 @@ int runloop_iterate(void)
 #endif
          core_run();
    }
+
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   if (hh_quick_menu_blocks_core_input)
+      input_st->flags &= ~INP_FLAG_BLOCK_LIBRETRO_INPUT;
+#endif
 
    /* Increment runtime tick counter after each call to
     * core_run() or run_ahead() */

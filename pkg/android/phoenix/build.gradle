@@ -32,6 +32,17 @@ if (!(handheldRuntimeFlag in ["0", "1"])) {
   throw new GradleException("HAVE_HANDHELD_RUNTIME must be 0 or 1")
 }
 
+def handheldQuickMenuFlag = project.findProperty("HAVE_HANDHELD_QUICK_MENU")
+if (handheldQuickMenuFlag == null) {
+  handheldQuickMenuFlag = System.getenv("HAVE_HANDHELD_QUICK_MENU") ?: (handheldRuntimeFlag == "1" ? "1" : "0")
+}
+if (!(handheldQuickMenuFlag in ["0", "1"])) {
+  throw new GradleException("HAVE_HANDHELD_QUICK_MENU must be 0 or 1")
+}
+if (handheldQuickMenuFlag == "1" && handheldRuntimeFlag != "1") {
+  throw new GradleException("HAVE_HANDHELD_QUICK_MENU requires HAVE_HANDHELD_RUNTIME=1")
+}
+
 def handheldRuntimeHarnessFlag = project.findProperty("HAVE_HANDHELD_RUNTIME_TEST_HARNESS")
 if (handheldRuntimeHarnessFlag == null) {
   handheldRuntimeHarnessFlag = System.getenv("HAVE_HANDHELD_RUNTIME_TEST_HARNESS") ?: "0"
@@ -76,6 +87,7 @@ android {
       ndkBuild {
         arguments "-j${Runtime.runtime.availableProcessors()}",
                   "HAVE_HANDHELD_RUNTIME=${handheldRuntimeFlag}",
+                  "HAVE_HANDHELD_QUICK_MENU=${handheldQuickMenuFlag}",
                   "HAVE_HANDHELD_RUNTIME_TEST_HARNESS=${handheldRuntimeHarnessFlag}"
       }
     }

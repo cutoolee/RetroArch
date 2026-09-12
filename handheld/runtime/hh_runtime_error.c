@@ -51,6 +51,8 @@ const char *hh_event_type_to_string(hh_event_type_t type)
       case HH_EVENT_RA_MENU_OPENED:   return "RA_MENU_OPENED";
       case HH_EVENT_RA_MENU_CLOSED:   return "RA_MENU_CLOSED";
       case HH_EVENT_ERROR:            return "ERROR";
+      case HH_EVENT_STATE_SAVE_COMPLETED: return "STATE_SAVE_COMPLETED";
+      case HH_EVENT_STATE_LOAD_COMPLETED: return "STATE_LOAD_COMPLETED";
       case HH_EVENT_STATE_SLOT_CHANGED: return "STATE_SLOT_CHANGED";
       default:                        return "UNKNOWN";
    }
