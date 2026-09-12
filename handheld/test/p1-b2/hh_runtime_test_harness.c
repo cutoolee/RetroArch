@@ -38,8 +38,9 @@ static const char *hh_p1b2_event_command(hh_event_type_t type)
    }
 }
 
-static void hh_p1b2_log_event(const hh_runtime_event_t *event)
+static void hh_p1b2_log_event(const hh_runtime_event_t *event, void *userdata)
 {
+   (void)userdata;
    if (!event)
       return;
    __android_log_print(ANDROID_LOG_INFO, HH_P1B2_TAG,
