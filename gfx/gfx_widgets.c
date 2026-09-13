@@ -18,6 +18,7 @@
 #include <retro_atomic.h>
 #include <retro_miscellaneous.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #ifdef HAVE_CONFIG_H
 #include "../config.h"
@@ -32,6 +33,7 @@
 #include "gfx_display.h"
 #include "gfx_widgets.h"
 #include "font_driver.h"
+#include "gfx_thumbnail.h"
 
 #ifdef HAVE_MENU
 #include "../menu/menu_defines.h"
@@ -2118,6 +2120,58 @@ static void hh_widget_text(void *userdata, hh_ui_rect_t bounds,
    font->usage_count++;
 }
 
+static bool hh_widget_preview(void *userdata, hh_ui_rect_t bounds, int slot)
+{
+   hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
+   char state_path[PATH_MAX_LENGTH];
+   char thumbnail_path[PATH_MAX_LENGTH];
+   struct stat thumbnail_stat;
+   float color[16];
+   uintptr_t *texture;
+
+   if (!ctx || !ctx->widgets || slot < 0
+         || slot >= HH_WIDGET_PREVIEW_SLOT_COUNT)
+      return false;
+   if (!runloop_get_savestate_path(state_path, sizeof(state_path), slot))
+      return false;
+   gfx_savestate_thumbnail_get_path(thumbnail_path,
+         sizeof(thumbnail_path), state_path, slot);
+   if (stat(thumbnail_path, &thumbnail_stat) != 0)
+      return false;
+
+   texture = &ctx->widgets->hh_quick_menu_preview_textures[slot];
+   if (strcmp(ctx->widgets->hh_quick_menu_preview_paths[slot], thumbnail_path)
+         || ctx->widgets->hh_quick_menu_preview_mtimes[slot]
+            != (unsigned long)thumbnail_stat.st_mtime
+         || ctx->widgets->hh_quick_menu_preview_sizes[slot]
+            != (unsigned long)thumbnail_stat.st_size)
+   {
+      video_driver_texture_unload(texture);
+      *texture = 0;
+      if (!gfx_display_reset_icon_texture(thumbnail_path, texture,
+               gfx_display_texture_filter(), NULL, NULL))
+      {
+         ctx->widgets->hh_quick_menu_preview_paths[slot][0] = '\0';
+         return false;
+      }
+      strlcpy(ctx->widgets->hh_quick_menu_preview_paths[slot],
+            thumbnail_path, PATH_MAX_LENGTH);
+      ctx->widgets->hh_quick_menu_preview_mtimes[slot] =
+         (unsigned long)thumbnail_stat.st_mtime;
+      ctx->widgets->hh_quick_menu_preview_sizes[slot] =
+         (unsigned long)thumbnail_stat.st_size;
+   }
+   if (!*texture)
+      return false;
+   hh_widget_color(0xffffffffUL, color);
+   gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+         ctx->video_info->width, ctx->video_info->height,
+         (int)bounds.x, (int)bounds.y, (unsigned)bounds.width,
+         (unsigned)bounds.height, ctx->video_info->width,
+         ctx->video_info->height, color, texture);
+   return true;
+}
+
 static void hh_widget_render_quick_menu(video_frame_info_t *video_info,
       gfx_display_t *display, dispgfx_widget_t *widgets)
 {
@@ -2134,6 +2188,7 @@ static void hh_widget_render_quick_menu(video_frame_info_t *video_info,
    painter.rect = hh_widget_rect;
    painter.text = hh_widget_text;
    painter.icon = hh_widget_icon;
+   painter.preview = hh_widget_preview;
    hh_quick_menu_render(hh_bridge_menu(bridge), video_info->width,
          video_info->height, NULL, &painter);
 }
@@ -2834,6 +2889,15 @@ static void gfx_widgets_context_destroy(dispgfx_widget_t *p_dispwidget)
    /* Textures */
    for (i = 0; i < MENU_WIDGETS_ICON_LAST; i++)
       video_driver_texture_unload(&p_dispwidget->gfx_widgets_icons_textures[i]);
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   for (i = 0; i < HH_WIDGET_PREVIEW_SLOT_COUNT; i++)
+   {
+      video_driver_texture_unload(&p_dispwidget->hh_quick_menu_preview_textures[i]);
+      p_dispwidget->hh_quick_menu_preview_paths[i][0] = '\0';
+      p_dispwidget->hh_quick_menu_preview_mtimes[i] = 0;
+      p_dispwidget->hh_quick_menu_preview_sizes[i] = 0;
+   }
+#endif
 
    /* Fonts */
    gfx_widgets_font_free(&p_dispwidget->gfx_widget_fonts.regular);

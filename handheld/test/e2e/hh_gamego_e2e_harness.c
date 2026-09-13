@@ -62,6 +62,7 @@ static jstring hh_gamego_e2e_status(JNIEnv *env)
          "QUICK_MENU_SELECTION=%u QUICK_MENU_BUSY=%s RUNTIME_STATE=%s "
          "PAUSED=%s PENDING_ACTION=%s PENDING_REQUEST_ID=%llu "
          "MENU_STATE=%s CAP_SAVE=%s CAP_LOAD=%s SLOT0_OCCUPIED=%s "
+         "SLOT0_PREVIEW_AVAILABLE=%s "
          "FEEDBACK=%u MESSAGE=%s BRIDGE_PENDING_ACTION=%s "
          "BRIDGE_PENDING_REQUEST_ID=%llu "
          "SAVE_SUBMIT_REQUEST_ID=%llu SAVE_ACCEPTED_REQUEST_ID=%llu "
@@ -81,6 +82,7 @@ static jstring hh_gamego_e2e_status(JNIEnv *env)
          hh_runtime_has_capability(HH_CAP_SAVE_STATE) ? "YES" : "NO",
          hh_runtime_has_capability(HH_CAP_LOAD_STATE) ? "YES" : "NO",
          view && view->slots[0].occupied ? "YES" : "NO",
+         view && view->slots[0].preview_available ? "YES" : "NO",
          view ? (unsigned)view->feedback : 0U,
          view ? view->message : "",
          hh_gamego_e2e_action(bridge->pending_action),

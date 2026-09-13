@@ -1,11 +1,50 @@
 #include "hh_bridge.h"
 
 #include <string.h>
+#include <sys/stat.h>
 
 static hh_bridge_t *hh_active_bridge;
 static volatile bool hh_test_input_pending;
 static volatile hh_quick_menu_input_t hh_test_input_value;
 static volatile bool hh_test_toggle_pending;
+
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME
+#define HH_BRIDGE_PATH_MAX 4096
+
+bool runloop_get_savestate_path(char *s, size_t len, int state_slot);
+void gfx_savestate_thumbnail_get_path(char *s, size_t len,
+      const char *state_name, int state_slot);
+
+static bool hh_bridge_file_exists(const char *path)
+{
+   struct stat st;
+   return path && *path && stat(path, &st) == 0;
+}
+
+#endif
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME
+static void hh_bridge_refresh_slots(hh_bridge_t *bridge)
+{
+   int i;
+   char state_path[HH_BRIDGE_PATH_MAX];
+   char thumbnail_path[HH_BRIDGE_PATH_MAX];
+
+   if (!bridge)
+      return;
+   for (i = 0; i < HH_QUICK_MENU_SLOT_COUNT; i++)
+   {
+      hh_quick_menu_slot_t *slot = &bridge->menu.view.slots[i];
+      memset(state_path, 0, sizeof(state_path));
+      memset(thumbnail_path, 0, sizeof(thumbnail_path));
+      slot->occupied = runloop_get_savestate_path(state_path,
+            sizeof(state_path), i) && hh_bridge_file_exists(state_path);
+      gfx_savestate_thumbnail_get_path(thumbnail_path,
+            sizeof(thumbnail_path), state_path, i);
+      slot->preview_available = slot->occupied
+         && hh_bridge_file_exists(thumbnail_path);
+   }
+}
+#endif
 
 static void hh_bridge_apply_snapshot(hh_bridge_t *bridge,
       const hh_runtime_snapshot_t *snapshot)
@@ -26,6 +65,9 @@ static void hh_bridge_apply_snapshot(hh_bridge_t *bridge,
    caps.advanced_menu_enabled = hh_runtime_has_capability(HH_CAP_RA_MENU);
    caps.reset_enabled = hh_runtime_has_capability(HH_CAP_RESET);
    hh_quick_menu_set_capabilities(&bridge->menu, &caps);
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME
+   hh_bridge_refresh_slots(bridge);
+#endif
    if (bridge->menu.state == HH_QUICK_MENU_CLOSED
          || bridge->menu.view.page == HH_QUICK_MENU_PAGE_MAIN)
       bridge->menu.view.state_slot = snapshot->state_slot < 0
@@ -151,6 +193,9 @@ static void hh_bridge_event(const hh_runtime_event_t *event, void *userdata)
          slot.occupied = true;
          slot.disabled = false;
          hh_quick_menu_set_slot(&bridge->menu, &slot);
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME
+         hh_bridge_refresh_slots(bridge);
+#endif
       }
       hh_quick_menu_action_result(&bridge->menu,
             event->result == HH_OK
