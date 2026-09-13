@@ -23,6 +23,8 @@ bool hh_bridge_open(hh_bridge_t *bridge);
 void hh_bridge_close(hh_bridge_t *bridge);
 bool hh_bridge_is_open(const hh_bridge_t *bridge);
 bool hh_bridge_input(hh_bridge_t *bridge, hh_quick_menu_input_t input);
+bool hh_bridge_test_input(hh_bridge_t *bridge, hh_quick_menu_input_t input);
+bool hh_bridge_test_toggle(hh_bridge_t *bridge);
 void hh_bridge_tick(hh_bridge_t *bridge);
 const hh_quick_menu_t *hh_bridge_menu(const hh_bridge_t *bridge);
 hh_bridge_t *hh_bridge_active(void);

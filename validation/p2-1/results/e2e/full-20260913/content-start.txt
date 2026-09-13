@@ -1,0 +1,1 @@
+Starting: Intent { cmp=com.cutoolee.gamego/com.retroarch.browser.retroactivity.RetroActivityFuture (has extras) }

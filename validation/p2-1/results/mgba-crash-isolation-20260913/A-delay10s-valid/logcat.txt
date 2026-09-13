@@ -1,0 +1,670 @@
+--------- beginning of system
+09-13 09:05:01.417  1451 24916 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=com.cutoolee.gamego/com.retroarch.browser.retroactivity.RetroActivityFuture (has extras)} from uid 2000
+--------- beginning of main
+09-13 09:05:01.431  1451 24916 D CompatibilityInfo: mCompatibilityFlags - 4
+09-13 09:05:01.431  1451 24916 D CompatibilityInfo: applicationDensity - 320
+09-13 09:05:01.431  1451 24916 D CompatibilityInfo: applicationScale - 1.0
+09-13 09:05:01.432  1451 24916 D ActivityTrigger: ActivityTrigger activityPauseTrigger 
+09-13 09:05:01.439  1451  1554 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10223; state: DISABLED
+09-13 09:05:01.441  1451  1572 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10223; state: ENABLED
+09-13 09:05:01.442   958  1031 W ANDR-PERF-LM: MetaMeter: handlePrimaryAsync() 118: AdaptLaunch MetaMeter. No MeterMgr Available to handle this Primary Async. !!!!
+09-13 09:05:01.443   958  1031 W ANDR-PERF-LM: MetaMeter: handlePrimaryAsync() 118: AdaptLaunch MetaMeter. No MeterMgr Available to handle this Primary Async. !!!!
+09-13 09:05:01.461   757   757 D Zygote  : Forked child process 4160
+09-13 09:05:01.462   958  3112 E ANDR-PERF-LM: ThreadHelper: thread_callback() 145: More than one pending updates!!! This should not happen. MeterMgr should avoid this case.
+09-13 09:05:01.463   958  1031 E ANDR-PERF-LM: MetaMeter: handleAsync() 166: AdaptLaunch Invalid Async
+09-13 09:05:01.463  1451  1572 I ActivityManager: Start proc 4160:com.cutoolee.gamego/u0a223 for pre-top-activity {com.cutoolee.gamego/com.retroarch.browser.retroactivity.RetroActivityFuture}
+09-13 09:05:01.468  4160  4160 I libc    : SetHeapTaggingLevel: tag level set to 0
+09-13 09:05:01.470  4160  4160 I cutoolee.gameg: Late-enabling -Xcheck:jni
+09-13 09:05:01.485  4160  4160 I cutoolee.gameg: Unquickening 18 vdex files!
+09-13 09:05:01.495 24797 24809 I adbd    : jdwp connection from 4160
+09-13 09:05:01.500   958  1031 E ANDR-PERF-LM: MetaMeter: handleAsync() 166: AdaptLaunch Invalid Async
+09-13 09:05:01.501  1451 24170 D CompatibilityInfo: mCompatibilityFlags - 4
+09-13 09:05:01.501  1451 24170 D CompatibilityInfo: applicationDensity - 320
+09-13 09:05:01.501  1451 24170 D CompatibilityInfo: applicationScale - 1.0
+09-13 09:05:01.502  1451 24170 D CompatibilityInfo: mCompatibilityFlags - 4
+09-13 09:05:01.502  1451 24170 D CompatibilityInfo: applicationDensity - 320
+09-13 09:05:01.502  1451 24170 D CompatibilityInfo: applicationScale - 1.0
+09-13 09:05:01.513  3583  3602 V MAPPER-Detector: onForegroundActivitiesChanged
+09-13 09:05:01.523  3583  3583 D MAPPER-Detector: getCurrentPackage com.cutoolee.gamego false
+09-13 09:05:01.524  3583  3583 D QuickSetting-MAPPER-Service: onChange com.cutoolee.gamego current: com.android.launcher3 (MapperService.kt:420)
+09-13 09:05:01.525  3583  3583 D QuickSetting-MAPPER-Service: loadCurrentForegroundAppConfigAndStartMapper com.cutoolee.gamego (MapperService.kt:297)
+09-13 09:05:01.525  3583  3583 D QuickSetting-MAPPER-Config: loadConfig com.cutoolee.gamego (ConfigManager.kt:63)
+09-13 09:05:01.527  3583  3583 D QuickSetting-MAPPER-Config: try to load from assets (ConfigManager.kt:74)
+09-13 09:05:01.528  3583  3583 E QuickSetting-MAPPER-Service: com.cutoolee.gamego has no config file but support mapper (MapperService.kt:316)
+09-13 09:05:01.528  3583  3583 D QuickSetting-MAPPER-display: releaseFd after use 67 (DisplayManager.kt:702)
+09-13 09:05:01.529  3583  3583 V QuickSetting-MAPPER-display: set config
+09-13 09:05:01.529  3583  3583 V QuickSetting-MAPPER-display: A (0,0) B (0,0) X (0,0) Y (0,0)
+09-13 09:05:01.529  3583  3583 V QuickSetting-MAPPER-display: Left (0,0) Right (0,0) Up (0,0) Down (0,0)
+09-13 09:05:01.529  3583  3583 V QuickSetting-MAPPER-display: TL1 (0,0) TR1 (0,0) TL2 (0,0) TR2 (0,0)
+09-13 09:05:01.529  3583  3583 V QuickSetting-MAPPER-display: L3 (0,0) R3 (0,0)
+09-13 09:05:01.529  3583  3583 V QuickSetting-MAPPER-display: Start (0,0) Select (0,0) Mode (0,0)
+09-13 09:05:01.529  3583  3583 V QuickSetting-MAPPER-display: ThumbL (0,0) ThumbR (0,0) 
+09-13 09:05:01.529  3583  3583 V QuickSetting-MAPPER-display: ThumbLRadius 100 ThumbRRadius 100 (DisplayManager.kt:72)
+09-13 09:05:01.529  3583  3583 W QuickSetting-MAPPER-Service: stopMapper magnificationEnabled: -1 com.cutoolee.gamego (MapperService.kt:379)
+09-13 09:05:01.530  1059  1059 D MAPPER  : stop mapper
+09-13 09:05:01.530  1059  1059 D MAPPER  : pthread pause already
+09-13 09:05:01.531  3583  3583 D QuickSetting-MAPPER-Service: callbackListener com.cutoolee.gamego (MapperService.kt:399)
+09-13 09:05:01.531  1451  1832 I InputReader: Reconfiguring input devices, changes=ENABLED_STATE | 
+09-13 09:05:01.531  3523  3634 D QuickSetting-MAPPER-Client: configChange (MapperSetting.kt:47)
+09-13 09:05:01.531  3523  3634 D QuickSetting-MAPPER-Client: refreshStatus (MapperSetting.kt:106)
+09-13 09:05:01.532  3583  3583 V QuickSetting-MAPPER-Service: isNowMapperOn com.cutoolee.gamego false (MapperService.kt:96)
+09-13 09:05:01.532  3583  3583 D QuickSetting-MAPPER-display: set config displayState:REMOVED same:false autoDisplay:0 autoStart:0 (DisplayManager.kt:74)
+09-13 09:05:01.532  3583  3583 D QuickSetting-MAPPER-display: inflateViewIfNeed (DisplayManager.kt:223)
+09-13 09:05:01.532  3583  3583 D QuickSetting-MAPPER-display: setViewConfig (DisplayManager.kt:484)
+09-13 09:05:01.532  3583  3583 D QuickSetting-MAPPER-display: hide (DisplayManager.kt:649)
+09-13 09:05:01.532  3583  3583 D QuickSetting-MAPPER-display: goneAllViews (DisplayManager.kt:384)
+09-13 09:05:01.532  3583  3583 D QuickSetting-MAPPER-display: removeViewFromWindow isAttached : false (DisplayManager.kt:641)
+09-13 09:05:01.560  4160  4160 I Perf    : Connecting to perf service.
+09-13 09:05:01.566  4160  4160 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+09-13 09:05:01.567  4160  4160 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+09-13 09:05:01.575  1054  1622 W DisplayIdentification: Invalid EDID: falling back to serial number due to missing display name.
+09-13 09:05:01.575  1054  1622 W DisplayIdentification: Invalid EDID: falling back to ASCII text due to missing serial number.
+09-13 09:05:01.607  4160  4202 I RetroActivity: isPlayStoreBuild: false
+09-13 09:05:01.612  1451  2553 I AccessibilityManagerService: Added user client for pid:4160 and userId:0
+09-13 09:05:01.622  4160  4160 I RetroActivity: isPlayStoreBuild: false
+09-13 09:05:01.624  4160  4160 I RetroArch: [ENV] Storage permission resolved (granted: 1).
+09-13 09:05:01.632  4160  4160 I RetroActivity: isSustainedPerformanceModeSupported? false
+09-13 09:05:01.657  4160  4203 I RetroActivity: isPlayStoreBuild: false
+09-13 09:05:01.659  1451 24916 W UriGrantsManagerService: No permission grants found for com.cutoolee.gamego
+09-13 09:05:01.661  4160  4203 I RetroActivity: isAndroidTV == false
+09-13 09:05:01.675   958  3112 E ANDR-PERF-LM: ThreadHelper: thread_callback() 145: More than one pending updates!!! This should not happen. MeterMgr should avoid this case.
+09-13 09:05:01.684  1451  1567 I ActivityTaskManager: Displayed com.cutoolee.gamego/com.retroarch.browser.retroactivity.RetroActivityFuture: +256ms
+09-13 09:05:01.698  4160  4203 I RetroArch: [ENV] Android version (major : 11, minor : 0, rel : 0)
+09-13 09:05:01.698  4160  4203 I RetroArch: [ENV] Checking arguments passed from intent ...
+09-13 09:05:01.698  4160  4203 I RetroArch: [ENV] Libretro path: "/data/data/com.cutoolee.gamego/cores/mgba_libretro_android.so".
+09-13 09:05:01.699  4160  4203 I RetroArch: [ENV] Auto-start game "/storage/emulated/0/Roms/GBA/龙珠大冒险.zip".
+09-13 09:05:01.706  3726  3726 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():3301 
+09-13 09:05:01.707  3726  3726 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1979 
+09-13 09:05:01.708  3726  3726 I DeviceUnlockedTag: DeviceUnlockedTag.notifyDeviceLockStatusChanged():79 Notify device unlocked.
+09-13 09:05:01.748  1451  7957 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:01.748  1035  1695 D AudioFlinger: ro.audio.silent is ignored since no output device is set
+09-13 09:05:01.748  1451  7957 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:01.749  1451 24916 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:01.750  1451  7957 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:01.751  1451  7957 I chatty  : uid=1000(system) Binder:1451_12 identical 3 lines
+09-13 09:05:01.751  1451  7957 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:01.751  1451 24916 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:01.752  1451 24916 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:01.756  4160  4203 I RetroArch: [ENV] Derived config file: "/storage/emulated/0/Android/data/com.cutoolee.gamego/files/retroarch.cfg".
+09-13 09:05:01.756  4160  4203 I RetroArch: Testing permissions for /storage/emulated/0
+09-13 09:05:01.766  1451 24916 D CompatibilityChangeReporter: Compat change id reported: 149924527; UID 10223; state: ENABLED
+09-13 09:05:01.769  1451 24916 D CompatibilityChangeReporter: Compat change id reported: 132649864; UID 10223; state: DISABLED
+09-13 09:05:01.794 24592 30297 I wnloader:daemo: oneway function results will be dropped but finished with status OK and parcel size 88
+09-13 09:05:01.799  1451  1570 D CompatibilityInfo: mCompatibilityFlags - 4
+09-13 09:05:01.799  1451  1570 D CompatibilityInfo: applicationDensity - 320
+09-13 09:05:01.799  1451  1570 D CompatibilityInfo: applicationScale - 1.0
+09-13 09:05:01.803  1451  1820 D CompatibilityInfo: mCompatibilityFlags - 4
+09-13 09:05:01.803  1451  1820 D CompatibilityInfo: applicationDensity - 320
+09-13 09:05:01.803  1451  1820 D CompatibilityInfo: applicationScale - 1.0
+09-13 09:05:01.848  3583  3602 V MAPPER-Detector: onForegroundActivitiesChanged
+09-13 09:05:01.854  3583  3583 D MAPPER-Detector: getCurrentPackage com.cutoolee.gamego false
+09-13 09:05:01.864  1451  2553 D CompatibilityInfo: mCompatibilityFlags - 4
+09-13 09:05:01.864  1451  2553 D CompatibilityInfo: applicationDensity - 320
+09-13 09:05:01.864  1451  2553 D CompatibilityInfo: applicationScale - 1.0
+09-13 09:05:01.869 15450 22341 I NetworkScheduler.Stats: Task com.google.android.gms/com.google.android.gms.auth.account.be.legacy.AuthCronService started execution. cause:4 exec_start_elapsed_seconds: 381186 [CONTEXT service_id=218 ]
+09-13 09:05:01.879 15450 29502 I NetworkScheduler.Stats: Task com.google.android.gms/com.google.android.gms.auth.account.be.legacy.AuthCronService finished executing. cause:4 result: 1 elapsed_millis: 24 uptime_millis: 24 exec_start_elapsed_seconds: 381186 [CONTEXT service_id=218 ]
+09-13 09:05:02.017  1054  2508 I BpBinder: onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+09-13 09:05:02.182  4160  4203 I RetroArch: Create /storage/emulated/0/.retroarch in /storage/emulated/0 true
+09-13 09:05:02.271  4160  4203 I RetroArch: [ENV] Application location: "/data/user/0/com.cutoolee.gamego".
+09-13 09:05:02.271  4160  4203 I RetroArch: [ENV] Default savefile folder: "/storage/emulated/0/GameGo/saves".
+09-13 09:05:02.271  4160  4203 I RetroArch: [ENV] Default savestate folder: "/storage/emulated/0/GameGo/states".
+09-13 09:05:02.271  4160  4203 I RetroArch: [ENV] Default system folder: "/storage/emulated/0/GameGo/system".
+09-13 09:05:02.271  4160  4203 I RetroArch: [ENV] Default screenshot folder: "/storage/emulated/0/GameGo/screenshots".
+09-13 09:05:02.273  4160  4203 I RetroArch: [ENV] App version code: 1789261453.
+09-13 09:05:02.298  4160  4160 W Thread-4: type=1400 audit(0.0:27858): avc: granted { execute } for path="/data/data/com.cutoolee.gamego/cores/mgba_libretro_android.so" dev="dm-11" ino=27870 scontext=u:r:untrusted_app:s0:c223,c256,c512,c768 tcontext=u:object_r:app_data_file:s0:c223,c256,c512,c768 tclass=file app=com.cutoolee.gamego
+09-13 09:05:02.305  4160  4203 I RetroActivity: isSustainedPerformanceModeSupported? false
+09-13 09:05:02.308  4160  4160 W Thread-4: type=1400 audit(0.0:27859): avc: granted { execute } for path="/data/data/com.cutoolee.gamego/cores/mgba_libretro_android.so" dev="dm-11" ino=27870 scontext=u:r:untrusted_app:s0:c223,c256,c512,c768 tcontext=u:object_r:app_data_file:s0:c223,c256,c512,c768 tclass=file app=com.cutoolee.gamego
+09-13 09:05:02.315  4160  4203 I RetroActivity: isPlayStoreBuild: false
+09-13 09:05:02.439  1451 24916 I ActivityManager: Process com.google.process.gservices (pid 25856) has died: cch+45 CEM 
+09-13 09:05:02.440  1451  1575 I libprocessgroup: Successfully killed process cgroup uid 10131 pid 25856 in 0ms
+09-13 09:05:02.440   757   757 I Zygote  : Process 25856 exited due to signal 9 (Killed)
+09-13 09:05:02.442   958  3101 E ANDR-PERF-LM: VmRssMeter:: start() 447: Could not find pid, can not collect vmrss data
+09-13 09:05:02.442   958  3101 E ANDR-PERF-LM: AdaptiveLaunch: writeToDataBase() 64: Meter aborted or could not get meter data for this run
+09-13 09:05:02.442  3583  3602 D MAPPER-Detector: onProcessDied
+09-13 09:05:02.444   958  3100 E ANDR-PERF-LM: VmRssMeter:: start() 447: Could not find pid, can not collect vmrss data
+09-13 09:05:02.449  3583  3583 D MAPPER-Detector: getCurrentPackage com.cutoolee.gamego false
+09-13 09:05:02.533 20557 20576 I m.baidu.netdis: Background young concurrent copying GC freed 206934(13MB) AllocSpace objects, 327(8028KB) LOS objects, 20% free, 79MB/100MB, paused 147us total 348.015ms
+09-13 09:05:02.533 20557 20576 W m.baidu.netdis: Reducing the number of considered missed Gc histogram windows from 360 to 100
+09-13 09:05:02.622  4160  4203 I AdrenoGLES-0: QUALCOMM build                   : 46d1463393, I43876eb25d
+09-13 09:05:02.622  4160  4203 I AdrenoGLES-0: Build Date                       : 11/30/21
+09-13 09:05:02.622  4160  4203 I AdrenoGLES-0: OpenGL ES Shader Compiler Version: EV031.32.02.16
+09-13 09:05:02.622  4160  4203 I AdrenoGLES-0: Local Branch                     : 
+09-13 09:05:02.622  4160  4203 I AdrenoGLES-0: Remote Branch                    : 
+09-13 09:05:02.622  4160  4203 I AdrenoGLES-0: Remote Branch                    : 
+09-13 09:05:02.622  4160  4203 I AdrenoGLES-0: Reconstruct Branch               : 
+09-13 09:05:02.622  4160  4203 I AdrenoGLES-0: Build Config                     : S P 10.0.7 AArch64
+09-13 09:05:02.622  4160  4203 I AdrenoGLES-0: Driver Path                      : /vendor/lib64/egl/libGLESv2_adreno.so
+09-13 09:05:02.626  4160  4203 I AdrenoGLES-0: PFP: 0x016ee190, ME: 0x00000000
+09-13 09:05:02.738   903   903 W sensors@2.0-ser: type=1400 audit(0.0:27860): avc: denied { read write } for name="diag" dev="tmpfs" ino=2475 scontext=u:r:hal_sensors_default:s0 tcontext=u:object_r:vendor_diag_device:s0 tclass=chr_file permissive=0
+09-13 09:05:02.738   903   903 W sensors@2.0-ser: type=1400 audit(0.0:27861): avc: denied { read write } for name="diag" dev="tmpfs" ino=2475 scontext=u:r:hal_sensors_default:s0 tcontext=u:object_r:vendor_diag_device:s0 tclass=chr_file permissive=0
+09-13 09:05:02.743   903   903 I sensors-hal: batch:242, android.sensor.accelerometer/11, period=200000000, max_latency=0
+09-13 09:05:02.743   903   903 I sensors-hal: set_config:63, sample_period_ns is adjusted to 200000000 based on min/max delay_ns
+09-13 09:05:02.743   903   903 I sensors-hal: batch:251, android.sensor.accelerometer/11, period=200000000, max_latency=0 request completed
+09-13 09:05:02.743   903   903 I sensors-hal: activate:209, android.sensor.accelerometer/11 en=1
+09-13 09:05:02.746   903   903 I sensors-hal: get_qmi_debug_flag:241, support_qmi_debug : false
+09-13 09:05:02.748   903   903 I sensors-hal: activate:220, android.sensor.accelerometer/11 en=1 completed
+09-13 09:05:02.749   903   903 I sensors-hal: batch:242, android.sensor.accelerometer/11, period=16000000, max_latency=0
+09-13 09:05:02.749   903   903 I sensors-hal: set_config:63, sample_period_ns is adjusted to 16000000 based on min/max delay_ns
+09-13 09:05:02.750   903   903 I sensors-hal: batch:251, android.sensor.accelerometer/11, period=16000000, max_latency=0 request completed
+09-13 09:05:02.750   903   903 I sensors-hal: batch:242, android.sensor.gyroscope/41, period=200000000, max_latency=0
+09-13 09:05:02.750   903   903 I sensors-hal: set_config:63, sample_period_ns is adjusted to 200000000 based on min/max delay_ns
+09-13 09:05:02.750   903   903 I sensors-hal: batch:251, android.sensor.gyroscope/41, period=200000000, max_latency=0 request completed
+09-13 09:05:02.750   903   903 I sensors-hal: activate:209, android.sensor.gyroscope/41 en=1
+09-13 09:05:02.751   903   903 I sensors-hal: get_qmi_debug_flag:241, support_qmi_debug : false
+09-13 09:05:02.751   903  4230 I sensors-hal: ssc_conn_resp_cb:663, resp_value = 0
+09-13 09:05:02.751   903  4230 I sensors-hal: ssc_conn_resp_cb:663, resp_value = 0
+09-13 09:05:02.754   903   903 E Diag_Lib:  Diag_LSM_Init: Failed to open handle to diag driver, error = 13
+09-13 09:05:02.754   903   903 E Diag_Lib:  Diag_LSM_Init: Failed to open handle to diag driver, error = 13
+09-13 09:05:02.754   903   903 I sensors-hal: set_config:63, sample_period_ns is adjusted to 1000000000 based on min/max delay_ns
+09-13 09:05:02.754   903   903 I sensors-hal: get_qmi_debug_flag:241, support_qmi_debug : false
+09-13 09:05:02.756   903   903 I sensors-hal: get_qmi_debug_flag:241, support_qmi_debug : false
+09-13 09:05:02.757   903  4233 I sensors-hal: handle_indication_realtime:471,  SCHED_FIFO(10) for qmi_cbk
+09-13 09:05:02.759   903  4230 I sensors-hal: handle_indication_realtime:471,  SCHED_FIFO(10) for qmi_cbk
+09-13 09:05:02.759   903  4237 I sensors-hal: ssc_conn_resp_cb:663, resp_value = 0
+09-13 09:05:02.760   903   903 I sensors-hal: activate:220, android.sensor.gyroscope/41 en=1 completed
+09-13 09:05:02.760   903   903 I sensors-hal: batch:242, android.sensor.gyroscope/41, period=16000000, max_latency=0
+09-13 09:05:02.760   903   903 I sensors-hal: set_config:63, sample_period_ns is adjusted to 16000000 based on min/max delay_ns
+09-13 09:05:02.761   903   903 I sensors-hal: batch:251, android.sensor.gyroscope/41, period=16000000, max_latency=0 request completed
+09-13 09:05:02.763   903  4237 I sensors-hal: handle_indication_realtime:471,  SCHED_FIFO(10) for qmi_cbk
+09-13 09:05:02.764   903  4241 I sensors-hal: ssc_conn_resp_cb:663, resp_value = 0
+09-13 09:05:02.766   903  4241 I sensors-hal: ssc_conn_resp_cb:663, resp_value = 0
+09-13 09:05:02.774   903  4241 I sensors-hal: handle_indication_realtime:471,  SCHED_FIFO(10) for qmi_cbk
+09-13 09:05:02.794  4160  4243 D cutoolee.gameg: PlayerBase::PlayerBase()
+09-13 09:05:02.794  4160  4243 D cutoolee.gameg: TrackPlayerBase::TrackPlayerBase()
+09-13 09:05:02.794  4160  4243 I libOpenSLES: Emulating old channel mask behavior (ignoring positional mask 0x3, using default mask 0x3 based on channel count of 2)
+09-13 09:05:02.794  4160  4243 W libOpenSLES: AudioPlayer: the usecase used will be ll, not ull
+09-13 09:05:02.794  4160  4243 W AudioTrack: set(): notificationFrames=-43 clamped to the range -1 to -8
+09-13 09:05:02.796   887   887 D audio_hw_primary: adev_get_parameters:vr_audio_mode_on
+09-13 09:05:02.797   887   887 I audio_hw_primary: getting vr mode to 0
+09-13 09:05:02.797   887   887 D audio_hw_primary: adev_get_parameters: exit: returns - vr_audio_mode_on=false
+09-13 09:05:02.797  1035  1770 I hash_map_utils: key: 'vr_audio_mode_on' value: ''
+09-13 09:05:02.797  1035  1770 I AudioPolicyManagerCustom: VR mode is 0, switch to primary output if request is for fast|raw
+09-13 09:05:02.797  1035  1770 D AudioFlinger: Client defaulted notificationFrames to 192 for frameCount 1536
+09-13 09:05:02.798  1035  1770 D AF::TrackHandle: OpPlayAudio: track:501 usage:1 not muted
+09-13 09:05:02.800  4160  4243 I AudioTrack: createTrack_l(1953721967): AUDIO_OUTPUT_FLAG_FAST successful; frameCount 0 -> 1536
+09-13 09:05:02.800  1451  6267 I system_server: oneway function results will be dropped but finished with status OK and parcel size 8
+09-13 09:05:02.806   887   887 I EffectsFactory: EffectCreate() create_effect
+09-13 09:05:02.808  1035  1276 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-13 09:05:02.808  1035  1276 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-13 09:05:02.810  1451  6267 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:02.812   887   887 E volume_listener: check_and_set_gain_dep_cal: Failed to set gain dep cal level
+09-13 09:05:02.813   887  3724 D audio_hw_primary: start_output_stream: enter: stream(0xecb40010)usecase(1: low-latency-playback) devices(0x2) is_haptic_usecase(0)
+09-13 09:05:02.813   887  3724 D audio_hw_primary: select_devices for use case (low-latency-playback)
+09-13 09:05:02.813   887  3724 I msm8974_platform: platform_check_and_set_codec_backend_cfg:becf: afe: bitwidth 16, samplerate 48000 channels 2, backend_idx 0 usecase = 1 device (speaker)
+09-13 09:05:02.813   887  3724 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+09-13 09:05:02.814   887  3724 I msm8974_platform: platform_check_and_set_codec_backend_cfg: new_snd_devices[0] is 2
+09-13 09:05:02.814   887  3724 I msm8974_platform: platform_check_codec_backend_cfg:becf: afe: bitwidth 16, samplerate 48000 channels 2, backend_idx 0 usecase = 1 device (speaker)
+09-13 09:05:02.816   887  3724 D audio_hw_extn: audio_extn_enable_hifi_filter: mixer_value set 0
+09-13 09:05:02.816   887  3724 D msm8974_platform: platform_check_codec_backend_cfg:becf: updated afe: bitwidth 16, samplerate 48000 channels 2,backend_idx 0 usecase = 1 device (speaker)
+09-13 09:05:02.816   887  3724 D msm8974_platform: platform_check_codec_backend_cfg:becf: afe: playback on codec device not supporting native playback set default Sample Rate(48k)
+09-13 09:05:02.816   887  3724 I msm8974_platform: platform_check_codec_backend_cfg:becf: afe: Codec selected backend: 0 updated bit width: 16 and sample rate: 48000
+09-13 09:05:02.816   887  3724 D audio_hw_primary: check_usecases_codec_backend:becf: force routing 0
+09-13 09:05:02.816   887  3724 E msm8974_platform: platform_check_backends_match: Invalid snd_device = 
+09-13 09:05:02.816   887  3724 D audio_hw_primary: check_usecases_codec_backend:becf: (78) check_usecases curr device: speaker, usecase device: backends match 0
+09-13 09:05:02.816   887  3724 D audio_hw_primary: check_usecases_codec_backend:becf: check_usecases num.of Usecases to switch 0
+09-13 09:05:02.816   887  3724 D hardware_info: hw_info_append_hw_type : device_name = speaker
+09-13 09:05:02.816   887  3724 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+09-13 09:05:02.816   887  3724 D audio_hw_primary: enable_snd_device: snd_device(2: speaker)
+09-13 09:05:02.816   887  3724 D msm8974_platform: platform_get_island_cfg_on_device:island cfg status on snd_device = (speaker 0)
+09-13 09:05:02.816   887  3724 I soundtrigger: audio_extn_sound_trigger_update_device_status: device 0x2 of type 0 for Event 1, with Raise=0
+09-13 09:05:02.816   887  3724 D audio_route: Apply path: speaker
+09-13 09:05:02.816   887  3724 D hardware_info: hw_info_append_hw_type : device_name = vi-feedback
+09-13 09:05:02.816   887  3724 D msm8974_platform: platform_split_snd_device: snd_device(217) num devices(0) new_snd_devices(0)
+09-13 09:05:02.816   887  3724 D audio_hw_primary: enable_snd_device: snd_device(217: vi-feedback)
+09-13 09:05:02.816   887  3724 D msm8974_platform: platform_get_island_cfg_on_device:island cfg status on snd_device = (vi-feedback 0)
+09-13 09:05:02.816   887  3724 I soundtrigger: audio_extn_sound_trigger_update_device_status: device 0xd9 of type 1 for Event 1, with Raise=0
+09-13 09:05:02.816   887  3724 D audio_route: Apply path: vi-feedback
+09-13 09:05:02.816   887  3724 D soundtrigger: audio_extn_sound_trigger_update_stream_status: uc_info->id 53 of type 1 for Event 3, with Raise=0
+09-13 09:05:02.816   887  3724 D audio_hw_utils: audio_extn_utils_send_app_type_cfg: usecase->in_snd_device vi-feedback
+09-13 09:05:02.816   887  3724 E voice   : voice_is_in_call_rec_stream: input stream is NULL
+09-13 09:05:02.816   887  3724 D msm8974_platform: platform_split_snd_device: snd_device(217) num devices(0) new_snd_devices(0)
+09-13 09:05:02.816   887  3724 E audio_hw_utils: send_app_type_cfg_for_device: Could not get ctl for mixer cmd - Audio Stream Capture 33 App Type Cfg
+09-13 09:05:02.816   887  3724 D msm8974_platform: platform_split_snd_device: snd_device(217) num devices(1) new_snd_devices(0)
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> send_audio_cal, acdb_id = 102, path = 1, app id = 0x11132, sample rate = 8000, afe_sample_rate = 8000
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> send_asm_topology
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_STREAM_TOPOLOGY_ID
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> send_adm_topology
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_COMMON_TOPOLOGY_ID
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> send_audtable
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_COMMON_TABLE_SIZE
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_COMMON_TABLE
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> AUDIO_SET_AUDPROC_CAL cal_type[11] acdb_id[102] app_type[69938]
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_STREAM_TABLE_SIZE
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> send_audstrmtable
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_STREAM_TABLE
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> audstrm_cal->cal_type.cal_data.cal_size = 20
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> send_afe_topology
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AFE_TOPOLOGY_ID
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> GET_AFE_TOPOLOGY_ID for adcd_id 102, Topology Id 1000ff00
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> send_afe_cal
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AFE_INSTANCE_COMMON_TABLE_SIZE
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AFE_INSTANCE_COMMON_TABLE
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> AUDIO_SET_AFE_CAL cal_type[17] acdb_id[102]
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> send_hw_delay : acdb_id = 102 path = 1
+09-13 09:05:02.817   887  3724 D ACDB-LOADER: ACDB -> ACDB_AVSYNC_INFO: ACDB_CMD_GET_DEVICE_PROPERTY
+09-13 09:05:02.817   887  3724 D audio_hw_primary: enable_audio_route: apply mixer and update path: spkr-vi-record
+09-13 09:05:02.817   887  3724 D audio_route: Apply path: spkr-vi-record
+09-13 09:05:02.819   887  3724 D audio_hw_awinic_feedback: audio_extn_aw882xx_start_feedback:[Awinic] the pcm id uc_info->id = 53, tx_pcm_id = 33
+09-13 09:05:02.855   887  3724 I audio_hw_utils: audio_extn_utils_update_stream_output_app_type_cfg Allowing 24 and above bits playback on speaker ONLY at default sampling rate
+09-13 09:05:02.855   887  3724 E soundtrigger: audio_extn_sound_trigger_update_stream_status: invalid input device 0x0, for event 3
+09-13 09:05:02.855   887  3724 D soundtrigger: audio_extn_sound_trigger_update_stream_status: uc_info->id 1 of type 0 for Event 3, with Raise=0
+09-13 09:05:02.855   887  3724 D audio_hw_utils: audio_extn_utils_send_app_type_cfg: usecase->out_snd_device speaker
+09-13 09:05:02.855   887  3724 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+09-13 09:05:02.855   887  3724 D audio_hw_utils: audio_extn_btsco_get_sample_rate:Not a BT SCO device, need not update sampling rate
+09-13 09:05:02.855   887  3724 I audio_hw_utils: send_app_type_cfg_for_device PLAYBACK app_type 69937, acdb_dev_id 15, sample_rate 48000, snd_device_be_idx 45
+09-13 09:05:02.856   887  3724 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+09-13 09:05:02.856   887  3724 D audio_hw_utils: audio_extn_btsco_get_sample_rate:Not a BT SCO device, need not update sampling rate
+09-13 09:05:02.856   887  3724 D ACDB-LOADER: ACDB -> send_audio_cal, acdb_id = 15, path = 0, app id = 0x11131, sample rate = 48000, afe_sample_rate = 48000
+09-13 09:05:02.856   887  3724 D ACDB-LOADER: ACDB -> send_asm_topology
+09-13 09:05:02.856   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_STREAM_TOPOLOGY_ID
+09-13 09:05:02.856   887  3724 D ACDB-LOADER: ACDB -> send_adm_topology
+09-13 09:05:02.856   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_COMMON_TOPOLOGY_ID
+09-13 09:05:02.856   887  3724 D ACDB-LOADER: ACDB -> send_audtable
+09-13 09:05:02.856   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_COMMON_TABLE_SIZE
+09-13 09:05:02.856   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_COMMON_TABLE
+09-13 09:05:02.856   887  3724 D ACDB-LOADER: ACDB -> AUDIO_SET_AUDPROC_CAL cal_type[11] acdb_id[15] app_type[69937]
+09-13 09:05:02.856   887  3724 D ACDB-LOADER: ACDB -> send_audvoltable
+09-13 09:05:02.856   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE
+09-13 09:05:02.856   887  3724 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: Error: ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE Returned = -19
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE, vol index 0
+09-13 09:05:02.857   887  3724 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: Error: ACDB AudProc vol returned = -19
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> AUDIO_SET_VOL_CAL cal type = 12
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_STREAM_TABLE_SIZE
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> send_audstrmtable
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_STREAM_TABLE
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> audstrm_cal->cal_type.cal_data.cal_size = 20
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> send_afe_topology
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AFE_TOPOLOGY_ID
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> GET_AFE_TOPOLOGY_ID for adcd_id 15, Topology Id 1000ff01
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> send_afe_cal
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AFE_INSTANCE_COMMON_TABLE_SIZE
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AFE_INSTANCE_COMMON_TABLE
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> AUDIO_SET_AFE_CAL cal_type[16] acdb_id[15]
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> send_hw_delay : acdb_id = 15 path = 0
+09-13 09:05:02.857   887  3724 D ACDB-LOADER: ACDB -> ACDB_AVSYNC_INFO: ACDB_CMD_GET_DEVICE_PROPERTY
+09-13 09:05:02.857   887  3724 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+09-13 09:05:02.857   887  3724 I msm8974_platform: platform_get_custom_mtmx_params: no matching param with id 0 ip_ch 2 op_ch 2 uc_id 1 snd_dev 2
+09-13 09:05:02.857   887  3724 D audio_hw_primary: enable_audio_route: apply mixer and update path: low-latency-playback
+09-13 09:05:02.857   887  3724 D audio_route: Apply path: low-latency-playback
+09-13 09:05:02.859   887  3724 D audio_hw_primary: select_devices: done
+09-13 09:05:02.886   887  3724 D msm8974_platform: platform_set_channel_map mixer_ctl_name:Playback Channel Map9
+09-13 09:05:02.887   887  3724 D msm8974_platform: platform_set_channel_map: set mapping(1 2 0 0 0 0 0 0) for channel:2
+09-13 09:05:02.888   887  3724 D audio_hw_primary: start_output_stream: exit
+09-13 09:05:02.888   887  3724 D audio_hw_primary: out_write: retry previous failed cal level set
+09-13 09:05:02.888   887  3724 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+09-13 09:05:02.888   887  3724 D ACDB-LOADER: ACDB -> send_audvoltable
+09-13 09:05:02.888   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE
+09-13 09:05:02.888   887  3724 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-13 09:05:02.888   887  3724 D ACDB-LOADER: Error: ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE Returned = -19
+09-13 09:05:02.888   887  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE, vol index 5
+09-13 09:05:02.888   887  3724 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-13 09:05:02.888   887  3724 D ACDB-LOADER: Error: ACDB AudProc vol returned = -19
+09-13 09:05:02.888   887  3724 D ACDB-LOADER: ACDB -> AUDIO_SET_VOL_CAL cal type = 40
+09-13 09:05:02.888   887  3724 W msm8974_platform: platform_send_gain_dep_cal: Usecase list is empty
+09-13 09:05:02.997  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:02.997  4160  4244 D AudioTrack: stop(816): called with 6192 frames delivered
+09-13 09:05:03.043  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.043  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.053  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.054  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.063  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.063  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.077  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.077  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.082  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.082  4160  4244 D AudioTrack: stop(816): called with 144 frames delivered
+09-13 09:05:03.082  1209  1785 D AudioAnalytics: gc(1700, 2000): log size:1700 item map size:8, item map items:1700
+09-13 09:05:03.097  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.097  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.109  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.109  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.129  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.129  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.146  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.146  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.167  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.167  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.181  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.181  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.193  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.193  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.214  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.214  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.229  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.229  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.245  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.245  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.265  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.265  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.275  1451 24916 I InputManager-JNI: Setting pointer capture to enabled.
+09-13 09:05:03.277  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.277  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.278  1451  1832 I InputReader: Reconfiguring input devices, changes=
+09-13 09:05:03.298  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.298  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.313  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.313  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.329  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.329  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.349  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.349  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.361  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.361  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.381  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.381  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.397  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.397  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.413  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.413  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.429  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.429  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.446  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.446  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.465  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.465  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.481  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.481  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.497  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.497  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.513  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.513  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.530  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.530  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.534  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.534  4160  4244 D AudioTrack: stop(816): called with 144 frames delivered
+09-13 09:05:03.549  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.549  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.565  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.565  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.581  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.581  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.597  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.597  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.614  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.614  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.630  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.630  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.649  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.649  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.665  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.665  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.681  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.681  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.698  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.698  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.714  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.714  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.733  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.733  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.749  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.749  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.765  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.765  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.770  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.770  4160  4244 D AudioTrack: stop(816): called with 144 frames delivered
+09-13 09:05:03.781  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.781  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.798  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.798  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.817  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.817  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.829  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.829  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.849  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.849  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.866  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.866  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.869  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.869  4160  4244 D AudioTrack: stop(816): called with 144 frames delivered
+09-13 09:05:03.883  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.883  4160  4244 D AudioTrack: stop(816): called with 576 frames delivered
+09-13 09:05:03.901  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.901  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.913  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.913  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.933  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.933  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.950  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.950  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.966  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.966  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:03.985  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.985  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:03.997  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:03.997  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:04.017  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.017  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.033  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.033  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:04.049  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.049  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.069  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.069  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.081  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.081  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:04.101  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.101  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.117  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.117  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:04.133  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.133  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.167  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.167  4160  4244 D AudioTrack: stop(816): called with 1584 frames delivered
+09-13 09:05:04.185  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.185  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.201  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.201  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:04.217  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.217  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.233  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.233  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:04.250  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.250  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.269  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.269  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.285  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.285  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:04.301  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.301  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.317  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.317  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:04.334  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.334  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.402  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.402  4160  4244 D AudioTrack: stop(816): called with 3168 frames delivered
+09-13 09:05:04.418  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.418  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.433  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.433  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:04.453  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.453  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.469  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.469  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.485  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.485  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+09-13 09:05:04.502  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.502  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.518  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.518  4160  4244 D AudioTrack: stop(816): called with 720 frames delivered
+--------- beginning of crash
+09-13 09:05:04.537  4160  4203 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x146d90 in tid 4203 (Thread-4), pid 4160 (cutoolee.gamego)
+09-13 09:05:04.537  4160  4244 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-13 09:05:04.537  4160  4244 D AudioTrack: stop(816): called with 864 frames delivered
+09-13 09:05:04.596  1035  1686 D AudioFlinger: mixer(0xb4000075393ce040) throttle end: throttle time(15)
+09-13 09:05:04.605  1451  2214 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:04.633   887   887 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=true
+09-13 09:05:04.633   887   887 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-13 09:05:04.634   887   887 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+09-13 09:05:04.634   887   887 D ACDB-LOADER: ACDB -> send_audvoltable
+09-13 09:05:04.634   887   887 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE
+09-13 09:05:04.634   887   887 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-13 09:05:04.634   887   887 D ACDB-LOADER: Error: ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE Returned = -19
+09-13 09:05:04.634   887   887 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE, vol index 0
+09-13 09:05:04.634   887   887 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-13 09:05:04.634   887   887 D ACDB-LOADER: Error: ACDB AudProc vol returned = -19
+09-13 09:05:04.634   887   887 D ACDB-LOADER: ACDB -> AUDIO_SET_VOL_CAL cal type = 40
+09-13 09:05:04.634   887   887 W msm8974_platform: platform_send_gain_dep_cal: Usecase list is empty
+09-13 09:05:04.639  1035  1276 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-13 09:05:04.642  1035  1276 I chatty  : uid=1041(audioserver) ApmOutput identical 1 line
+09-13 09:05:04.642  1035  1276 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-13 09:05:04.661  4250  4250 I crash_dump64: obtaining output fd from tombstoned, type: kDebuggerdTombstone
+09-13 09:05:04.664   744   744 I tombstoned: received crash request for pid 4203
+09-13 09:05:04.666  4250  4250 I crash_dump64: performing dump of process 4160 (target tid = 4203)
+09-13 09:05:04.671  4250  4250 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+09-13 09:05:04.671  4250  4250 F DEBUG   : Build fingerprint: 'Logitech/GR0006/GR0006:11/SQ02K.00.0018/SQ02K.60.0228:user/release-keys'
+09-13 09:05:04.671  4250  4250 F DEBUG   : Revision: '0'
+09-13 09:05:04.671  4250  4250 F DEBUG   : ABI: 'arm64'
+09-13 09:05:04.673  4250  4250 F DEBUG   : Timestamp: 2026-09-13 09:05:04+0800
+09-13 09:05:04.673  4250  4250 F DEBUG   : pid: 4160, tid: 4203, name: Thread-4  >>> com.cutoolee.gamego <<<
+09-13 09:05:04.673  4250  4250 F DEBUG   : uid: 10223
+09-13 09:05:04.673  4250  4250 F DEBUG   : signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x146d90
+09-13 09:05:04.673  4250  4250 F DEBUG   :     x0  000000751b3ae230  x1  000000778c05e860  x2  0000000000001000  x3  0000000000000048
+09-13 09:05:04.673  4250  4250 F DEBUG   :     x4  0000000000000000  x5  0000000000000001  x6  000000752478c070  x7  0000000000000019
+09-13 09:05:04.673  4250  4250 F DEBUG   :     x8  000000778c05d060  x9  0000000000001120  x10 0000000000010000  x11 ffffffffffffe800
+09-13 09:05:04.673  4250  4250 F DEBUG   :     x12 0000000000000000  x13 00000000ffff4cef  x14 0000000000000001  x15 00000075fc048b60
+09-13 09:05:04.673  4250  4250 F DEBUG   :     x16 000000751b2aef00  x17 0000000000146d90  x18 000000751da9a000  x19 000000787c055678
+09-13 09:05:04.673  4250  4250 F DEBUG   :     x20 0000000000001000  x21 000000000000e800  x22 000000778c05e860  x23 ffffffffffff2800
+09-13 09:05:04.673  4250  4250 F DEBUG   :     x24 000000751e6ffcc0  x25 0000000000000000  x26 0000000000000001  x27 0000000000000001
+09-13 09:05:04.673  4250  4250 F DEBUG   :     x28 0000000000000001  x29 000000751e6ff810
+09-13 09:05:04.673  4250  4250 F DEBUG   :     lr  000000751b2859ac  sp  000000751e6ff810  pc  0000000000146d90  pst 0000000080001000
+09-13 09:05:04.683  4250  4250 F DEBUG   : backtrace:
+09-13 09:05:04.683  4250  4250 F DEBUG   :     NOTE: Function names and BuildId information is missing for some frames due
+09-13 09:05:04.683  4250  4250 F DEBUG   :     NOTE: to unreadable libraries. For unwinds of apps, only shared libraries
+09-13 09:05:04.683  4250  4250 F DEBUG   :     NOTE: found under the lib/ directory are readable.
+09-13 09:05:04.683  4250  4250 F DEBUG   :       #00 pc 0000000000146d90  <unknown>
+09-13 09:05:04.683  4250  4250 F DEBUG   :       #01 pc 000000000013a9a8  /data/data/com.cutoolee.gamego/cores/mgba_libretro_android.so
+09-13 09:05:04.683  4250  4250 F DEBUG   :       #02 pc 000000000013ed48  /data/data/com.cutoolee.gamego/cores/mgba_libretro_android.so
+09-13 09:05:04.683  4250  4250 F DEBUG   :       #03 pc 00000000001438f0  /data/data/com.cutoolee.gamego/cores/mgba_libretro_android.so
+09-13 09:05:04.683  4250  4250 F DEBUG   :       #04 pc 0000000000ddf2d8  /data/app/~~7mHpBB4s9IeQHpFii11iTg==/com.cutoolee.gamego-K1vBFgA7BR48k80syqUoLQ==/lib/arm64/libretroarch-activity.so (core_run+296) (BuildId: 48e6068385ed8801606e65181984d79d1c83d514)
+09-13 09:05:04.684  4250  4250 F DEBUG   :       #05 pc 0000000000dc7840  /data/app/~~7mHpBB4s9IeQHpFii11iTg==/com.cutoolee.gamego-K1vBFgA7BR48k80syqUoLQ==/lib/arm64/libretroarch-activity.so (runloop_iterate+2848) (BuildId: 48e6068385ed8801606e65181984d79d1c83d514)
+09-13 09:05:04.684  4250  4250 F DEBUG   :       #06 pc 0000000000dc6a04  /data/app/~~7mHpBB4s9IeQHpFii11iTg==/com.cutoolee.gamego-K1vBFgA7BR48k80syqUoLQ==/lib/arm64/libretroarch-activity.so (rarch_main+636) (BuildId: 48e6068385ed8801606e65181984d79d1c83d514)
+09-13 09:05:04.684  4250  4250 F DEBUG   :       #07 pc 000000000104dd24  /data/app/~~7mHpBB4s9IeQHpFii11iTg==/com.cutoolee.gamego-K1vBFgA7BR48k80syqUoLQ==/lib/arm64/libretroarch-activity.so (BuildId: 48e6068385ed8801606e65181984d79d1c83d514)
+09-13 09:05:04.684  4250  4250 F DEBUG   :       #08 pc 0000000000deb39c  /data/app/~~7mHpBB4s9IeQHpFii11iTg==/com.cutoolee.gamego-K1vBFgA7BR48k80syqUoLQ==/lib/arm64/libretroarch-activity.so (BuildId: 48e6068385ed8801606e65181984d79d1c83d514)
+09-13 09:05:04.684  4250  4250 F DEBUG   :       #09 pc 00000000000b008c  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64) (BuildId: f4881cdb04823cc0d8c0fa3f95c4db2e)
+09-13 09:05:04.684  4250  4250 F DEBUG   :       #10 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: f4881cdb04823cc0d8c0fa3f95c4db2e)
+09-13 09:05:04.750  1451  2214 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:04.751  1451 24916 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:04.753  1451 24916 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:04.754  1451  2214 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:05.174 24592 18527 I FileLockLib: [24592]file 61 unlocked. fl.pid=0
+09-13 09:05:05.174  2204  4078 D QCNEJ/WlanStaInfoRelay: Received action: android.net.wifi.RSSI_CHANGED
+09-13 09:05:05.215 24592 24923 D HTTPDNS : Network onCapabilitiesChanged(138)
+09-13 09:05:05.216 10094 10201 D GPL-NetworkManager: onCapabilitiesChanged net status change!  (NetworkManager.kt:58)
+09-13 09:05:05.217 22746 22772 W GCloudCore: [2026-09-13 09:05:05 217] | Warning | [GCloudCore] |22772| :0|| [NetworkChangeHelper]Network State not change:2
+09-13 09:05:05.634   887 23651 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=false
+09-13 09:05:05.634   887 23651 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-13 09:05:05.635   887  3724 W audio_hw_primary: out_write: underrun(2611) frames_by_time(48307) > out->last_fifo_frames_remaining(384)
+09-13 09:05:05.677   887 23651 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=true
+09-13 09:05:05.677   887 23651 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-13 09:05:06.373   744   744 E tombstoned: Tombstone written to: /data/tombstones/tombstone_19
+09-13 09:05:06.407  1451  4255 I DropBoxManagerService: add tag=data_app_native_crash isTagEnabled=true flags=0x2
+09-13 09:05:06.409  1451  4253 W ActivityTaskManager:   Force finishing activity com.cutoolee.gamego/com.retroarch.browser.retroactivity.RetroActivityFuture
+09-13 09:05:06.411  1451  1610 I BootReceiver: Copying /data/tombstones/tombstone_19 to DropBox (SYSTEM_TOMBSTONE)
+09-13 09:05:06.413  1451  1610 I DropBoxManagerService: add tag=SYSTEM_TOMBSTONE isTagEnabled=true flags=0x2
+09-13 09:05:06.450  1451  4253 D ActivityTrigger: ActivityTrigger activityPauseTrigger 
+09-13 09:05:06.460  1451  1570 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.DROPBOX_ENTRY_ADDED flg=0x10 (has extras) } to com.google.android.gms/.stats.service.DropBoxEntryAddedReceiver
+09-13 09:05:06.464  1451  1570 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.DROPBOX_ENTRY_ADDED flg=0x10 (has extras) } to com.google.android.gms/.chimera.GmsIntentOperationService$PersistentTrustedReceiver
+09-13 09:05:06.464  1451  1570 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.DROPBOX_ENTRY_ADDED flg=0x10 (has extras) } to com.google.android.gms/.stats.service.DropBoxEntryAddedReceiver
+09-13 09:05:06.465  1451  1570 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.DROPBOX_ENTRY_ADDED flg=0x10 (has extras) } to com.google.android.gms/.chimera.GmsIntentOperationService$PersistentTrustedReceiver
+09-13 09:05:06.467  1451 24916 D CompatibilityInfo: mCompatibilityFlags - 4
+09-13 09:05:06.467  1451 24916 D CompatibilityInfo: applicationDensity - 320
+09-13 09:05:06.467  1451 24916 D CompatibilityInfo: applicationScale - 1.0
+09-13 09:05:06.478  3583  3602 V MAPPER-Detector: onForegroundActivitiesChanged
+09-13 09:05:06.486  3583  3583 D MAPPER-Detector: getCurrentPackage com.android.launcher3 false
+09-13 09:05:06.486  3583  3583 D QuickSetting-MAPPER-Service: onChange com.android.launcher3 current: com.cutoolee.gamego (MapperService.kt:420)
+09-13 09:05:06.502  1451  1831 I InputManager-JNI: Setting pointer capture to disabled.
+09-13 09:05:06.503  3583  3583 D QuickSetting-MAPPER-Service: loadCurrentForegroundAppConfigAndStartMapper com.android.launcher3 (MapperService.kt:297)
+09-13 09:05:06.503  3583  3583 D QuickSetting-MAPPER-Config: loadConfig com.android.launcher3 (ConfigManager.kt:63)
+09-13 09:05:06.504  1451  1832 I InputReader: Reconfiguring input devices, changes=
+09-13 09:05:06.508   903   903 I sensors-hal: activate:209, android.sensor.accelerometer/11 en=0
+09-13 09:05:06.509  1451  3688 I WindowManager: WIN DEATH: Window{20387d4 u0 com.cutoolee.gamego/com.retroarch.browser.retroactivity.RetroActivityFuture}
+09-13 09:05:06.509  1451  3688 W InputDispatcher: Attempted to unregister already unregistered input channel '20387d4 com.cutoolee.gamego/com.retroarch.browser.retroactivity.RetroActivityFuture (server)'
+09-13 09:05:06.510  1451 24916 I ActivityManager: Process com.cutoolee.gamego (pid 4160) has died: prcp TOP 
+09-13 09:05:06.510  3583  3583 D QuickSetting-MAPPER-Config: try to load from assets (ConfigManager.kt:74)
+09-13 09:05:06.510  3583  3583 E QuickSetting-MAPPER-Service: com.android.launcher3 has no config file and don't support mapper (MapperService.kt:321)
+09-13 09:05:06.511  3583  3583 W QuickSetting-MAPPER-Service: stopMapper magnificationEnabled: -1 com.android.launcher3 (MapperService.kt:379)
+09-13 09:05:06.511   903   903 I sensors-hal: activate:220, android.sensor.accelerometer/11 en=0 completed
+09-13 09:05:06.512   903   903 I sensors-hal: activate:209, android.sensor.gyroscope/41 en=0
+09-13 09:05:06.515  3583  3602 D MAPPER-Detector: onProcessDied
+09-13 09:05:06.515  1451  1832 I InputReader: Reconfiguring input devices, changes=ENABLED_STATE | 
+09-13 09:05:06.515  1059  1059 D MAPPER  : stop mapper
+09-13 09:05:06.515  1059  1059 D MAPPER  : pthread pause already
+09-13 09:05:06.517  3583  3583 D QuickSetting-MAPPER-Service: callbackListener com.android.launcher3 (MapperService.kt:399)
+09-13 09:05:06.518   757   757 I Zygote  : Process 4160 exited due to signal 11 (Segmentation fault)
+09-13 09:05:06.522  3523  3634 D QuickSetting-MAPPER-Client: configChange (MapperSetting.kt:47)
+09-13 09:05:06.522   903   903 E Diag_Lib: diag: Diag_LSM_DeInit: invoked for pid: 903
+09-13 09:05:06.522   903   903 E Diag_Lib: diag: Diag_LSM_DeInit: done for pid: 903
+09-13 09:05:06.523   903   903 E Diag_Lib: diag: Diag_LSM_DeInit: invoked for pid: 903
+09-13 09:05:06.523   903   903 E Diag_Lib: diag: Diag_LSM_DeInit: done for pid: 903
+09-13 09:05:06.523   903   903 I sensors-hal: activate:220, android.sensor.gyroscope/41 en=0 completed
+09-13 09:05:06.527  3523  3634 D QuickSetting-MAPPER-Client: refreshStatus (MapperSetting.kt:106)
+09-13 09:05:06.527  3583  3583 V QuickSetting-MAPPER-Service: isNowMapperOn com.android.launcher3 false (MapperService.kt:96)
+09-13 09:05:06.529  3583  3583 D QuickSetting-MAPPER-display: releaseFd after use 67 (DisplayManager.kt:702)
+09-13 09:05:06.529  3583  3583 V QuickSetting-MAPPER-display: set config
+09-13 09:05:06.529  3583  3583 V QuickSetting-MAPPER-display: null (DisplayManager.kt:72)
+09-13 09:05:06.555  3583  3583 D MAPPER-Detector: getCurrentPackage com.android.launcher3 false
+09-13 09:05:06.555  3583  3583 D QuickSetting-MAPPER-display: set config displayState:REMOVED same:false autoDisplay:null autoStart:null (DisplayManager.kt:74)
+09-13 09:05:06.555  3583  3583 D QuickSetting-MAPPER-display: removeViewFromWindow isAttached : false (DisplayManager.kt:641)
+09-13 09:05:06.556  1451  1575 I libprocessgroup: Successfully killed process cgroup uid 10223 pid 4160 in 46ms
+09-13 09:05:06.562  1451  1554 W ActivityManager: setHasOverlayUi called on unknown pid: 4160
+09-13 09:05:06.569  1451  3659 D ActivityTaskManager: PreferredAppsTask trimLevel = 2
+09-13 09:05:06.578  1975  1991 I ndroid.systemu: NativeAlloc concurrent copying GC freed 22477(1073KB) AllocSpace objects, 0(0B) LOS objects, 49% free, 7894KB/15MB, paused 59us total 112.646ms
+09-13 09:05:06.580  1975  1993 W System  : A resource failed to call release. 
+09-13 09:05:06.582  3726  3726 I AppBase : AppBase.onTrimMemory():736 onTrimMemory(): 10
+09-13 09:05:06.583  1975  1993 W System  : A resource failed to call release. 
+09-13 09:05:06.585  1975  1993 W System  : A resource failed to call release. 
+09-13 09:05:06.593  3726  3726 I GoogleInputMethodService: GoogleInputMethodService.onTrimMemory():4502 onTrimMemory(): 10
+09-13 09:05:06.594  1451  3659 D ActivityTaskManager: PreferredAppsTask start_empty_apps = 
+09-13 09:05:06.598 24592 31877 I wnloader:daemo: oneway function results will be dropped but finished with status OK and parcel size 88
+09-13 09:05:06.599  1451  4261 D ActivityTaskManager: PreferredAppsTask trimLevel = 2
+09-13 09:05:06.601  1451  4261 D ActivityTaskManager: PreferredAppsTask start_empty_apps = 
+09-13 09:05:06.626  1451  7995 D CompatibilityInfo: mCompatibilityFlags - 4
+09-13 09:05:06.626  1451  7995 D CompatibilityInfo: applicationDensity - 320
+09-13 09:05:06.626  1451  7995 D CompatibilityInfo: applicationScale - 1.0
+09-13 09:05:06.629  3726  3726 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():3301 
+09-13 09:05:06.630  1451 24916 D CompatibilityInfo: mCompatibilityFlags - 4
+09-13 09:05:06.630  1451 24916 D CompatibilityInfo: applicationDensity - 320
+09-13 09:05:06.630  1451 24916 D CompatibilityInfo: applicationScale - 1.0
+09-13 09:05:06.633  3726  3726 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1979 
+09-13 09:05:06.634  3726  3726 I DeviceUnlockedTag: DeviceUnlockedTag.notifyDeviceLockStatusChanged():79 Notify device unlocked.
+09-13 09:05:06.680   887 23651 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=false
+09-13 09:05:06.680   887 23651 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-13 09:05:06.681   887  3724 W audio_hw_primary: out_write: underrun(2612) frames_by_time(48354) > out->last_fifo_frames_remaining(384)
+09-13 09:05:06.723   887 23651 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=true
+09-13 09:05:06.723   887 23651 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-13 09:05:06.845 14911 14911 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.feedback.internal.IFeedbackService cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+09-13 09:05:06.925  1451  1554 W ActivityTaskManager: Activity top resumed state loss timeout for ActivityRecord{8e0fec8 u0 com.cutoolee.gamego/com.retroarch.browser.retroactivity.RetroActivityFuture t-1 f}}
+09-13 09:05:07.559   958  3100 E ANDR-PERF-LM: VmRssMeter:: start() 447: Could not find pid, can not collect vmrss data
+09-13 09:05:07.565   958  3101 E ANDR-PERF-LM: VmRssMeter:: start() 447: Could not find pid, can not collect vmrss data
+09-13 09:05:07.565   958  3101 E ANDR-PERF-LM: AdaptiveLaunch: writeToDataBase() 64: Meter aborted or could not get meter data for this run
+09-13 09:05:07.726   887 23651 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=false
+09-13 09:05:07.726   887 23651 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-13 09:05:07.728   887   887 D audio_hw_primary: out_standby: enter: stream (0xecb40010) usecase(1: low-latency-playback)
+09-13 09:05:07.822   887   887 D audio_hw_primary: disable_audio_route: reset and update mixer path: low-latency-playback
+09-13 09:05:07.827   887   887 E soundtrigger: audio_extn_sound_trigger_update_stream_status: invalid input device 0x0, for event 2
+09-13 09:05:07.828   887   887 D soundtrigger: audio_extn_sound_trigger_update_stream_status: uc_info->id 1 of type 0 for Event 2, with Raise=0
+09-13 09:05:07.828   887   887 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+09-13 09:05:07.828   887   887 I msm8974_platform: platform_get_custom_mtmx_params: no matching param with id 0 ip_ch 2 op_ch 2 uc_id 1 snd_dev 2
+09-13 09:05:07.828   887   887 D hardware_info: hw_info_append_hw_type : device_name = speaker
+09-13 09:05:07.828   887   887 D audio_hw_primary: disable_snd_device: snd_device(2: speaker)
+09-13 09:05:07.828   887   887 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+09-13 09:05:07.847   887   887 D hardware_info: hw_info_append_hw_type : device_name = vi-feedback
+09-13 09:05:07.848   887   887 D audio_hw_primary: disable_snd_device: snd_device(217: vi-feedback)
+09-13 09:05:07.848   887   887 D msm8974_platform: platform_split_snd_device: snd_device(217) num devices(0) new_snd_devices(0)
+09-13 09:05:07.848   887   887 I soundtrigger: audio_extn_sound_trigger_update_device_status: device 0xd9 of type 1 for Event 0, with Raise=0
+09-13 09:05:07.848   887   887 D audio_hw_primary: disable_audio_route: reset and update mixer path: spkr-vi-record
+09-13 09:05:07.850   887   887 D soundtrigger: audio_extn_sound_trigger_update_stream_status: uc_info->id 53 of type 1 for Event 2, with Raise=0
+09-13 09:05:07.850   887   887 I soundtrigger: audio_extn_sound_trigger_update_device_status: device 0x2 of type 0 for Event 0, with Raise=0
+09-13 09:05:07.850   887   887 D audio_hw_primary: out_standby: exit
+09-13 09:05:07.853  1451 24916 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-13 09:05:11.152  2121 29011 D NetlinkTracker/wlan0: addressUpdated: 240e:37b:1aed:0:d4ce:9aff:fe21:2418/64 on wlan0 flags 256 scope 0
+09-13 09:05:11.154  2121 30547 D NetlinkTracker/wlan0: addressUpdated: 240e:37b:1aed:0:b8dc:3a2:3f42:9c60/64 on wlan0 flags 1 scope 0
+09-13 09:05:14.288  2204  4078 D QCNEJ/WlanStaInfoRelay: Received action: android.net.wifi.RSSI_CHANGED
+09-13 09:05:14.291 24592 18527 I FileLockLib: [24592]file 61 unlocked. fl.pid=0
+09-13 09:05:14.303 10094 10201 D GPL-NetworkManager: onCapabilitiesChanged net status change!  (NetworkManager.kt:58)
+09-13 09:05:14.304 24592 24923 D HTTPDNS : Network onCapabilitiesChanged(138)
+09-13 09:05:14.306 22746 22772 W GCloudCore: [2026-09-13 09:05:14 306] | Warning | [GCloudCore] |22772| :0|| [NetworkChangeHelper]Network State not change:2
+09-13 09:05:24.347  2121  2147 D NetlinkTracker/wlan0: addressUpdated: 240e:37b:1aed:0:d4ce:9aff:fe21:2418/64 on wlan0 flags 256 scope 0
+09-13 09:05:24.352  2121  2147 D NetlinkTracker/wlan0: addressUpdated: 240e:37b:1aed:0:b8dc:3a2:3f42:9c60/64 on wlan0 flags 1 scope 0

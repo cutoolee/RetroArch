@@ -1,0 +1,9 @@
+schema: gamego-p2.1-validation-run/v1
+completion_contract:
+  save: HH_EVENT_STATE_SAVE_COMPLETED
+  load: HH_EVENT_STATE_LOAD_COMPLETED
+contract_gate: PASS
+quick_menu_regression: PASS
+bridge_lifecycle: PASS
+feature_off_android_configuration: NOT_RUN
+device: NOT_RUN

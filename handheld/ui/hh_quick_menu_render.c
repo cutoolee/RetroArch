@@ -32,11 +32,11 @@ const char *hh_quick_menu_state_to_string(hh_quick_menu_state_t state)
 
 static const hh_quick_menu_theme_t hh_quick_menu_theme =
 {
-   0x071018d9UL, 0x15232effUL, 0x29473fffUL,
-   0xf4f7f5ffUL, 0xb6c7cbffUL, 0x829397ffUL,
-   0xa3efb4ffUL, 0xffb3a7ffUL,
-   4.0f, 12.0f, 20.0f, 10.0f, 14.0f, 20.0f, 24.0f,
-   0x00000066UL, 0x1d2e38ffUL, 0x9df2b4ffUL, 0xffd27dffUL
+   0x07131cd9UL, 0x0b1b27ffUL, 0x145841ffUL,
+   0xeaf7f1ffUL, 0x9bb8b0ffUL, 0x5f7774ffUL,
+   0x64f5b1ffUL, 0xff8f86ffUL,
+   8.0f, 24.0f, 36.0f, 14.0f, 16.0f, 24.0f, 28.0f,
+   0x00000066UL, 0x102b38ffUL, 0x64f5b1ffUL, 0xffd27dffUL
 };
 
 const hh_quick_menu_theme_t *hh_quick_menu_default_theme(void)
@@ -79,9 +79,19 @@ static void hh_quick_menu_paint_text(const hh_quick_menu_painter_t *p,
    p->text(p->userdata, rect, text, color, size, bold);
 }
 
+static const char *hh_quick_menu_display_title(const char *title)
+{
+   const char *slash;
+   if (!title || !*title)
+      return title;
+   slash = strrchr(title, '/');
+   return slash && slash[1] ? slash + 1 : title;
+}
+
 static void hh_quick_menu_paint_row(const hh_quick_menu_painter_t *p,
       const hh_quick_menu_theme_t *t, hh_ui_rect_t rect, float scale,
-      const char *label, hh_quick_menu_item_state_t state, bool focused)
+      const char *label, hh_quick_menu_item_state_t state, bool focused,
+      hh_quick_menu_icon_t icon)
 {
    hh_ui_rect_t text = rect;
    bool pending = state == HH_QUICK_MENU_ITEM_PENDING;
@@ -92,17 +102,22 @@ static void hh_quick_menu_paint_row(const hh_quick_menu_painter_t *p,
    float inset = t->spacing_medium * scale;
    p->rect(p->userdata, rect, focused ? t->surface_focused : t->surface_muted,
          focused ? t->focus : 0, t->radius * scale, focused ? 2 * scale : 0);
-   text.x += inset;
-   text.width = 24 * scale;
-   hh_quick_menu_paint_text(p, text, focused ? ">" : "", color,
-         t->font_body * scale, true);
-   text.x += text.width;
-   text.width = rect.width - 2 * inset - 24 * scale - 80 * scale;
+   text.x += inset + 4.0f * scale;
+   text.width = 32 * scale;
+   if (p->icon)
+      p->icon(p->userdata, text, icon, focused ? t->focus : t->text_secondary);
+   text.x += text.width + 20.0f * scale;
+   text.width = rect.width - 2 * inset - 52 * scale - 96 * scale;
    hh_quick_menu_paint_text(p, text, label, color, t->font_body * scale, focused);
-   text.x = rect.x + rect.width - inset - 80 * scale;
-   text.width = 80 * scale;
+   text.x = rect.x + rect.width - inset - 96 * scale;
+   text.width = 56 * scale;
    hh_quick_menu_paint_text(p, text, pending ? "处理中…" : disabled ? "不可用" : "",
          status_color, t->font_small * scale, pending || disabled);
+   text.x = rect.x + rect.width - inset - 32 * scale;
+   text.width = 32 * scale;
+   if (p->icon)
+      p->icon(p->userdata, text, HH_QUICK_MENU_ICON_CHEVRON,
+            pending || disabled ? status_color : t->text_secondary);
 }
 
 static void hh_quick_menu_paint_slots(const hh_quick_menu_t *menu,
@@ -168,6 +183,37 @@ static void hh_quick_menu_paint_slots(const hh_quick_menu_t *menu,
    }
 }
 
+static void hh_quick_menu_paint_dialog(const hh_quick_menu_t *menu,
+      const hh_quick_menu_layout_t *l, const hh_quick_menu_theme_t *t,
+      const hh_quick_menu_painter_t *p)
+{
+   hh_ui_rect_t rect;
+   size_t i;
+   float s = l->scale;
+
+   p->rect(p->userdata, l->viewport, t->background, 0, 0, 0);
+   p->rect(p->userdata, hh_quick_menu_expand(l->dialog, 4.0f * s),
+         t->panel_shadow, 0, (t->radius + 3.0f) * s, 0);
+   p->rect(p->userdata, l->dialog, t->surface, t->danger,
+         t->radius * s, 2 * s);
+   rect = l->dialog;
+   rect.x += t->spacing_large * s;
+   rect.width -= 2 * t->spacing_large * s;
+   hh_quick_menu_paint_text(p, hh_quick_menu_line(rect, 20, 32, s),
+         menu->view.dialog.message, t->text_primary, t->font_title * s, true);
+   hh_quick_menu_paint_text(p, hh_quick_menu_line(rect, 62, 26, s),
+         menu->view.dialog.detail, t->text_secondary, t->font_body * s, false);
+   hh_quick_menu_paint_text(p, hh_quick_menu_line(rect, 94, 20, s),
+         "←→ 选择    A 确认    B 取消", t->text_secondary,
+         t->font_small * s, false);
+   for (i = 0; i < 2; i++)
+      hh_quick_menu_paint_row(p, t, l->dialog_buttons[i], s,
+            i ? menu->view.dialog.confirm_label : "取消",
+            HH_QUICK_MENU_ITEM_NORMAL,
+            (i == 1) == menu->view.dialog.confirm_selected,
+            HH_QUICK_MENU_ICON_CHEVRON);
+}
+
 void hh_quick_menu_render(const hh_quick_menu_t *menu, float width,
       float height, const hh_quick_menu_theme_t *theme,
       const hh_quick_menu_painter_t *p)
@@ -188,24 +234,38 @@ void hh_quick_menu_render(const hh_quick_menu_t *menu, float width,
          t->panel_shadow, 0, (t->radius + 4.0f) * s, 0);
    p->rect(p->userdata, l.panel, t->surface, t->surface_muted,
          t->radius * s, s);
-   hh_quick_menu_paint_text(p, hh_quick_menu_line(l.header, 0, 16, s),
-         "GAMEGO  /  快捷菜单", t->focus, t->font_small * s, true);
-   hh_quick_menu_paint_text(p, hh_quick_menu_line(l.header, 18, 28, s),
-         menu->view.game.title[0] ? menu->view.game.title : menu->view.title,
-         t->text_primary, t->font_title * s, true);
-   hh_quick_menu_paint_text(p, hh_quick_menu_line(l.header, 48, 18, s),
-         menu->view.game.platform, t->text_secondary, t->font_small * s, false);
-   hh_quick_menu_paint_text(p, hh_quick_menu_line(l.header, 68, 16, s),
-         menu->view.game.subtitle, t->text_secondary, t->font_small * s, false);
-   rect = l.header;
-   rect.y += rect.height - s;
-   rect.height = s;
+   if (menu->state == HH_QUICK_MENU_CONFIRM_DIALOG
+         && menu->view.dialog.visible)
+   {
+      hh_quick_menu_paint_dialog(menu, &l, t, p);
+      return;
+   }
+   rect = hh_quick_menu_line(l.header, 0, 32, s);
+   rect.width = 170 * s;
+   hh_quick_menu_paint_text(p, rect, "GAMEGO", t->focus, t->font_title * s, true);
+   rect.x += 178 * s;
+   rect.width = l.header.width - 178 * s;
+   hh_quick_menu_paint_text(p, rect, "/  快捷菜单", t->text_secondary,
+         t->font_title * s, false);
+   rect = hh_quick_menu_line(l.header, 54, 2, s);
+   rect.x += 350 * s;
+   rect.width -= 350 * s;
    p->rect(p->userdata, rect, t->surface_muted, 0, 0, 0);
+   hh_quick_menu_paint_text(p, hh_quick_menu_line(l.header, 78, 40, s),
+         menu->view.game.title[0]
+         ? hh_quick_menu_display_title(menu->view.game.title)
+         : menu->view.title,
+         t->text_primary, t->font_title * s, true);
+   hh_quick_menu_paint_text(p, hh_quick_menu_line(l.header, 124, 32, s),
+         menu->view.game.platform, t->text_secondary, t->font_body * s, false);
+   hh_quick_menu_paint_text(p, hh_quick_menu_line(l.header, 156, 24, s),
+         menu->view.game.subtitle, t->text_secondary, t->font_small * s, false);
    if (menu->view.page == HH_QUICK_MENU_PAGE_MAIN)
    {
       for (i = 0; i < menu->view.item_count && i < HH_QUICK_MENU_ITEM_COUNT; i++)
          hh_quick_menu_paint_row(p, t, l.items[i], s, menu->view.items[i].label,
-               hh_quick_menu_item_state(menu, i), i == menu->view.selected_index);
+               hh_quick_menu_item_state(menu, i), i == menu->view.selected_index,
+               (hh_quick_menu_icon_t)i);
    }
    else
       hh_quick_menu_paint_slots(menu, &l, t, p);
@@ -231,27 +291,46 @@ void hh_quick_menu_render(const hh_quick_menu_t *menu, float width,
                t->text_primary, t->font_small * s, false);
       }
    }
-   hh_quick_menu_paint_text(p, l.footer,
-         pending ? "请等待操作结果" : menu->view.page == HH_QUICK_MENU_PAGE_MAIN
-         ? "A 确认    B 返回    ↑↓ 选择" : "A 确认    B 返回    ↑↓ 切换 Slot    - 不可用",
-         t->text_secondary, t->font_small * s, false);
-   if (menu->state != HH_QUICK_MENU_CONFIRM_DIALOG || !menu->view.dialog.visible)
-      return;
-   p->rect(p->userdata, l.viewport, t->background, 0, 0, 0);
-   p->rect(p->userdata, hh_quick_menu_expand(l.dialog, 4.0f * s),
-         t->panel_shadow, 0, (t->radius + 3.0f) * s, 0);
-   p->rect(p->userdata, l.dialog, t->surface, t->danger, t->radius * s, 2 * s);
-   rect = l.dialog;
-   rect.x += t->spacing_large * s;
-   rect.width -= 2 * t->spacing_large * s;
-   hh_quick_menu_paint_text(p, hh_quick_menu_line(rect, 20, 32, s),
-         menu->view.dialog.message, t->text_primary, t->font_title * s, true);
-   hh_quick_menu_paint_text(p, hh_quick_menu_line(rect, 62, 26, s),
-         menu->view.dialog.detail, t->text_secondary, t->font_body * s, false);
-   hh_quick_menu_paint_text(p, hh_quick_menu_line(rect, 94, 20, s),
-         "←→ 选择    A 确认    B 取消", t->text_secondary, t->font_small * s, false);
-   for (i = 0; i < 2; i++)
-      hh_quick_menu_paint_row(p, t, l.dialog_buttons[i], s,
-            i ? menu->view.dialog.confirm_label : "取消",
-            HH_QUICK_MENU_ITEM_NORMAL, (i == 1) == menu->view.dialog.confirm_selected);
+   rect = l.footer;
+   rect.y -= 18 * s;
+   rect.height = 2 * s;
+   p->rect(p->userdata, rect, t->surface_muted, 0, 0, 0);
+   if (pending)
+      hh_quick_menu_paint_text(p, l.footer, "请等待操作结果",
+            t->text_secondary, t->font_small * s, false);
+   else
+   {
+      hh_ui_rect_t pill = l.footer;
+      pill.width = 54 * s;
+      pill.height = 46 * s;
+      p->rect(p->userdata, pill, t->surface, t->success,
+            23 * s, s);
+      hh_quick_menu_paint_text(p, pill, "A", t->success,
+            t->font_body * s, true);
+      rect = l.footer;
+      rect.x += 66 * s;
+      rect.width = 100 * s;
+      hh_quick_menu_paint_text(p, rect, "确认", t->text_secondary,
+            t->font_body * s, false);
+      pill.x += 156 * s;
+      pill.width = 54 * s;
+      p->rect(p->userdata, pill, t->surface_muted, 0,
+            23 * s, 0);
+      hh_quick_menu_paint_text(p, pill, "B", t->text_secondary,
+            t->font_body * s, true);
+      rect.x = l.footer.x + 222 * s;
+      rect.width = 100 * s;
+      hh_quick_menu_paint_text(p, rect, "返回", t->text_secondary,
+            t->font_body * s, false);
+      pill.x = l.footer.x + 312 * s;
+      pill.width = 80 * s;
+      p->rect(p->userdata, pill, t->surface_muted, 0,
+            23 * s, 0);
+      hh_quick_menu_paint_text(p, pill, "↑↓", t->text_secondary,
+            t->font_body * s, true);
+      rect.x = l.footer.x + 408 * s;
+      rect.width = 100 * s;
+      hh_quick_menu_paint_text(p, rect, "选择", t->text_secondary,
+            t->font_body * s, false);
+   }
 }

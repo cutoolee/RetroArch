@@ -53,6 +53,9 @@ typedef struct hh_runtime_state
    hh_runtime_event_callback_t callback;
    void *callback_userdata;
    unsigned processing_count;
+#ifdef HAVE_GAMEGO_E2E_HARNESS
+   hh_runtime_e2e_state_io_observation_t e2e_state_io;
+#endif
 } hh_runtime_state_t;
 
 extern hh_runtime_state_t hh_runtime_state;

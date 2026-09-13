@@ -12,6 +12,14 @@ void hh_runtime_state_task_begin(uint64_t id, hh_command_type_t type)
 {
    slock_lock(hh_runtime_state.lock);
    hh_runtime_state.state_task_generation++;
+#ifdef HAVE_GAMEGO_E2E_HARNESS
+   if (type == HH_CMD_SAVE_STATE)
+      hh_runtime_state.e2e_state_io.save_generation =
+         hh_runtime_state.state_task_generation;
+   else if (type == HH_CMD_LOAD_STATE)
+      hh_runtime_state.e2e_state_io.load_generation =
+         hh_runtime_state.state_task_generation;
+#endif
    hh_runtime_state.state_task_id       = id;
    hh_runtime_state.state_task_type     = type;
    hh_runtime_state.state_task_busy     = true;
@@ -101,6 +109,12 @@ void hh_runtime_state_task_publish(void)
    type = hh_runtime_state.state_task_type == HH_CMD_SAVE_STATE
       ? HH_EVENT_STATE_SAVE_COMPLETED : HH_EVENT_STATE_LOAD_COMPLETED;
    result = hh_runtime_state.state_task_result;
+#ifdef HAVE_GAMEGO_E2E_HARNESS
+   if (type == HH_EVENT_STATE_SAVE_COMPLETED)
+      hh_runtime_state.e2e_state_io.save_completed_request_id = id;
+   else if (type == HH_EVENT_STATE_LOAD_COMPLETED)
+      hh_runtime_state.e2e_state_io.load_completed_request_id = id;
+#endif
    hh_runtime_state.state_task_busy = false;
    slock_unlock(hh_runtime_state.lock);
    hh_runtime_refresh_snapshot();

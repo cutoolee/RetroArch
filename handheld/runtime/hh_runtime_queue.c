@@ -60,6 +60,12 @@ static void hh_runtime_finish_request(hh_runtime_request_t *request,
    event.type = result == HH_OK ? event_type : HH_EVENT_ERROR;
 
    slock_lock(hh_runtime_state.lock);
+#ifdef HAVE_GAMEGO_E2E_HARNESS
+   if (result == HH_OK && type == HH_CMD_SAVE_STATE)
+      hh_runtime_state.e2e_state_io.save_accepted_request_id = request_id;
+   else if (result == HH_OK && type == HH_CMD_LOAD_STATE)
+      hh_runtime_state.e2e_state_io.load_accepted_request_id = request_id;
+#endif
    snapshot = hh_runtime_state.snapshot;
    event.snapshot = snapshot;
    if (hh_runtime_command_is_state_io(type))
@@ -138,6 +144,12 @@ hh_result_t hh_runtime_submit_command(
    if (!id)
       id = hh_runtime_state.next_request_id++;
    *request_id = id;
+#ifdef HAVE_GAMEGO_E2E_HARNESS
+   if (type == HH_CMD_SAVE_STATE)
+      hh_runtime_state.e2e_state_io.save_submit_request_id = id;
+   else if (type == HH_CMD_LOAD_STATE)
+      hh_runtime_state.e2e_state_io.load_submit_request_id = id;
+#endif
    memset(request, 0, sizeof(*request));
    request->in_use = true;
    request->queued = true;

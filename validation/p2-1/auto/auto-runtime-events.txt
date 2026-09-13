@@ -1,0 +1,8 @@
+2026-09-12 23:52:33 +0800 CONTENT_LAUNCH PASS
+  RetroArch log: Libretro path mGBA; Auto-start game 龙珠大冒险.zip
+2026-09-12 23:52:45 +0800 QUICK_MENU_VISIBLE PASS
+  Evidence: auto-quick-menu.png; internal HH event/request_id trace unavailable from installed app
+2026-09-12 23:52:49 +0800 BUTTON_A SYNTHETIC_BLOCKED
+  keyevent 96 left Quick Menu open; Save was not accepted
+2026-09-12 23:52:53 +0800 BUTTON_MODE SYNTHETIC_BLOCKED
+  keyevent 110 left Quick Menu open

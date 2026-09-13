@@ -32,6 +32,17 @@ typedef struct hh_quick_menu_layout
    hh_ui_rect_t feedback, footer, dialog, dialog_buttons[2];
 } hh_quick_menu_layout_t;
 
+typedef enum hh_quick_menu_icon
+{
+   HH_QUICK_MENU_ICON_CONTINUE = 0,
+   HH_QUICK_MENU_ICON_SAVE,
+   HH_QUICK_MENU_ICON_LOAD,
+   HH_QUICK_MENU_ICON_RESET,
+   HH_QUICK_MENU_ICON_ADVANCED,
+   HH_QUICK_MENU_ICON_EXIT,
+   HH_QUICK_MENU_ICON_CHEVRON
+} hh_quick_menu_icon_t;
+
 /* Colors are RRGGBBAA. Callbacks consume values synchronously. */
 typedef struct hh_quick_menu_painter
 {
@@ -42,6 +53,9 @@ typedef struct hh_quick_menu_painter
    /* Draw one UTF-8 line, clipped/ellipsized to bounds, vertically centered. */
    void (*text)(void *userdata, hh_ui_rect_t bounds, const char *text,
          unsigned long color, float font_size, bool emphasized);
+   /* Optional simple vector icon. */
+   void (*icon)(void *userdata, hh_ui_rect_t bounds,
+         hh_quick_menu_icon_t icon, unsigned long color);
    /* Optional caller-owned preview. False requests the placeholder. */
    bool (*preview)(void *userdata, hh_ui_rect_t bounds, int slot);
 } hh_quick_menu_painter_t;

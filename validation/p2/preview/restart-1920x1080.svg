@@ -1,81 +1,24 @@
 <svg xmlns='http://www.w3.org/2000/svg' width='1920' height='1080' viewBox='0 0 1920 1080'><rect width='100%' height='100%' fill='#456657'/>
-<rect x='0' y='0' width='1920' height='1080' rx='0' fill='#071018' fill-opacity='0.85098' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
-<rect x='118.5' y='40.5' width='1683' height='999' rx='31.5' fill='#000000' fill-opacity='0.4' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
-<rect x='132' y='54' width='1656' height='972' rx='22.5' fill='#15232e' fill-opacity='1' stroke='#1d2e38' stroke-opacity='1' stroke-width='2.25'/>
-<defs><clipPath id='c0'><rect x='177' y='81' width='1566' height='36'/></clipPath></defs>
-<text x='177' y='110.34' fill='#a3efb4' font-size='31.5' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c0)'>GAMEGO  /  快捷菜单</text>
-<defs><clipPath id='c1'><rect x='177' y='121.5' width='1566' height='63'/></clipPath></defs>
-<text x='177' y='172.44' fill='#f4f7f5' font-size='54' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c1)'>Pokémon Emerald</text>
-<defs><clipPath id='c2'><rect x='177' y='189' width='1566' height='40.5'/></clipPath></defs>
-<text x='177' y='220.59' fill='#b6c7cb' font-size='31.5' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c2)'>Game Boy Advance</text>
-<defs><clipPath id='c3'><rect x='177' y='234' width='1566' height='36'/></clipPath></defs>
-<text x='177' y='263.34' fill='#b6c7cb' font-size='31.5' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c3)'>离线 UI 演示</text>
-<rect x='177' y='267.75' width='1566' height='2.25' rx='0' fill='#1d2e38' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
-<rect x='177' y='297' width='1566' height='81' rx='22.5' fill='#1d2e38' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
-<defs><clipPath id='c4'><rect x='204' y='297' width='54' height='81'/></clipPath></defs>
-<text x='204' y='353.7' fill='#f4f7f5' font-size='45' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c4)'></text>
-<defs><clipPath id='c5'><rect x='258' y='297' width='1278' height='81'/></clipPath></defs>
-<text x='258' y='353.7' fill='#f4f7f5' font-size='45' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c5)'>继续游戏</text>
-<defs><clipPath id='c6'><rect x='1536' y='297' width='180' height='81'/></clipPath></defs>
-<text x='1536' y='348.84' fill='#f4f7f5' font-size='31.5' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c6)'></text>
-<rect x='177' y='387' width='1566' height='81' rx='22.5' fill='#1d2e38' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
-<defs><clipPath id='c7'><rect x='204' y='387' width='54' height='81'/></clipPath></defs>
-<text x='204' y='443.7' fill='#f4f7f5' font-size='45' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c7)'></text>
-<defs><clipPath id='c8'><rect x='258' y='387' width='1278' height='81'/></clipPath></defs>
-<text x='258' y='443.7' fill='#f4f7f5' font-size='45' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c8)'>保存进度</text>
-<defs><clipPath id='c9'><rect x='1536' y='387' width='180' height='81'/></clipPath></defs>
-<text x='1536' y='438.84' fill='#f4f7f5' font-size='31.5' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c9)'></text>
-<rect x='177' y='477' width='1566' height='81' rx='22.5' fill='#1d2e38' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
-<defs><clipPath id='c10'><rect x='204' y='477' width='54' height='81'/></clipPath></defs>
-<text x='204' y='533.7' fill='#f4f7f5' font-size='45' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c10)'></text>
-<defs><clipPath id='c11'><rect x='258' y='477' width='1278' height='81'/></clipPath></defs>
-<text x='258' y='533.7' fill='#f4f7f5' font-size='45' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c11)'>读取进度</text>
-<defs><clipPath id='c12'><rect x='1536' y='477' width='180' height='81'/></clipPath></defs>
-<text x='1536' y='528.84' fill='#f4f7f5' font-size='31.5' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c12)'></text>
-<rect x='177' y='567' width='1566' height='81' rx='22.5' fill='#29473f' fill-opacity='1' stroke='#a3efb4' stroke-opacity='1' stroke-width='4.5'/>
-<defs><clipPath id='c13'><rect x='204' y='567' width='54' height='81'/></clipPath></defs>
-<text x='204' y='623.7' fill='#f4f7f5' font-size='45' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c13)'>&gt;</text>
-<defs><clipPath id='c14'><rect x='258' y='567' width='1278' height='81'/></clipPath></defs>
-<text x='258' y='623.7' fill='#f4f7f5' font-size='45' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c14)'>重新开始</text>
-<defs><clipPath id='c15'><rect x='1536' y='567' width='180' height='81'/></clipPath></defs>
-<text x='1536' y='618.84' fill='#f4f7f5' font-size='31.5' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c15)'></text>
-<rect x='177' y='657' width='1566' height='81' rx='22.5' fill='#1d2e38' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
-<defs><clipPath id='c16'><rect x='204' y='657' width='54' height='81'/></clipPath></defs>
-<text x='204' y='713.7' fill='#829397' font-size='45' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c16)'></text>
-<defs><clipPath id='c17'><rect x='258' y='657' width='1278' height='81'/></clipPath></defs>
-<text x='258' y='713.7' fill='#829397' font-size='45' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c17)'>高级菜单</text>
-<defs><clipPath id='c18'><rect x='1536' y='657' width='180' height='81'/></clipPath></defs>
-<text x='1536' y='708.84' fill='#829397' font-size='31.5' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c18)'>不可用</text>
-<rect x='177' y='747' width='1566' height='81' rx='22.5' fill='#1d2e38' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
-<defs><clipPath id='c19'><rect x='204' y='747' width='54' height='81'/></clipPath></defs>
-<text x='204' y='803.7' fill='#f4f7f5' font-size='45' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c19)'></text>
-<defs><clipPath id='c20'><rect x='258' y='747' width='1278' height='81'/></clipPath></defs>
-<text x='258' y='803.7' fill='#f4f7f5' font-size='45' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c20)'>退出游戏</text>
-<defs><clipPath id='c21'><rect x='1536' y='747' width='180' height='81'/></clipPath></defs>
-<text x='1536' y='798.84' fill='#f4f7f5' font-size='31.5' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c21)'></text>
-<defs><clipPath id='c22'><rect x='177' y='940.5' width='1566' height='58.5'/></clipPath></defs>
-<text x='177' y='981.09' fill='#b6c7cb' font-size='31.5' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c22)'>A 确认    B 返回    ↑↓ 选择</text>
-<rect x='0' y='0' width='1920' height='1080' rx='0' fill='#071018' fill-opacity='0.85098' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
-<rect x='195' y='315' width='1530' height='450' rx='29.25' fill='#000000' fill-opacity='0.4' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
-<rect x='204' y='324' width='1512' height='432' rx='22.5' fill='#15232e' fill-opacity='1' stroke='#ffb3a7' stroke-opacity='1' stroke-width='4.5'/>
-<defs><clipPath id='c23'><rect x='249' y='369' width='1422' height='72'/></clipPath></defs>
-<text x='249' y='424.44' fill='#f4f7f5' font-size='54' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c23)'>重新开始游戏？</text>
-<defs><clipPath id='c24'><rect x='249' y='463.5' width='1422' height='58.5'/></clipPath></defs>
-<text x='249' y='508.95' fill='#b6c7cb' font-size='45' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c24)'>未保存的游戏进度可能丢失。</text>
-<defs><clipPath id='c25'><rect x='249' y='535.5' width='1422' height='45'/></clipPath></defs>
-<text x='249' y='569.34' fill='#b6c7cb' font-size='31.5' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c25)'>←→ 选择    A 确认    B 取消</text>
-<rect x='249' y='612' width='693' height='99' rx='22.5' fill='#29473f' fill-opacity='1' stroke='#a3efb4' stroke-opacity='1' stroke-width='4.5'/>
-<defs><clipPath id='c26'><rect x='276' y='612' width='54' height='99'/></clipPath></defs>
-<text x='276' y='677.7' fill='#f4f7f5' font-size='45' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c26)'>&gt;</text>
-<defs><clipPath id='c27'><rect x='330' y='612' width='405' height='99'/></clipPath></defs>
-<text x='330' y='677.7' fill='#f4f7f5' font-size='45' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c27)'>取消</text>
-<defs><clipPath id='c28'><rect x='735' y='612' width='180' height='99'/></clipPath></defs>
-<text x='735' y='672.84' fill='#f4f7f5' font-size='31.5' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c28)'></text>
-<rect x='960' y='612' width='693' height='99' rx='22.5' fill='#1d2e38' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
-<defs><clipPath id='c29'><rect x='987' y='612' width='54' height='99'/></clipPath></defs>
-<text x='987' y='677.7' fill='#f4f7f5' font-size='45' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c29)'></text>
-<defs><clipPath id='c30'><rect x='1041' y='612' width='405' height='99'/></clipPath></defs>
-<text x='1041' y='677.7' fill='#f4f7f5' font-size='45' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c30)'>重新开始</text>
-<defs><clipPath id='c31'><rect x='1446' y='612' width='180' height='99'/></clipPath></defs>
-<text x='1446' y='672.84' fill='#f4f7f5' font-size='31.5' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c31)'></text>
+<rect x='0' y='0' width='1920' height='1080' rx='0' fill='#07131c' fill-opacity='0.85098' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<rect x='364' y='102' width='1192' height='876' rx='18' fill='#000000' fill-opacity='0.4' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<rect x='370' y='108' width='1180' height='864' rx='14' fill='#0b1b27' fill-opacity='1' stroke='#102b38' stroke-opacity='1' stroke-width='1'/>
+<rect x='0' y='0' width='1920' height='1080' rx='0' fill='#07131c' fill-opacity='0.85098' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<rect x='438' y='294' width='1044' height='428' rx='17' fill='#000000' fill-opacity='0.4' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<rect x='442' y='298' width='1036' height='420' rx='14' fill='#0b1b27' fill-opacity='1' stroke='#ff8f86' stroke-opacity='1' stroke-width='2'/>
+<defs><clipPath id='c0'><rect x='478' y='318' width='964' height='32'/></clipPath></defs>
+<text x='478' y='344.08' fill='#eaf7f1' font-size='28' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c0)'>重新开始游戏？</text>
+<defs><clipPath id='c1'><rect x='478' y='360' width='964' height='26'/></clipPath></defs>
+<text x='478' y='381.64' fill='#9bb8b0' font-size='24' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c1)'>未保存的游戏进度可能丢失。</text>
+<defs><clipPath id='c2'><rect x='478' y='392' width='964' height='20'/></clipPath></defs>
+<text x='478' y='407.76' fill='#9bb8b0' font-size='16' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c2)'>←→ 选择    A 确认    B 取消</text>
+<rect x='474' y='618' width='474' height='64' rx='14' fill='#145841' fill-opacity='1' stroke='#64f5b1' stroke-opacity='1' stroke-width='2'/>
+<defs><clipPath id='c3'><rect x='554' y='618' width='278' height='64'/></clipPath></defs>
+<text x='554' y='658.64' fill='#eaf7f1' font-size='24' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c3)'>取消</text>
+<defs><clipPath id='c4'><rect x='828' y='618' width='56' height='64'/></clipPath></defs>
+<text x='828' y='655.76' fill='#eaf7f1' font-size='16' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c4)'></text>
+<rect x='960' y='618' width='474' height='64' rx='14' fill='#102b38' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c5'><rect x='1040' y='618' width='278' height='64'/></clipPath></defs>
+<text x='1040' y='658.64' fill='#eaf7f1' font-size='24' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c5)'>重新开始</text>
+<defs><clipPath id='c6'><rect x='1314' y='618' width='56' height='64'/></clipPath></defs>
+<text x='1314' y='655.76' fill='#eaf7f1' font-size='16' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c6)'></text>
 </svg>

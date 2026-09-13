@@ -1,6 +1,7 @@
 #include "mock_quick_menu.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct svg_painter
 {
@@ -118,6 +119,7 @@ int main(int argc, char **argv)
    FILE *html;
    int i, j;
    if (argc != 2 || strlen(argv[1]) > sizeof(path) - 100) return 1;
+   memset(&painter, 0, sizeof(painter));
    strcpy(path, argv[1]);
    strcat(path, "/index.html");
    html = fopen(path, "w");

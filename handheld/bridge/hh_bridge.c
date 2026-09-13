@@ -3,6 +3,9 @@
 #include <string.h>
 
 static hh_bridge_t *hh_active_bridge;
+static volatile bool hh_test_input_pending;
+static volatile hh_quick_menu_input_t hh_test_input_value;
+static volatile bool hh_test_toggle_pending;
 
 static void hh_bridge_apply_snapshot(hh_bridge_t *bridge,
       const hh_runtime_snapshot_t *snapshot)
@@ -138,12 +141,31 @@ static void hh_bridge_event(const hh_runtime_event_t *event, void *userdata)
          || (bridge->pending_action == HH_UI_ACTION_LOAD
             && event->type == HH_EVENT_STATE_LOAD_COMPLETED))
    {
+      if (bridge->pending_action == HH_UI_ACTION_SAVE
+            && event->result == HH_OK
+            && bridge->pending_slot >= 0
+            && bridge->pending_slot < HH_QUICK_MENU_SLOT_COUNT)
+      {
+         hh_quick_menu_slot_t slot = bridge->menu.view.slots[bridge->pending_slot];
+         slot.index = bridge->pending_slot;
+         slot.occupied = true;
+         slot.disabled = false;
+         hh_quick_menu_set_slot(&bridge->menu, &slot);
+      }
       hh_quick_menu_action_result(&bridge->menu,
             event->result == HH_OK
             ? (bridge->pending_action == HH_UI_ACTION_SAVE
                ? HH_QUICK_MENU_SAVE_SUCCESS : HH_QUICK_MENU_LOAD_SUCCESS)
             : HH_QUICK_MENU_ACTION_ERROR,
             event->result == HH_OK ? NULL : hh_bridge_error_message(event->result));
+      if (bridge->pending_action == HH_UI_ACTION_LOAD
+            && event->result == HH_OK)
+      {
+         bridge->pending_request_id = 0;
+         bridge->pending_action = HH_UI_ACTION_NONE;
+         hh_bridge_close(bridge);
+         return;
+      }
       bridge->pending_request_id = 0;
       bridge->pending_action = HH_UI_ACTION_NONE;
       return;
@@ -273,7 +295,20 @@ bool hh_bridge_input(hh_bridge_t *bridge, hh_quick_menu_input_t input)
       return true;
    if (action == HH_UI_ACTION_CONTINUE)
    {
-      hh_bridge_close(bridge);
+      if (bridge->quick_menu_owns_pause || bridge->pause_request_id
+            || bridge->pause_cancel_requested)
+      {
+         if (hh_runtime_submit_command(HH_CMD_RESUME, 0, &request_id) == HH_OK)
+         {
+            bridge->pause_request_id = 0;
+            bridge->pause_cancel_requested = false;
+            bridge->pending_request_id = request_id;
+            bridge->pending_action = HH_UI_ACTION_CONTINUE;
+            hh_quick_menu_set_busy(&bridge->menu, true);
+         }
+      }
+      else
+         hh_bridge_close(bridge);
       return true;
    }
    if (action == HH_UI_ACTION_SAVE || action == HH_UI_ACTION_LOAD)
@@ -344,14 +379,78 @@ bool hh_bridge_input(hh_bridge_t *bridge, hh_quick_menu_input_t input)
 void hh_bridge_tick(hh_bridge_t *bridge)
 {
    hh_runtime_snapshot_t snapshot;
+   uint64_t request_id = 0;
    if (!bridge || !bridge->initialized)
       return;
+   if (hh_test_input_pending && hh_active_bridge == bridge)
+   {
+      hh_quick_menu_input_t input = hh_test_input_value;
+      hh_test_input_pending = false;
+      hh_bridge_input(bridge, input);
+   }
+   if (hh_test_toggle_pending && hh_active_bridge == bridge)
+   {
+      hh_test_toggle_pending = false;
+      if (hh_bridge_is_open(bridge))
+         hh_bridge_close(bridge);
+      else
+         hh_bridge_open(bridge);
+   }
    if (hh_runtime_get_snapshot(&snapshot) == HH_OK)
    {
+      if (snapshot.paused && bridge->pause_request_id)
+      {
+         bridge->pause_request_id = 0;
+         bridge->quick_menu_owns_pause = true;
+         if (bridge->pause_cancel_requested
+               && hh_runtime_submit_command(HH_CMD_RESUME, 0, &request_id) == HH_OK)
+         {
+            bridge->pause_cancel_requested = false;
+            bridge->pending_request_id = request_id;
+            bridge->pending_action = HH_UI_ACTION_CONTINUE;
+            hh_quick_menu_set_busy(&bridge->menu, true);
+         }
+      }
+      if (snapshot.paused
+            && bridge->pending_action == HH_UI_ACTION_CONTINUE
+            && !bridge->pending_request_id
+            && hh_runtime_submit_command(HH_CMD_RESUME, 0, &request_id) == HH_OK)
+      {
+         bridge->pending_request_id = request_id;
+         hh_quick_menu_set_busy(&bridge->menu, true);
+      }
+      if (!snapshot.paused
+            && bridge->menu.view.pending_action == HH_UI_ACTION_CONTINUE
+            && !bridge->pending_request_id)
+      {
+         hh_quick_menu_action_result(&bridge->menu,
+               HH_QUICK_MENU_ACTION_SUCCESS, NULL);
+         bridge->pending_action = HH_UI_ACTION_NONE;
+         hh_quick_menu_set_busy(&bridge->menu, false);
+         hh_quick_menu_close(&bridge->menu);
+         hh_quick_menu_finish_close(&bridge->menu);
+      }
       hh_bridge_apply_snapshot(bridge, &snapshot);
       if (hh_bridge_is_open(bridge) && !snapshot.content_loaded)
          hh_bridge_close(bridge);
    }
+}
+
+bool hh_bridge_test_input(hh_bridge_t *bridge, hh_quick_menu_input_t input)
+{
+   if (!bridge || bridge != hh_active_bridge || hh_test_input_pending)
+      return false;
+   hh_test_input_value = input;
+   hh_test_input_pending = true;
+   return true;
+}
+
+bool hh_bridge_test_toggle(hh_bridge_t *bridge)
+{
+   if (!bridge || bridge != hh_active_bridge || hh_test_toggle_pending)
+      return false;
+   hh_test_toggle_pending = true;
+   return true;
 }
 
 const hh_quick_menu_t *hh_bridge_menu(const hh_bridge_t *bridge)

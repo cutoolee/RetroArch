@@ -1,6 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application>
         <receiver
+            android:name="com.retroarch.gamego.GameGoE2eHarnessReceiver"
+            android:enabled="${gamegoE2eHarnessEnabled}"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.cutoolee.gamego.E2E_COMMAND" />
+            </intent-filter>
+        </receiver>
+        <receiver
             android:name="com.retroarch.p1b2.P1B2HarnessReceiver"
             android:enabled="${p1b2HarnessEnabled}"
             android:exported="true">

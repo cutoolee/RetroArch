@@ -39,6 +39,17 @@ To reach developers, either make an issue here on GitHub, make a thread on the [
 See our [Documentation Center](https://docs.libretro.com/). On Unix, man-pages are provided.
 More developer-centric stuff is found [here](https://docs.libretro.com/development/libretro-overview/).
 
+## Local GameGo Android Development
+
+本地快速构建、校验并安装 GameGo APK：
+
+```sh
+./tools/gamego-dev doctor
+./tools/gamego-dev install
+```
+
+详见 [Local GameGo Android Development](docs/local-android-development.md)。
+
 ## Related projects
 
    - Cg/HLSL shaders: [common-shaders](https://github.com/libretro/common-shaders)

@@ -76,6 +76,17 @@ if (gamegoProductFlag == "1" && p1b2ValidationApkFlag == "1") {
   throw new GradleException("GAMEGO_PRODUCT cannot use P1B2_VALIDATION_APK")
 }
 
+def gamegoE2eHarnessFlag = project.findProperty("HAVE_GAMEGO_E2E_HARNESS")
+if (gamegoE2eHarnessFlag == null) {
+  gamegoE2eHarnessFlag = System.getenv("HAVE_GAMEGO_E2E_HARNESS") ?: "0"
+}
+if (!(gamegoE2eHarnessFlag in ["0", "1"])) {
+  throw new GradleException("HAVE_GAMEGO_E2E_HARNESS must be 0 or 1")
+}
+if (gamegoE2eHarnessFlag == "1" && gamegoProductFlag != "1") {
+  throw new GradleException("HAVE_GAMEGO_E2E_HARNESS requires GAMEGO_PRODUCT=1")
+}
+
 def developmentStoreFile = project.findProperty("DEV_STORE_FILE")
 if (developmentStoreFile == null) {
   developmentStoreFile = System.getenv("DEV_STORE_FILE")
@@ -122,10 +133,12 @@ android {
                   "HAVE_HANDHELD_RUNTIME=${handheldRuntimeFlag}",
                   "HAVE_HANDHELD_QUICK_MENU=${handheldQuickMenuFlag}",
                   "HAVE_GAMEGO_PRODUCT=${gamegoProductFlag}",
-                  "HAVE_HANDHELD_RUNTIME_TEST_HARNESS=${handheldRuntimeHarnessFlag}"
+                  "HAVE_HANDHELD_RUNTIME_TEST_HARNESS=${handheldRuntimeHarnessFlag}",
+                  "HAVE_GAMEGO_E2E_HARNESS=${gamegoE2eHarnessFlag}"
       }
     }
     manifestPlaceholders.p1b2HarnessEnabled = handheldRuntimeHarnessFlag == "1" ? "true" : "false"
+    manifestPlaceholders.gamegoE2eHarnessEnabled = gamegoE2eHarnessFlag == "1" ? "true" : "false"
     versionCode = (System.currentTimeMillis() / 1000).toInteger()
     versionName "${getManifestAttribute("versionName")}_GIT"
   }

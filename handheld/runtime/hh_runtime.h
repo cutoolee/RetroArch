@@ -41,6 +41,23 @@ hh_result_t hh_runtime_set_event_callback(
       hh_runtime_event_callback_t callback, void *userdata);
 hh_result_t hh_runtime_poll_event(hh_runtime_event_t *out);
 
+#ifdef HAVE_GAMEGO_E2E_HARNESS
+typedef struct hh_runtime_e2e_state_io_observation
+{
+   uint64_t save_submit_request_id;
+   uint64_t save_accepted_request_id;
+   uint64_t save_completed_request_id;
+   uint64_t save_generation;
+   uint64_t load_submit_request_id;
+   uint64_t load_accepted_request_id;
+   uint64_t load_completed_request_id;
+   uint64_t load_generation;
+} hh_runtime_e2e_state_io_observation_t;
+
+hh_result_t hh_runtime_e2e_get_state_io_observation(
+      hh_runtime_e2e_state_io_observation_t *out);
+#endif
+
 const char *hh_result_to_string(hh_result_t result);
 const char *hh_runtime_mode_to_string(hh_runtime_mode_t mode);
 const char *hh_event_type_to_string(hh_event_type_t type);

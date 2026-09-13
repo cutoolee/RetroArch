@@ -31,6 +31,8 @@ static const char *hh_p1b2_event_command(hh_event_type_t type)
       case HH_EVENT_STATE_SLOT_CHANGED: return "SET_STATE_SLOT";
       case HH_EVENT_STATE_SAVE_ACCEPTED: return "SAVE_STATE";
       case HH_EVENT_STATE_LOAD_ACCEPTED: return "LOAD_STATE";
+      case HH_EVENT_STATE_SAVE_COMPLETED: return "SAVE_STATE_COMPLETED";
+      case HH_EVENT_STATE_LOAD_COMPLETED: return "LOAD_STATE_COMPLETED";
       case HH_EVENT_SCREENSHOT_TAKEN:   return "SCREENSHOT";
       case HH_EVENT_RA_MENU_OPENED:     return "OPEN_RA_MENU";
       case HH_EVENT_RA_MENU_CLOSED:     return "OPEN_RA_MENU";

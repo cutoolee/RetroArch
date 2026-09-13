@@ -47,6 +47,10 @@ hh_result_t hh_runtime_init(void)
    hh_runtime_state.state_task_result = HH_OK;
    hh_runtime_state.owner_thread_id = 0;
    hh_runtime_state.next_request_id = 1;
+#ifdef HAVE_GAMEGO_E2E_HARNESS
+   memset(&hh_runtime_state.e2e_state_io, 0,
+         sizeof(hh_runtime_state.e2e_state_io));
+#endif
    hh_runtime_state.last_error = HH_OK;
    hh_runtime_state.event_head = 0;
    hh_runtime_state.event_count = 0;
@@ -110,6 +114,21 @@ void hh_runtime_deinit(void)
    }
    slock_unlock(hh_runtime_state.lock);
 }
+
+#ifdef HAVE_GAMEGO_E2E_HARNESS
+hh_result_t hh_runtime_e2e_get_state_io_observation(
+      hh_runtime_e2e_state_io_observation_t *out)
+{
+   if (!out)
+      return HH_ERR_INVALID_ARGUMENT;
+   if (!hh_runtime_state.lock)
+      return HH_ERR_NOT_INITIALIZED;
+   slock_lock(hh_runtime_state.lock);
+   *out = hh_runtime_state.e2e_state_io;
+   slock_unlock(hh_runtime_state.lock);
+   return HH_OK;
+}
+#endif
 
 void hh_runtime_emit_event(uint64_t request_id,
       hh_event_type_t type, hh_result_t result)
