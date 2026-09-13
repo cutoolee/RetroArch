@@ -18,6 +18,8 @@
 #include <retro_atomic.h>
 #include <retro_miscellaneous.h>
 #include <retro_inline.h>
+#include <string.h>
+#include <sys/stat.h>
 
 #ifdef HAVE_CONFIG_H
 #include "../config.h"
@@ -34,6 +36,7 @@
 #include "gfx_display.h"
 #include "gfx_widgets.h"
 #include "font_driver.h"
+#include "gfx_thumbnail.h"
 #ifdef HAVE_THREADS
 #include "video_thread_wrapper.h"
 #endif
@@ -48,6 +51,11 @@
 
 #include "../tasks/task_content.h"
 #include "../tasks/tasks_internal.h"
+
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+#include "../handheld/bridge/hh_bridge.h"
+#include "../handheld/ui/hh_quick_menu_render.h"
+#endif
 
 #define BASE_FONT_SIZE      32.0f
 #define MSG_QUEUE_FONT_SIZE 20.0f
@@ -1124,14 +1132,31 @@ static void gfx_widgets_layout(
    if (!font_path || !*font_path)
    {
       char font_file[PATH_MAX_LENGTH];
+      char regular_font_file[PATH_MAX_LENGTH];
+      char bold_font_file[PATH_MAX_LENGTH];
+      const char *lang_font = font_driver_language_font_file();
+      if (lang_font)
+         fill_pathname_join_special(regular_font_file,
+               p_dispwidget->assets_pkg_dir, lang_font,
+               sizeof(regular_font_file));
+      else
+         strlcpy(regular_font_file, p_dispwidget->ozone_regular_font_path,
+               sizeof(regular_font_file));
+      if (lang_font)
+         fill_pathname_join_special(bold_font_file,
+               p_dispwidget->assets_pkg_dir, lang_font,
+               sizeof(bold_font_file));
+      else
+         strlcpy(bold_font_file, p_dispwidget->ozone_bold_font_path,
+               sizeof(bold_font_file));
       /* Create regular font */
       gfx_widgets_font_init(p_disp, p_dispwidget,
             &p_dispwidget->gfx_widget_fonts.regular,
-            is_threaded, p_dispwidget->ozone_regular_font_path, BASE_FONT_SIZE);
+            is_threaded, regular_font_file, BASE_FONT_SIZE);
       /* Create bold font */
       gfx_widgets_font_init(p_disp, p_dispwidget,
             &p_dispwidget->gfx_widget_fonts.bold,
-            is_threaded, p_dispwidget->ozone_bold_font_path, BASE_FONT_SIZE);
+            is_threaded, bold_font_file, BASE_FONT_SIZE);
 
       /* Create msg_queue font */
       {
@@ -1148,9 +1173,15 @@ static void gfx_widgets_layout(
             &p_dispwidget->gfx_widget_fonts.msg_queue,
             is_threaded, font_file, MSG_QUEUE_FONT_SIZE);
 
-      /* Only the message-queue font follows the language; the regular
-       * and bold ones are always the ozone faces. Marking it lets a
-       * language change rebuild it in place. */
+      /* Let all widget fonts follow the selected language. */
+      font_driver_set_language_font(
+            p_dispwidget->gfx_widget_fonts.regular.font,
+            p_dispwidget->assets_pkg_dir,
+            p_dispwidget->ozone_regular_font_path);
+      font_driver_set_language_font(
+            p_dispwidget->gfx_widget_fonts.bold.font,
+            p_dispwidget->assets_pkg_dir,
+            p_dispwidget->ozone_bold_font_path);
       font_driver_set_language_font(
             p_dispwidget->gfx_widget_fonts.msg_queue.font,
             p_dispwidget->assets_pkg_dir,
@@ -1920,6 +1951,349 @@ bool gfx_widgets_visible(void *data)
    return false;
 }
 
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+typedef struct hh_widget_paint_context
+{
+   video_frame_info_t *video_info;
+   gfx_display_t *display;
+   dispgfx_widget_t *widgets;
+} hh_widget_paint_context_t;
+
+static void hh_widget_color(unsigned long value, float *out)
+{
+   unsigned i;
+   float channels[4];
+   channels[0] = ((value >> 24) & 0xff) / 255.0f;
+   channels[1] = ((value >> 16) & 0xff) / 255.0f;
+   channels[2] = ((value >> 8) & 0xff) / 255.0f;
+   channels[3] = (value & 0xff) / 255.0f;
+   for (i = 0; i < 16; i++)
+      out[i] = channels[i & 3];
+}
+
+static void hh_widget_rect(void *userdata, hh_ui_rect_t bounds,
+      unsigned long fill, unsigned long border, float radius,
+      float border_width)
+{
+   hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
+   float color[16];
+   (void)border;
+   (void)radius;
+   (void)border_width;
+   hh_widget_color(fill, color);
+   gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+         ctx->video_info->width, ctx->video_info->height,
+         (int)bounds.x, (int)bounds.y, (unsigned)bounds.width,
+         (unsigned)bounds.height, ctx->video_info->width,
+         ctx->video_info->height, color, NULL);
+}
+
+static void hh_widget_icon_rect(hh_widget_paint_context_t *ctx,
+      hh_ui_rect_t bounds, unsigned long value)
+{
+   float color[16];
+   hh_widget_color(value, color);
+   gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+         ctx->video_info->width, ctx->video_info->height,
+         (int)bounds.x, (int)bounds.y, (unsigned)bounds.width,
+         (unsigned)bounds.height, ctx->video_info->width,
+         ctx->video_info->height, color, NULL);
+}
+
+static void hh_widget_icon(void *userdata, hh_ui_rect_t bounds,
+      hh_quick_menu_icon_t icon, unsigned long color)
+{
+   hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
+   hh_ui_rect_t part = bounds;
+   float unit = bounds.width / 8.0f;
+   float line = unit * 0.5f;
+   if (unit < 1.0f)
+      unit = 1.0f;
+   if (line < 1.0f)
+      line = 1.0f;
+   switch (icon)
+   {
+      case HH_QUICK_MENU_ICON_CHEVRON:
+         part.x = bounds.x + unit * 2.0f;
+         part.y = bounds.y + unit * 1.0f;
+         part.width = line;
+         part.height = line;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x += unit;
+         part.y += unit;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x -= unit;
+         part.y += unit;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x += unit;
+         part.y += unit;
+         hh_widget_icon_rect(ctx, part, color);
+         break;
+      case HH_QUICK_MENU_ICON_CONTINUE:
+         part.x = bounds.x + unit * 2.0f;
+         part.y = bounds.y + unit * 1.0f;
+         part.width = line * 2.0f;
+         part.height = line;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x += line;
+         part.y += line;
+         part.width = line * 3.0f;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x += line;
+         part.y += line;
+         part.width = line * 4.0f;
+         hh_widget_icon_rect(ctx, part, color);
+         break;
+      case HH_QUICK_MENU_ICON_LOAD:
+         part.x = bounds.x + unit * 1.0f;
+         part.y = bounds.y + unit * 3.0f;
+         part.width = unit * 6.0f;
+         part.height = line;
+         hh_widget_icon_rect(ctx, part, color);
+         part.y += unit * 3.0f;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x = bounds.x + unit * 1.0f;
+         part.y = bounds.y + unit * 3.0f;
+         part.width = line;
+         part.height = unit * 3.0f;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x = bounds.x + unit * 7.0f - line;
+         hh_widget_icon_rect(ctx, part, color);
+         break;
+      case HH_QUICK_MENU_ICON_SAVE:
+         part.x = bounds.x + unit * 1.0f;
+         part.y = bounds.y + unit * 1.0f;
+         part.width = unit * 6.0f;
+         part.height = line;
+         hh_widget_icon_rect(ctx, part, color);
+         part.y += unit * 6.0f;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x = bounds.x + unit * 1.0f;
+         part.y = bounds.y + unit * 1.0f;
+         part.width = line;
+         part.height = unit * 6.0f;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x = bounds.x + unit * 7.0f - line;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x = bounds.x + unit * 3.0f;
+         part.y = bounds.y + unit * 2.0f;
+         part.width = unit * 2.0f;
+         part.height = line;
+         hh_widget_icon_rect(ctx, part, color);
+         break;
+      case HH_QUICK_MENU_ICON_RESET:
+         part.x = bounds.x + unit * 1.0f;
+         part.y = bounds.y + unit * 3.0f;
+         part.width = unit * 5.0f;
+         part.height = line;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x += unit * 4.0f;
+         part.y -= unit * 2.0f;
+         part.width = line;
+         part.height = unit * 2.0f;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x = bounds.x + unit * 1.0f;
+         part.y = bounds.y + unit * 3.0f;
+         part.width = line;
+         part.height = unit * 2.0f;
+         hh_widget_icon_rect(ctx, part, color);
+         break;
+      case HH_QUICK_MENU_ICON_ADVANCED:
+         part.x = bounds.x + unit * 3.0f;
+         part.y = bounds.y + unit * 1.0f;
+         part.width = line;
+         part.height = unit * 6.0f;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x = bounds.x + unit * 1.0f;
+         part.y = bounds.y + unit * 3.0f;
+         part.width = unit * 6.0f;
+         part.height = line;
+         hh_widget_icon_rect(ctx, part, color);
+         break;
+      case HH_QUICK_MENU_ICON_EXIT:
+         part.x = bounds.x + unit * 1.0f;
+         part.y = bounds.y + unit * 1.0f;
+         part.width = line;
+         part.height = unit * 6.0f;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x = bounds.x + unit * 1.0f;
+         part.y = bounds.y + unit * 1.0f;
+         part.width = unit * 4.0f;
+         part.height = line;
+         hh_widget_icon_rect(ctx, part, color);
+         part.y += unit * 6.0f;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x = bounds.x + unit * 4.0f;
+         part.y = bounds.y + unit * 3.0f;
+         part.width = unit * 3.0f;
+         part.height = line;
+         hh_widget_icon_rect(ctx, part, color);
+         break;
+      default:
+         break;
+   }
+}
+
+static size_t hh_widget_utf8_char_length(const char *text, size_t length)
+{
+   unsigned char first;
+   if (!text || !length)
+      return 0;
+   first = (unsigned char)text[0];
+   if (first < 0x80)
+      return 1;
+   if ((first & 0xe0) == 0xc0 && length >= 2)
+      return 2;
+   if ((first & 0xf0) == 0xe0 && length >= 3)
+      return 3;
+   if ((first & 0xf8) == 0xf0 && length >= 4)
+      return 4;
+   return 1;
+}
+
+static void hh_widget_fit_text(const gfx_widget_font_data_t *font,
+      const char *text, float max_width, float scale,
+      char *out, size_t out_size)
+{
+   const char *ellipsis = "…";
+   size_t length, offset = 0, out_length = 0, char_length;
+   int text_width, ellipsis_width;
+
+   if (!out || !out_size)
+      return;
+   out[0] = '\0';
+   if (!font || !font->font || !text || !*text)
+      return;
+   length = strlen(text);
+   text_width = font_driver_get_message_width(font->font, text, length, scale);
+   if ((float)text_width <= max_width)
+   {
+      strlcpy(out, text, out_size);
+      return;
+   }
+   ellipsis_width = font_driver_get_message_width(font->font, ellipsis,
+         strlen(ellipsis), scale);
+   max_width -= (float)ellipsis_width;
+   if (max_width < 0.0f)
+      max_width = 0.0f;
+   while (offset < length && out_length + 4 < out_size)
+   {
+      char_length = hh_widget_utf8_char_length(text + offset, length - offset);
+      if (!char_length || out_length + char_length >= out_size)
+         break;
+      memcpy(out + out_length, text + offset, char_length);
+      out[out_length + char_length] = '\0';
+      text_width = font_driver_get_message_width(font->font, out,
+            out_length + char_length, scale);
+      if ((float)text_width > max_width)
+      {
+         out[out_length] = '\0';
+         break;
+      }
+      out_length += char_length;
+      offset += char_length;
+   }
+   if (offset < length && out_length + strlen(ellipsis) < out_size)
+      strlcpy(out + out_length, ellipsis, out_size - out_length);
+}
+
+static void hh_widget_text(void *userdata, hh_ui_rect_t bounds,
+      const char *text, unsigned long color, float size, bool emphasized)
+{
+   hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
+   gfx_widget_font_data_t *font = emphasized
+      ? &ctx->widgets->gfx_widget_fonts.bold
+      : &ctx->widgets->gfx_widget_fonts.regular;
+   char fitted[HH_QUICK_MENU_TEXT_MAX * 4];
+   float scale = size / BASE_FONT_SIZE;
+   float y;
+   if (scale <= 0.0f)
+      scale = 1.0f;
+   hh_widget_fit_text(font, text, bounds.width, scale,
+         fitted, sizeof(fitted));
+   y = bounds.y + bounds.height * 0.5f
+      + font->line_centre_offset * scale;
+   gfx_display_draw_text(font->font, fitted, bounds.x, y,
+         (int)ctx->video_info->width, (int)ctx->video_info->height,
+         (uint32_t)color,
+         TEXT_ALIGN_LEFT, scale, false, 0.0f, false);
+   font->usage_count++;
+}
+
+static bool hh_widget_preview(void *userdata, hh_ui_rect_t bounds, int slot)
+{
+   hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
+   char state_path[PATH_MAX_LENGTH];
+   char thumbnail_path[PATH_MAX_LENGTH];
+   struct stat thumbnail_stat;
+   float color[16];
+   uintptr_t *texture;
+
+   if (!ctx || !ctx->widgets || slot < 0
+         || slot >= HH_WIDGET_PREVIEW_SLOT_COUNT)
+      return false;
+   if (!runloop_get_savestate_path(state_path, sizeof(state_path), slot))
+      return false;
+   gfx_savestate_thumbnail_get_path(thumbnail_path,
+         sizeof(thumbnail_path), state_path, slot);
+   if (stat(thumbnail_path, &thumbnail_stat) != 0)
+      return false;
+
+   texture = &ctx->widgets->hh_quick_menu_preview_textures[slot];
+   if (strcmp(ctx->widgets->hh_quick_menu_preview_paths[slot], thumbnail_path)
+         || ctx->widgets->hh_quick_menu_preview_mtimes[slot]
+            != (unsigned long)thumbnail_stat.st_mtime
+         || ctx->widgets->hh_quick_menu_preview_sizes[slot]
+            != (unsigned long)thumbnail_stat.st_size)
+   {
+      video_driver_texture_unload(texture);
+      *texture = 0;
+      if (!gfx_display_reset_icon_texture(thumbnail_path, texture,
+               gfx_display_texture_filter(), NULL, NULL))
+      {
+         ctx->widgets->hh_quick_menu_preview_paths[slot][0] = '\0';
+         return false;
+      }
+      strlcpy(ctx->widgets->hh_quick_menu_preview_paths[slot],
+            thumbnail_path, PATH_MAX_LENGTH);
+      ctx->widgets->hh_quick_menu_preview_mtimes[slot] =
+         (unsigned long)thumbnail_stat.st_mtime;
+      ctx->widgets->hh_quick_menu_preview_sizes[slot] =
+         (unsigned long)thumbnail_stat.st_size;
+   }
+   if (!*texture)
+      return false;
+   hh_widget_color(0xffffffffUL, color);
+   gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+         ctx->video_info->width, ctx->video_info->height,
+         (int)bounds.x, (int)bounds.y, (unsigned)bounds.width,
+         (unsigned)bounds.height, ctx->video_info->width,
+         ctx->video_info->height, color, texture);
+   return true;
+}
+
+static void hh_widget_render_quick_menu(video_frame_info_t *video_info,
+      gfx_display_t *display, dispgfx_widget_t *widgets)
+{
+   hh_bridge_t *bridge = hh_bridge_active();
+   hh_widget_paint_context_t context;
+   hh_quick_menu_painter_t painter;
+   if (!bridge || !hh_bridge_is_open(bridge))
+      return;
+   context.video_info = video_info;
+   context.display = display;
+   context.widgets = widgets;
+   memset(&painter, 0, sizeof(painter));
+   painter.userdata = &context;
+   painter.rect = hh_widget_rect;
+   painter.text = hh_widget_text;
+   painter.icon = hh_widget_icon;
+   painter.preview = hh_widget_preview;
+   hh_quick_menu_render(hh_bridge_menu(bridge), video_info->width,
+         video_info->height, NULL, &painter);
+}
+#endif
+
 static void gfx_widgets_frame_state(void *data)
 {
    size_t i;
@@ -2241,6 +2615,10 @@ static void gfx_widgets_frame_state(void *data)
       if (widget->frame)
          widget->frame(data, p_dispwidget);
    }
+
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   hh_widget_render_quick_menu(video_info, p_disp, p_dispwidget);
+#endif
 
    /* Draw all messages */
    if (p_dispwidget->current_msgs_size)
@@ -2609,6 +2987,15 @@ static void gfx_widgets_context_destroy(dispgfx_widget_t *p_dispwidget)
    /* Textures */
    for (i = 0; i < MENU_WIDGETS_ICON_LAST; i++)
       video_driver_texture_unload(&p_dispwidget->gfx_widgets_icons_textures[i]);
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   for (i = 0; i < HH_WIDGET_PREVIEW_SLOT_COUNT; i++)
+   {
+      video_driver_texture_unload(&p_dispwidget->hh_quick_menu_preview_textures[i]);
+      p_dispwidget->hh_quick_menu_preview_paths[i][0] = '\0';
+      p_dispwidget->hh_quick_menu_preview_mtimes[i] = 0;
+      p_dispwidget->hh_quick_menu_preview_sizes[i] = 0;
+   }
+#endif
 
    /* Fonts */
    gfx_widgets_font_free(&p_dispwidget->gfx_widget_fonts.regular);

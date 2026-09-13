@@ -95,6 +95,12 @@
 #endif
 
 #ifdef ANDROID
+#ifdef HAVE_GAMEGO_PRODUCT
+#define ANDROID_PRODUCT_DATA_ROOT "GameGo"
+#else
+#define ANDROID_PRODUCT_DATA_ROOT "RetroArch"
+#endif
+
 static void frontend_unix_set_sustained_performance_mode(bool on);
 
 enum
@@ -2841,7 +2847,7 @@ static void frontend_unix_get_env(int *argc,
                /* sdcard is writable, this should be the case most of the time*/
                case INTERNAL_STORAGE_WRITABLE:
                   fill_pathname_join(parent_path,
-                        internal_storage_path, "RetroArch",
+                        internal_storage_path, ANDROID_PRODUCT_DATA_ROOT,
                         sizeof(parent_path));
                   break;
             }
@@ -3551,7 +3557,7 @@ static int frontend_unix_parse_drive_list(void *data, bool load_content)
          {
             char user_data_path[PATH_MAX_LENGTH];
             fill_pathname_join_special(user_data_path,
-                  internal_storage_path, "RetroArch",
+                  internal_storage_path, ANDROID_PRODUCT_DATA_ROOT,
                   sizeof(user_data_path));
 
             menu_entries_append(list,
@@ -3591,7 +3597,7 @@ static int frontend_unix_parse_drive_list(void *data, bool load_content)
       {
          char user_data_app_path[PATH_MAX_LENGTH];
          fill_pathname_join_special(user_data_app_path,
-               internal_storage_app_path, "RetroArch",
+               internal_storage_app_path, ANDROID_PRODUCT_DATA_ROOT,
                sizeof(user_data_app_path));
 
          menu_entries_append(list,

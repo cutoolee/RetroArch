@@ -1,0 +1,30 @@
+P2.1 Agent C device evidence
+
+Date: 2026-09-12
+Target: GR0006
+
+Commands attempted from the host:
+
+  adb devices -l
+  getevent
+  logcat
+
+Result:
+
+  adb: command not found
+  getevent: not found on host
+  logcat: not found on host
+
+No Android device or ADB binary was available in this environment. No physical
+button was pressed and no Linux event, Android keycode/scancode, or logcat
+trace is claimed by this audit. Device-side collection remains required:
+
+  adb shell getevent -lt
+  adb shell getevent -lp
+  adb shell dumpsys input
+  adb logcat -v threadtime
+
+The first command should be run while pressing MENU, UP, DOWN, LEFT, RIGHT,
+the confirm button, and the back button. The dumpsys output should identify
+the input device, source, VID/PID, key layout, and key character map used by
+GR0006.

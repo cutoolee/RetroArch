@@ -1,0 +1,587 @@
+--------- beginning of main
+09-12 23:52:32.720   887   887 I EffectsFactory: EffectCreate() create_effect
+09-12 23:52:32.722 23546 23563 D QuickSetting-MAPPER-Client: configChange (MapperSetting.kt:47)
+09-12 23:52:32.722 23546 23563 D QuickSetting-MAPPER-Client: refreshStatus (MapperSetting.kt:106)
+09-12 23:52:32.723 23741 23741 V QuickSetting-MAPPER-Service: isNowMapperOn com.tencent.tmgp.supercell.clashofclans false (MapperService.kt:96)
+09-12 23:52:32.723  1035  1276 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-12 23:52:32.723  1035  1276 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-12 23:52:32.724   887 23971 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=false
+09-12 23:52:32.724   887 23971 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:52:32.724 23741 23741 D QuickSetting-MAPPER-Service: loadCurrentForegroundAppConfigAndStartMapper com.tencent.tmgp.supercell.clashofclans (MapperService.kt:297)
+09-12 23:52:32.724 23741 23741 D QuickSetting-MAPPER-Config: loadConfig com.tencent.tmgp.supercell.clashofclans (ConfigManager.kt:63)
+09-12 23:52:32.725 23741 23741 D QuickSetting-MAPPER-Config: try to load from assets (ConfigManager.kt:74)
+09-12 23:52:32.725 23741 23741 E QuickSetting-MAPPER-Service: com.tencent.tmgp.supercell.clashofclans has no config file but support mapper (MapperService.kt:316)
+09-12 23:52:32.725 23741 23741 D QuickSetting-MAPPER-display: releaseFd after use 67 (DisplayManager.kt:702)
+09-12 23:52:32.725 23741 23741 V QuickSetting-MAPPER-display: set config
+09-12 23:52:32.725 23741 23741 V QuickSetting-MAPPER-display: A (0,0) B (0,0) X (0,0) Y (0,0)
+09-12 23:52:32.725 23741 23741 V QuickSetting-MAPPER-display: Left (0,0) Right (0,0) Up (0,0) Down (0,0)
+09-12 23:52:32.725 23741 23741 V QuickSetting-MAPPER-display: TL1 (0,0) TR1 (0,0) TL2 (0,0) TR2 (0,0)
+09-12 23:52:32.725 23741 23741 V QuickSetting-MAPPER-display: L3 (0,0) R3 (0,0)
+09-12 23:52:32.725 23741 23741 V QuickSetting-MAPPER-display: Start (0,0) Select (0,0) Mode (0,0)
+09-12 23:52:32.725 23741 23741 V QuickSetting-MAPPER-display: ThumbL (0,0) ThumbR (0,0) 
+09-12 23:52:32.725 23741 23741 V QuickSetting-MAPPER-display: ThumbLRadius 100 ThumbRRadius 100 (DisplayManager.kt:72)
+09-12 23:52:32.726  1451 28288 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:52:32.726   887   887 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+09-12 23:52:32.726 23741 23741 W QuickSetting-MAPPER-Service: stopMapper magnificationEnabled: -1 com.tencent.tmgp.supercell.clashofclans (MapperService.kt:379)
+09-12 23:52:32.726   887   887 D ACDB-LOADER: ACDB -> send_audvoltable
+09-12 23:52:32.726   887   887 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE
+09-12 23:52:32.726   887   887 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-12 23:52:32.726   887   887 D ACDB-LOADER: Error: ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE Returned = -19
+09-12 23:52:32.726   887   887 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE, vol index 5
+09-12 23:52:32.726   887   887 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-12 23:52:32.726   887   887 D ACDB-LOADER: Error: ACDB AudProc vol returned = -19
+09-12 23:52:32.726   887   887 D ACDB-LOADER: ACDB -> AUDIO_SET_VOL_CAL cal type = 40
+09-12 23:52:32.726   887   887 W msm8974_platform: platform_send_gain_dep_cal: Usecase list is empty
+09-12 23:52:32.726   887  3724 W audio_hw_primary: out_write: underrun(2546) frames_by_time(34840) > out->last_fifo_frames_remaining(384)
+09-12 23:52:32.728  1059  1059 D MAPPER  : stop mapper
+09-12 23:52:32.728  1059  1059 D MAPPER  : pthread pause already
+09-12 23:52:32.729 23741 23741 D QuickSetting-MAPPER-Service: callbackListener com.tencent.tmgp.supercell.clashofclans (MapperService.kt:399)
+09-12 23:52:32.729 23546 23563 D QuickSetting-MAPPER-Client: configChange (MapperSetting.kt:47)
+09-12 23:52:32.729 23546 23563 D QuickSetting-MAPPER-Client: refreshStatus (MapperSetting.kt:106)
+09-12 23:52:32.730  1451  1832 I InputReader: Reconfiguring input devices, changes=ENABLED_STATE | 
+09-12 23:52:32.731 23741 23741 V QuickSetting-MAPPER-Service: isNowMapperOn com.tencent.tmgp.supercell.clashofclans false (MapperService.kt:96)
+09-12 23:52:32.736 23741 23741 D QuickSetting-MAPPER-display: set config displayState:REMOVED same:true autoDisplay:0 autoStart:0 (DisplayManager.kt:74)
+09-12 23:52:32.736 23741 23741 D QuickSetting-MAPPER-display: inflateViewIfNeed (DisplayManager.kt:223)
+09-12 23:52:32.737 23741 23741 D QuickSetting-MAPPER-display: setViewConfig (DisplayManager.kt:484)
+09-12 23:52:32.737 23741 23741 D QuickSetting-MAPPER-display: hide (DisplayManager.kt:649)
+09-12 23:52:32.737 23741 23741 D QuickSetting-MAPPER-display: goneAllViews (DisplayManager.kt:384)
+09-12 23:52:32.737 23741 23741 D QuickSetting-MAPPER-display: removeViewFromWindow isAttached : false (DisplayManager.kt:641)
+09-12 23:52:32.738 23741 23741 D QuickSetting-MAPPER-display: set config displayState:REMOVED same:true autoDisplay:0 autoStart:0 (DisplayManager.kt:74)
+09-12 23:52:32.738 23741 23741 D QuickSetting-MAPPER-display: inflateViewIfNeed (DisplayManager.kt:223)
+09-12 23:52:32.738 23741 23741 D QuickSetting-MAPPER-display: setViewConfig (DisplayManager.kt:484)
+09-12 23:52:32.738 23741 23741 D QuickSetting-MAPPER-display: hide (DisplayManager.kt:649)
+09-12 23:52:32.738 23741 23741 D QuickSetting-MAPPER-display: goneAllViews (DisplayManager.kt:384)
+09-12 23:52:32.738 23741 23741 D QuickSetting-MAPPER-display: removeViewFromWindow isAttached : false (DisplayManager.kt:641)
+09-12 23:52:32.748 22746 22746 W beacon-thread-3: type=1400 audit(0.0:25706): avc: denied { read } for name="type" dev="sysfs" ino=61425 scontext=u:r:untrusted_app:s0:c190,c256,c512,c768 tcontext=u:object_r:sysfs:s0 tclass=file permissive=0 app=com.tencent.tmgp.supercell.clashofclans
+09-12 23:52:32.748 22746 22746 W beacon-thread-3: type=1400 audit(0.0:25707): avc: denied { read } for name="name" dev="sysfs" ino=61420 scontext=u:r:untrusted_app:s0:c190,c256,c512,c768 tcontext=u:object_r:sysfs:s0 tclass=file permissive=0 app=com.tencent.tmgp.supercell.clashofclans
+09-12 23:52:32.748 22746 22746 W beacon-thread-3: type=1400 audit(0.0:25708): avc: denied { read } for name="cid" dev="sysfs" ino=61410 scontext=u:r:untrusted_app:s0:c190,c256,c512,c768 tcontext=u:object_r:sysfs:s0 tclass=file permissive=0 app=com.tencent.tmgp.supercell.clashofclans
+09-12 23:52:32.758 22746 22746 W beacon-thread-1: type=1400 audit(0.0:25709): avc: denied { read } for name="type" dev="sysfs" ino=61425 scontext=u:r:untrusted_app:s0:c190,c256,c512,c768 tcontext=u:object_r:sysfs:s0 tclass=file permissive=0 app=com.tencent.tmgp.supercell.clashofclans
+09-12 23:52:32.758 22746 22746 W beacon-thread-1: type=1400 audit(0.0:25710): avc: denied { read } for name="name" dev="sysfs" ino=61420 scontext=u:r:untrusted_app:s0:c190,c256,c512,c768 tcontext=u:object_r:sysfs:s0 tclass=file permissive=0 app=com.tencent.tmgp.supercell.clashofclans
+09-12 23:52:32.758 22746 22746 W beacon-thread-1: type=1400 audit(0.0:25711): avc: denied { read } for name="cid" dev="sysfs" ino=61410 scontext=u:r:untrusted_app:s0:c190,c256,c512,c768 tcontext=u:object_r:sysfs:s0 tclass=file permissive=0 app=com.tencent.tmgp.supercell.clashofclans
+--------- beginning of system
+09-12 23:52:32.789  1451  7605 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=com.cutoolee.gamego/com.retroarch.browser.mainmenu.MainMenuActivity (has extras)} from uid 2000
+09-12 23:52:32.805  1451  7605 D CompatibilityInfo: mCompatibilityFlags - 4
+09-12 23:52:32.805  1451  7605 D CompatibilityInfo: applicationDensity - 320
+09-12 23:52:32.805  1451  7605 D CompatibilityInfo: applicationScale - 1.0
+09-12 23:52:32.807  1451  7605 D ActivityTrigger: ActivityTrigger activityPauseTrigger 
+09-12 23:52:32.807   958  1031 W ANDR-PERF-LM: MetaMeter: handlePrimaryAsync() 118: AdaptLaunch MetaMeter. No MeterMgr Available to handle this Primary Async. !!!!
+09-12 23:52:32.808   958  1031 W ANDR-PERF-LM: MetaMeter: handlePrimaryAsync() 118: AdaptLaunch MetaMeter. No MeterMgr Available to handle this Primary Async. !!!!
+09-12 23:52:32.819  1451  1554 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10223; state: DISABLED
+09-12 23:52:32.825  1451  1572 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10223; state: ENABLED
+09-12 23:52:32.848   757   757 D Zygote  : Forked child process 24994
+09-12 23:52:32.851   958  3112 E ANDR-PERF-LM: ThreadHelper: thread_callback() 145: More than one pending updates!!! This should not happen. MeterMgr should avoid this case.
+09-12 23:52:32.852  1451  1572 I ActivityManager: Start proc 24994:com.cutoolee.gamego/u0a223 for pre-top-activity {com.cutoolee.gamego/com.retroarch.browser.mainmenu.MainMenuActivity}
+09-12 23:52:32.852   958  1031 E ANDR-PERF-LM: MetaMeter: handleAsync() 166: AdaptLaunch Invalid Async
+09-12 23:52:32.864 24994 24994 I libc    : SetHeapTaggingLevel: tag level set to 0
+09-12 23:52:32.870 24994 24994 I cutoolee.gameg: Late-enabling -Xcheck:jni
+09-12 23:52:32.890 24994 24994 I cutoolee.gameg: Unquickening 18 vdex files!
+09-12 23:52:32.896 24797 24809 I adbd    : jdwp connection from 24994
+09-12 23:52:32.904   958  1031 E ANDR-PERF-LM: MetaMeter: handleAsync() 166: AdaptLaunch Invalid Async
+09-12 23:52:32.904  1451  7605 D CompatibilityInfo: mCompatibilityFlags - 4
+09-12 23:52:32.904  1451  7605 D CompatibilityInfo: applicationDensity - 320
+09-12 23:52:32.904  1451  7605 D CompatibilityInfo: applicationScale - 1.0
+09-12 23:52:32.905  1451  7605 I ActivityTaskManager: The Process com.cutoolee.gamego Already Exists in BG. So sending its PID: 24994
+09-12 23:52:32.906   958  1031 E ANDR-PERF-LM: MetaMeter: handleAsync() 166: AdaptLaunch Invalid Async
+09-12 23:52:33.045 22746 24937 E MSDK    : [54][A.E][20260912 +8.0 23:52:33.045][22746,24937][msdk_json.cpp,parseObject,248]:Parse json error! JsonStr : 
+09-12 23:52:33.045 22746 24937 E MSDK    : [55][A.E][20260912 +8.0 23:52:33.045][22746,24937][msdk_wx_network.cpp,ParseLoginResponseData,203]:parse exten1 fail
+09-12 23:52:33.046   958  1031 W ANDR-PERF-LM: MetaMeter: handlePrimaryAsync() 118: AdaptLaunch MetaMeter. No MeterMgr Available to handle this Primary Async. !!!!
+09-12 23:52:33.047   958  1031 W ANDR-PERF-LM: MetaMeter: handlePrimaryAsync() 118: AdaptLaunch MetaMeter. No MeterMgr Available to handle this Primary Async. !!!!
+09-12 23:52:33.048  1451  7605 I ActivityTaskManager: The Process com.cutoolee.gamego Already Exists in BG. So sending its PID: 24994
+09-12 23:52:33.049   958  1031 E ANDR-PERF-LM: MetaMeter: handleAsync() 166: AdaptLaunch Invalid Async
+09-12 23:52:33.051  1451  7605 D CompatibilityInfo: mCompatibilityFlags - 4
+09-12 23:52:33.051  1451  7605 D CompatibilityInfo: applicationDensity - 320
+09-12 23:52:33.051  1451  7605 D CompatibilityInfo: applicationScale - 1.0
+09-12 23:52:33.071 24592 31877 I wnloader:daemo: oneway function results will be dropped but finished with status OK and parcel size 88
+09-12 23:52:33.081 24994 24994 I Perf    : Connecting to perf service.
+09-12 23:52:33.086 23741 23761 V MAPPER-Detector: onForegroundActivitiesChanged
+09-12 23:52:33.093 24994 24994 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+09-12 23:52:33.093 24994 24994 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+09-12 23:52:33.101 23741 23741 D MAPPER-Detector: getCurrentPackage com.cutoolee.gamego false
+09-12 23:52:33.101 23741 23741 D QuickSetting-MAPPER-Service: onChange com.cutoolee.gamego current: com.tencent.tmgp.supercell.clashofclans (MapperService.kt:420)
+09-12 23:52:33.102 23741 23741 D QuickSetting-MAPPER-Service: loadCurrentForegroundAppConfigAndStartMapper com.cutoolee.gamego (MapperService.kt:297)
+09-12 23:52:33.102 23741 23741 D QuickSetting-MAPPER-Config: loadConfig com.cutoolee.gamego (ConfigManager.kt:63)
+09-12 23:52:33.103 23741 23741 D QuickSetting-MAPPER-Config: try to load from assets (ConfigManager.kt:74)
+09-12 23:52:33.103 23741 23741 E QuickSetting-MAPPER-Service: com.cutoolee.gamego has no config file but support mapper (MapperService.kt:316)
+09-12 23:52:33.104 23741 23741 D QuickSetting-MAPPER-display: releaseFd after use 67 (DisplayManager.kt:702)
+09-12 23:52:33.104 23741 23741 V QuickSetting-MAPPER-display: set config
+09-12 23:52:33.104 23741 23741 V QuickSetting-MAPPER-display: A (0,0) B (0,0) X (0,0) Y (0,0)
+09-12 23:52:33.104 23741 23741 V QuickSetting-MAPPER-display: Left (0,0) Right (0,0) Up (0,0) Down (0,0)
+09-12 23:52:33.104 23741 23741 V QuickSetting-MAPPER-display: TL1 (0,0) TR1 (0,0) TL2 (0,0) TR2 (0,0)
+09-12 23:52:33.104 23741 23741 V QuickSetting-MAPPER-display: L3 (0,0) R3 (0,0)
+09-12 23:52:33.104 23741 23741 V QuickSetting-MAPPER-display: Start (0,0) Select (0,0) Mode (0,0)
+09-12 23:52:33.104 23741 23741 V QuickSetting-MAPPER-display: ThumbL (0,0) ThumbR (0,0) 
+09-12 23:52:33.104 23741 23741 V QuickSetting-MAPPER-display: ThumbLRadius 100 ThumbRRadius 100 (DisplayManager.kt:72)
+09-12 23:52:33.104 23741 23741 W QuickSetting-MAPPER-Service: stopMapper magnificationEnabled: -1 com.cutoolee.gamego (MapperService.kt:379)
+09-12 23:52:33.105  1059  1059 D MAPPER  : stop mapper
+09-12 23:52:33.105  1059  1059 D MAPPER  : pthread pause already
+09-12 23:52:33.105 23741 23741 D QuickSetting-MAPPER-Service: callbackListener com.cutoolee.gamego (MapperService.kt:399)
+09-12 23:52:33.106 23546 23563 D QuickSetting-MAPPER-Client: configChange (MapperSetting.kt:47)
+09-12 23:52:33.106 23546 23563 D QuickSetting-MAPPER-Client: refreshStatus (MapperSetting.kt:106)
+09-12 23:52:33.106  1451  1832 I InputReader: Reconfiguring input devices, changes=ENABLED_STATE | 
+09-12 23:52:33.106 23741 23741 V QuickSetting-MAPPER-Service: isNowMapperOn com.cutoolee.gamego false (MapperService.kt:96)
+09-12 23:52:33.107 23741 23741 D QuickSetting-MAPPER-display: set config displayState:REMOVED same:true autoDisplay:0 autoStart:0 (DisplayManager.kt:74)
+09-12 23:52:33.107 23741 23741 D QuickSetting-MAPPER-display: inflateViewIfNeed (DisplayManager.kt:223)
+09-12 23:52:33.107 23741 23741 D QuickSetting-MAPPER-display: setViewConfig (DisplayManager.kt:484)
+09-12 23:52:33.107 23741 23741 D QuickSetting-MAPPER-display: hide (DisplayManager.kt:649)
+09-12 23:52:33.107 23741 23741 D QuickSetting-MAPPER-display: goneAllViews (DisplayManager.kt:384)
+09-12 23:52:33.107 23741 23741 D QuickSetting-MAPPER-display: removeViewFromWindow isAttached : false (DisplayManager.kt:641)
+09-12 23:52:33.108  1975  1975 D KeyguardUpdateMonitor: received broadcast android.intent.action.BATTERY_CHANGED
+09-12 23:52:33.113  2324  2324 D DeviceStatisticsService: chargerType=2 batteryLevel=100 totalBatteryCapacity=6085000
+09-12 23:52:33.113  1975  1975 D KeyguardUpdateMonitor: handleBatteryUpdate
+09-12 23:52:33.114  1054  1106 W DisplayIdentification: Invalid EDID: falling back to serial number due to missing display name.
+09-12 23:52:33.115  1054  1106 W DisplayIdentification: Invalid EDID: falling back to ASCII text due to missing serial number.
+09-12 23:52:33.144 24994 25047 I RetroActivity: isPlayStoreBuild: false
+09-12 23:52:33.152  1451  3688 I AccessibilityManagerService: Added user client for pid:24994 and userId:0
+09-12 23:52:33.186 24994 24994 I RetroActivity: isPlayStoreBuild: false
+09-12 23:52:33.188 24994 24994 I RetroArch: [ENV] Storage permission resolved (granted: 1).
+09-12 23:52:33.197 24994 24994 I RetroActivity: isSustainedPerformanceModeSupported? false
+09-12 23:52:33.223 24994 25048 I RetroActivity: isPlayStoreBuild: false
+09-12 23:52:33.226  1451 12372 W UriGrantsManagerService: No permission grants found for com.cutoolee.gamego
+09-12 23:52:33.240 24994 25048 I RetroActivity: isAndroidTV == false
+09-12 23:52:33.264   958  3112 E ANDR-PERF-LM: ThreadHelper: thread_callback() 145: More than one pending updates!!! This should not happen. MeterMgr should avoid this case.
+09-12 23:52:33.269 24994 25048 I RetroArch: [ENV] Android version (major : 11, minor : 0, rel : 0)
+09-12 23:52:33.269 24994 25048 I RetroArch: [ENV] Checking arguments passed from intent ...
+09-12 23:52:33.269 24994 25048 I RetroArch: [ENV] Libretro path: "/data/user/0/com.cutoolee.gamego/cores/mgba_libretro_android.so".
+09-12 23:52:33.269 24994 25048 I RetroArch: [ENV] Auto-start game "/storage/emulated/0/Roms/GBA/龙珠大冒险.zip".
+09-12 23:52:33.280  1451  1567 I ActivityTaskManager: Displayed com.cutoolee.gamego/com.retroarch.browser.mainmenu.MainMenuActivity: +474ms
+09-12 23:52:33.298  3726  3726 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():3301 
+09-12 23:52:33.299  3726  3726 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1979 
+09-12 23:52:33.300  3726  3726 I DeviceUnlockedTag: DeviceUnlockedTag.notifyDeviceLockStatusChanged():79 Notify device unlocked.
+09-12 23:52:33.307  1035  1695 D AudioFlinger: ro.audio.silent is ignored since no output device is set
+09-12 23:52:33.308  1451 28288 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:52:33.308 24994 25048 I RetroArch: [ENV] Derived config file: "/storage/emulated/0/Android/data/com.cutoolee.gamego/files/retroarch.cfg".
+09-12 23:52:33.308 24994 25048 I RetroArch: Testing permissions for /storage/emulated/0
+09-12 23:52:33.308  1451  7605 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:52:33.310  1451  7605 I chatty  : uid=1000(system) Binder:1451_10 identical 5 lines
+09-12 23:52:33.310  1451  7605 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:52:33.573 24994 25048 I RetroArch: Create /storage/emulated/0/.retroarch in /storage/emulated/0 true
+09-12 23:52:33.578 24994 25048 I RetroArch: [ENV] Application location: "/data/user/0/com.cutoolee.gamego".
+09-12 23:52:33.579 24994 25048 I RetroArch: [ENV] Default savefile folder: "/storage/emulated/0/GameGo/saves".
+09-12 23:52:33.579 24994 25048 I RetroArch: [ENV] Default savestate folder: "/storage/emulated/0/GameGo/states".
+09-12 23:52:33.579 24994 25048 I RetroArch: [ENV] Default system folder: "/storage/emulated/0/GameGo/system".
+09-12 23:52:33.579 24994 25048 I RetroArch: [ENV] Default screenshot folder: "/storage/emulated/0/GameGo/screenshots".
+09-12 23:52:33.580 24994 25048 I RetroArch: [ENV] App version code: 1789227983.
+09-12 23:52:33.616 24994 25048 I RetroActivity: isSustainedPerformanceModeSupported? false
+09-12 23:52:33.623  1054  1106 I BpBinder: onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+09-12 23:52:33.630 24994 25048 I RetroActivity: isPlayStoreBuild: false
+09-12 23:52:33.656   958  3101 E ANDR-PERF-LM: VmRssMeter:: start() 447: Could not find pid, can not collect vmrss data
+09-12 23:52:33.656   958  3101 E ANDR-PERF-LM: AdaptiveLaunch: writeToDataBase() 64: Meter aborted or could not get meter data for this run
+09-12 23:52:33.658   958  3100 E ANDR-PERF-LM: VmRssMeter:: start() 447: Could not find pid, can not collect vmrss data
+09-12 23:52:33.666 24592 25115 I wnloader:daemo: oneway function results will be dropped but finished with status OK and parcel size 88
+09-12 23:52:33.891 24994 25048 I AdrenoGLES-0: QUALCOMM build                   : 46d1463393, I43876eb25d
+09-12 23:52:33.891 24994 25048 I AdrenoGLES-0: Build Date                       : 11/30/21
+09-12 23:52:33.891 24994 25048 I AdrenoGLES-0: OpenGL ES Shader Compiler Version: EV031.32.02.16
+09-12 23:52:33.891 24994 25048 I AdrenoGLES-0: Local Branch                     : 
+09-12 23:52:33.891 24994 25048 I AdrenoGLES-0: Remote Branch                    : 
+09-12 23:52:33.891 24994 25048 I AdrenoGLES-0: Remote Branch                    : 
+09-12 23:52:33.891 24994 25048 I AdrenoGLES-0: Reconstruct Branch               : 
+09-12 23:52:33.891 24994 25048 I AdrenoGLES-0: Build Config                     : S P 10.0.7 AArch64
+09-12 23:52:33.891 24994 25048 I AdrenoGLES-0: Driver Path                      : /vendor/lib64/egl/libGLESv2_adreno.so
+09-12 23:52:33.895 24994 25048 I AdrenoGLES-0: PFP: 0x016ee190, ME: 0x00000000
+09-12 23:52:33.928   903   903 W sensors@2.0-ser: type=1400 audit(0.0:25714): avc: denied { read write } for name="diag" dev="tmpfs" ino=2475 scontext=u:r:hal_sensors_default:s0 tcontext=u:object_r:vendor_diag_device:s0 tclass=chr_file permissive=0
+09-12 23:52:33.928   903   903 W sensors@2.0-ser: type=1400 audit(0.0:25715): avc: denied { read write } for name="diag" dev="tmpfs" ino=2475 scontext=u:r:hal_sensors_default:s0 tcontext=u:object_r:vendor_diag_device:s0 tclass=chr_file permissive=0
+09-12 23:52:33.934   903   903 I sensors-hal: batch:242, android.sensor.accelerometer/11, period=200000000, max_latency=0
+09-12 23:52:33.934   903   903 I sensors-hal: set_config:63, sample_period_ns is adjusted to 200000000 based on min/max delay_ns
+09-12 23:52:33.934   903   903 I sensors-hal: batch:251, android.sensor.accelerometer/11, period=200000000, max_latency=0 request completed
+09-12 23:52:33.935   903   903 I sensors-hal: activate:209, android.sensor.accelerometer/11 en=1
+09-12 23:52:33.935   903   903 I sensors-hal: get_qmi_debug_flag:241, support_qmi_debug : false
+09-12 23:52:33.938   903   903 I sensors-hal: activate:220, android.sensor.accelerometer/11 en=1 completed
+09-12 23:52:33.938   903   903 I sensors-hal: batch:242, android.sensor.accelerometer/11, period=16000000, max_latency=0
+09-12 23:52:33.938   903   903 I sensors-hal: set_config:63, sample_period_ns is adjusted to 16000000 based on min/max delay_ns
+09-12 23:52:33.938   903 25077 I sensors-hal: ssc_conn_resp_cb:663, resp_value = 0
+09-12 23:52:33.938   903   903 I sensors-hal: batch:251, android.sensor.accelerometer/11, period=16000000, max_latency=0 request completed
+09-12 23:52:33.939   903   903 I sensors-hal: batch:242, android.sensor.gyroscope/41, period=200000000, max_latency=0
+09-12 23:52:33.939   903   903 I sensors-hal: set_config:63, sample_period_ns is adjusted to 200000000 based on min/max delay_ns
+09-12 23:52:33.939   903   903 I sensors-hal: batch:251, android.sensor.gyroscope/41, period=200000000, max_latency=0 request completed
+09-12 23:52:33.940   903 25077 I sensors-hal: handle_indication_realtime:471,  SCHED_FIFO(10) for qmi_cbk
+09-12 23:52:33.940   903 25077 I sensors-hal: ssc_conn_resp_cb:663, resp_value = 0
+09-12 23:52:33.942   903   903 I sensors-hal: activate:209, android.sensor.gyroscope/41 en=1
+09-12 23:52:33.942   903   903 I sensors-hal: get_qmi_debug_flag:241, support_qmi_debug : false
+09-12 23:52:33.944   903   903 E Diag_Lib:  Diag_LSM_Init: Failed to open handle to diag driver, error = 13
+09-12 23:52:33.945   903   903 E Diag_Lib:  Diag_LSM_Init: Failed to open handle to diag driver, error = 13
+09-12 23:52:33.945   903   903 I sensors-hal: set_config:63, sample_period_ns is adjusted to 1000000000 based on min/max delay_ns
+09-12 23:52:33.945   903   903 I sensors-hal: get_qmi_debug_flag:241, support_qmi_debug : false
+09-12 23:52:33.946   903 25080 I sensors-hal: handle_indication_realtime:471,  SCHED_FIFO(10) for qmi_cbk
+09-12 23:52:33.950   903   903 I sensors-hal: get_qmi_debug_flag:241, support_qmi_debug : false
+09-12 23:52:33.957   903 25084 I sensors-hal: ssc_conn_resp_cb:663, resp_value = 0
+09-12 23:52:33.957   903 25084 I sensors-hal: handle_indication_realtime:471,  SCHED_FIFO(10) for qmi_cbk
+09-12 23:52:33.958   903   903 I sensors-hal: activate:220, android.sensor.gyroscope/41 en=1 completed
+09-12 23:52:33.959   903   903 I sensors-hal: batch:242, android.sensor.gyroscope/41, period=16000000, max_latency=0
+09-12 23:52:33.959   903   903 I sensors-hal: set_config:63, sample_period_ns is adjusted to 16000000 based on min/max delay_ns
+09-12 23:52:33.959   903   903 I sensors-hal: batch:251, android.sensor.gyroscope/41, period=16000000, max_latency=0 request completed
+09-12 23:52:33.959   903 25093 I sensors-hal: ssc_conn_resp_cb:663, resp_value = 0
+09-12 23:52:33.959   903 25093 I sensors-hal: handle_indication_realtime:471,  SCHED_FIFO(10) for qmi_cbk
+09-12 23:52:33.960   903 25093 I sensors-hal: ssc_conn_resp_cb:663, resp_value = 0
+09-12 23:52:33.999 24994 25095 D cutoolee.gameg: PlayerBase::PlayerBase()
+09-12 23:52:33.999 24994 25095 D cutoolee.gameg: TrackPlayerBase::TrackPlayerBase()
+09-12 23:52:33.999 24994 25095 I libOpenSLES: Emulating old channel mask behavior (ignoring positional mask 0x3, using default mask 0x3 based on channel count of 2)
+09-12 23:52:33.999 24994 25095 W libOpenSLES: AudioPlayer: the usecase used will be ll, not ull
+09-12 23:52:34.000 24994 25095 W AudioTrack: set(): notificationFrames=-43 clamped to the range -1 to -8
+09-12 23:52:34.001   887 23748 D audio_hw_primary: adev_get_parameters:vr_audio_mode_on
+09-12 23:52:34.001   887 23748 I audio_hw_primary: getting vr mode to 0
+09-12 23:52:34.001   887 23748 D audio_hw_primary: adev_get_parameters: exit: returns - vr_audio_mode_on=false
+09-12 23:52:34.001  1035  1324 I hash_map_utils: key: 'vr_audio_mode_on' value: ''
+09-12 23:52:34.001  1035  1324 I AudioPolicyManagerCustom: VR mode is 0, switch to primary output if request is for fast|raw
+09-12 23:52:34.001  1035  1324 D AudioFlinger: Client defaulted notificationFrames to 192 for frameCount 1536
+09-12 23:52:34.003  1035  1324 D AF::TrackHandle: OpPlayAudio: track:485 usage:1 not muted
+09-12 23:52:34.006 24994 25095 I AudioTrack: createTrack_l(0): AUDIO_OUTPUT_FLAG_FAST successful; frameCount 0 -> 1536
+09-12 23:52:34.011   887 23748 I EffectsFactory: EffectCreate() create_effect
+09-12 23:52:34.013  1451  7605 I system_server: oneway function results will be dropped but finished with status OK and parcel size 8
+09-12 23:52:34.031  1451  7605 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:52:34.129 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.129 24994 25096 D AudioTrack: stop(800): called with 6192 frames delivered
+09-12 23:52:34.138 24689 27160 I KcSdk   : [KcState] auto_check_msg: NET_RETRY
+09-12 23:52:34.139 24689 27160 I KcSdk   : [KcState] [checkChange]: errorCode:-10001subErrorCode:0, isKingCard:false, apn:null, requestParamType:0, requestParamValue:null, unicomRet:0, Product:0
+09-12 23:52:34.140 24689 27160 I KcSdk   : [KcState] [notifyNetworkChange] - (true) OrderCheckResult{kingcard=0, errorCode=-10001, subErrorCode=0, product=0, phoneNum='null', operator=-2, activationUrl='https://personalkingcard.3g.qq.com/activity/personal/index.html#/?logintype=2&j=1&src=76_1_u&sdi_from=20', stateTag='null', extra='null'}
+09-12 23:52:34.140 24689 27160 I KcSdk   : [KcState] [notifyNetworkChange] - (false) OrderCheckResult{kingcard=0, errorCode=-10001, subErrorCode=0, product=0, phoneNum='null', operator=-2, activationUrl='https://personalkingcard.3g.qq.com/activity/personal/index.html#/?logintype=2&j=1&src=76_1_u&sdi_from=20', stateTag='null', extra='null'}
+09-12 23:52:34.192 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.192 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.201 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.201 24994 25096 D AudioTrack: stop(800): called with 144 frames delivered
+09-12 23:52:34.202 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.202 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.210 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.210 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.225 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.225 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.245 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.245 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.257 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.257 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.277 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.277 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.294 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.294 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.321 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.321 24994 25096 D AudioTrack: stop(800): called with 144 frames delivered
+09-12 23:52:34.322 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.323 24994 25096 D AudioTrack: stop(800): called with 576 frames delivered
+09-12 23:52:34.327 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.327 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.329 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.329 24994 25096 D AudioTrack: stop(800): called with 144 frames delivered
+09-12 23:52:34.341 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.341 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.361 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.361 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.377 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.377 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.393 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.393 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.413 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.413 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.425 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.425 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.446 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.446 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.461 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.461 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.464  1451 12535 I InputManager-JNI: Setting pointer capture to enabled.
+09-12 23:52:34.465  1451  1832 I InputReader: Reconfiguring input devices, changes=
+09-12 23:52:34.477 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.477 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.497 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.497 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.509 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.509 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.530 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.530 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.545 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.545 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.561 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.561 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.577 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.577 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.594 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.594 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.605 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.605 24994 25096 D AudioTrack: stop(800): called with 144 frames delivered
+09-12 23:52:34.613 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.613 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.629 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.629 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.645 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.645 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.661 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.661 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.678 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.678 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.699 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.699 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.713 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.713 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.729 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.729 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.745 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.745 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.758 22746 22746 W beacon-thread-3: type=1400 audit(0.0:25716): avc: denied { read } for name="type" dev="sysfs" ino=61425 scontext=u:r:untrusted_app:s0:c190,c256,c512,c768 tcontext=u:object_r:sysfs:s0 tclass=file permissive=0 app=com.tencent.tmgp.supercell.clashofclans
+09-12 23:52:34.758 22746 22746 W beacon-thread-3: type=1400 audit(0.0:25717): avc: denied { read } for name="name" dev="sysfs" ino=61420 scontext=u:r:untrusted_app:s0:c190,c256,c512,c768 tcontext=u:object_r:sysfs:s0 tclass=file permissive=0 app=com.tencent.tmgp.supercell.clashofclans
+09-12 23:52:34.758 22746 22746 W beacon-thread-3: type=1400 audit(0.0:25718): avc: denied { read } for name="cid" dev="sysfs" ino=61410 scontext=u:r:untrusted_app:s0:c190,c256,c512,c768 tcontext=u:object_r:sysfs:s0 tclass=file permissive=0 app=com.tencent.tmgp.supercell.clashofclans
+09-12 23:52:34.762 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.762 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.777 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.778 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.797 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.797 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.813 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.813 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.829 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.829 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.846 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.846 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.862 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.862 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.881 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.881 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.897 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.897 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.913 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.913 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.930 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.930 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.947 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.947 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:34.965 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.965 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:34.973 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.973 24994 25096 D AudioTrack: stop(800): called with 144 frames delivered
+09-12 23:52:34.981 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.981 24994 25096 D AudioTrack: stop(800): called with 576 frames delivered
+09-12 23:52:34.997 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:34.997 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.014 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.014 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.030 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.030 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.049 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.049 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.061 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.062 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.075 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.075 24994 25096 D AudioTrack: stop(800): called with 144 frames delivered
+09-12 23:52:35.082 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.082 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.091 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.091 24994 25096 D AudioTrack: stop(800): called with 144 frames delivered
+09-12 23:52:35.097 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.097 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.115 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.115 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.133 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.133 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.145 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.145 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.166 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.166 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.175 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.175 24994 25096 D AudioTrack: stop(800): called with 144 frames delivered
+09-12 23:52:35.181 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.181 24994 25096 D AudioTrack: stop(800): called with 576 frames delivered
+09-12 23:52:35.198 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.198 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.217 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.218 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.229 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.229 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.250 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.250 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.259 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.259 24994 25096 D AudioTrack: stop(800): called with 144 frames delivered
+09-12 23:52:35.265 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.265 24994 25096 D AudioTrack: stop(800): called with 576 frames delivered
+09-12 23:52:35.281 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.281 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.301 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.301 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.313 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.313 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.324 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.325 24994 25096 D AudioTrack: stop(800): called with 144 frames delivered
+09-12 23:52:35.333 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.333 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.349 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.349 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.365 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.365 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.381 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.381 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.398 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.398 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.418 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.418 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.433 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.433 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.449 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.449 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.465 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.465 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.482 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.482 24994 25096 D AudioTrack: stop(800): called with 864 frames delivered
+09-12 23:52:35.485 22746 22789 D ll.clashofclan: PlayerBase::pause() from IPlayer
+09-12 23:52:35.503 22746 22746 I Choreographer: Skipped 143 frames!  The application may be doing too much work on its main thread.
+09-12 23:52:35.525 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.525 24994 25096 D AudioTrack: stop(800): called with 720 frames delivered
+09-12 23:52:35.526 24994 25096 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:52:35.526 24994 25096 D AudioTrack: stop(800): called with 144 frames delivered
+09-12 23:52:35.535  1451 12535 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:52:35.571 23741 23761 V MAPPER-Detector: onForegroundActivitiesChanged
+09-12 23:52:35.580  1451  7605 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:52:35.588 23741 23741 D MAPPER-Detector: getCurrentPackage com.cutoolee.gamego false
+09-12 23:52:35.606   887 23971 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=true
+09-12 23:52:35.606   887 23971 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:52:35.607   887 23971 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+09-12 23:52:35.607   887 23971 D ACDB-LOADER: ACDB -> send_audvoltable
+09-12 23:52:35.607   887 23971 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE
+09-12 23:52:35.607   887 23971 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-12 23:52:35.607   887 23971 D ACDB-LOADER: Error: ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE Returned = -19
+09-12 23:52:35.607   887 23971 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE, vol index 0
+09-12 23:52:35.607   887 23971 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-12 23:52:35.607   887 23971 D ACDB-LOADER: Error: ACDB AudProc vol returned = -19
+09-12 23:52:35.607   887 23971 D ACDB-LOADER: ACDB -> AUDIO_SET_VOL_CAL cal type = 40
+09-12 23:52:35.607   887 23971 W msm8974_platform: platform_send_gain_dep_cal: Usecase list is empty
+09-12 23:52:35.608   887 23748 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+09-12 23:52:35.608   887 23748 W msm8974_platform: platform_send_gain_dep_cal: Usecase list is empty
+09-12 23:52:35.610  1035  1276 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-12 23:52:35.611  1035  1276 I chatty  : uid=1041(audioserver) ApmOutput identical 1 line
+09-12 23:52:35.611  1035  1276 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-12 23:52:36.315  1451 28288 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:52:36.316  1451  7605 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:52:36.317  1451  7605 I chatty  : uid=1000(system) Binder:1451_10 identical 1 line
+09-12 23:52:36.329  1451  7605 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:52:36.607   887 23748 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=false
+09-12 23:52:36.608   887 23748 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:52:36.609   887  3724 W audio_hw_primary: out_write: underrun(2547) frames_by_time(48202) > out->last_fifo_frames_remaining(384)
+09-12 23:52:36.648   887 23748 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=true
+09-12 23:52:36.649   887 23748 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:52:37.649   887 23748 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=false
+09-12 23:52:37.650   887 23748 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:52:37.650   887  3724 W audio_hw_primary: out_write: underrun(2548) frames_by_time(48190) > out->last_fifo_frames_remaining(384)
+09-12 23:52:37.690   887 23748 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=true
+09-12 23:52:37.690   887 23748 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:52:37.788 22746 22746 W beacon-thread-1: type=1400 audit(0.0:25719): avc: denied { read } for name="type" dev="sysfs" ino=61425 scontext=u:r:untrusted_app:s0:c190,c256,c512,c768 tcontext=u:object_r:sysfs:s0 tclass=file permissive=0 app=com.tencent.tmgp.supercell.clashofclans
+09-12 23:52:37.788 22746 22746 W beacon-thread-1: type=1400 audit(0.0:25720): avc: denied { read } for name="name" dev="sysfs" ino=61420 scontext=u:r:untrusted_app:s0:c190,c256,c512,c768 tcontext=u:object_r:sysfs:s0 tclass=file permissive=0 app=com.tencent.tmgp.supercell.clashofclans
+09-12 23:52:37.788 22746 22746 W beacon-thread-1: type=1400 audit(0.0:25721): avc: denied { read } for name="cid" dev="sysfs" ino=61410 scontext=u:r:untrusted_app:s0:c190,c256,c512,c768 tcontext=u:object_r:sysfs:s0 tclass=file permissive=0 app=com.tencent.tmgp.supercell.clashofclans
+09-12 23:52:38.692   887 23748 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=false
+09-12 23:52:38.693   887 23748 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:52:38.694   887 23971 D audio_hw_primary: out_standby: enter: stream (0xecb40010) usecase(1: low-latency-playback)
+09-12 23:52:38.776   887 23971 D audio_hw_primary: disable_audio_route: reset and update mixer path: low-latency-playback
+09-12 23:52:38.788   887 23971 E soundtrigger: audio_extn_sound_trigger_update_stream_status: invalid input device 0x0, for event 2
+09-12 23:52:38.788   887 23971 D soundtrigger: audio_extn_sound_trigger_update_stream_status: uc_info->id 1 of type 0 for Event 2, with Raise=0
+09-12 23:52:38.788   887 23971 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+09-12 23:52:38.788   887 23971 I msm8974_platform: platform_get_custom_mtmx_params: no matching param with id 0 ip_ch 2 op_ch 2 uc_id 1 snd_dev 2
+09-12 23:52:38.788   887 23971 D hardware_info: hw_info_append_hw_type : device_name = speaker
+09-12 23:52:38.788   887 23971 D audio_hw_primary: disable_snd_device: snd_device(2: speaker)
+09-12 23:52:38.788   887 23971 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+09-12 23:52:38.817   887 23971 D hardware_info: hw_info_append_hw_type : device_name = vi-feedback
+09-12 23:52:38.817   887 23971 D audio_hw_primary: disable_snd_device: snd_device(217: vi-feedback)
+09-12 23:52:38.817   887 23971 D msm8974_platform: platform_split_snd_device: snd_device(217) num devices(0) new_snd_devices(0)
+09-12 23:52:38.817   887 23971 I soundtrigger: audio_extn_sound_trigger_update_device_status: device 0xd9 of type 1 for Event 0, with Raise=0
+09-12 23:52:38.818   887 23971 D audio_hw_primary: disable_audio_route: reset and update mixer path: spkr-vi-record
+09-12 23:52:38.819   887 23971 D soundtrigger: audio_extn_sound_trigger_update_stream_status: uc_info->id 53 of type 1 for Event 2, with Raise=0
+09-12 23:52:38.819   887 23971 I soundtrigger: audio_extn_sound_trigger_update_device_status: device 0x2 of type 0 for Event 0, with Raise=0
+09-12 23:52:38.819   887 23971 D audio_hw_primary: out_standby: exit
+09-12 23:52:38.822  1451 12372 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:52:38.902  2121 20938 D NetlinkTracker/wlan0: addressUpdated: 240e:37b:1aed:0:d4ce:9aff:fe21:2418/64 on wlan0 flags 256 scope 0
+09-12 23:52:38.903  2121 20938 D NetlinkTracker/wlan0: addressUpdated: 240e:37b:1aed:0:b8dc:3a2:3f42:9c60/64 on wlan0 flags 1 scope 0
+09-12 23:52:39.007  1451  1451 I JobServiceContext: Client timed out while executing (no jobFinished received), sending onStop: cb8b083 #u0a161/459 com.levelinfinite.southpole.gamepad.launcher/androidx.work.impl.background.systemjob.SystemJobService
+09-12 23:52:39.134  1451  1879 D ConnectivityService: releasing NetworkRequest [ TRACK_DEFAULT id=1285, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10161 AdministratorUids: [] RequestorUid: 10161 RequestorPackageName: com.levelinfinite.southpole.gamepad.launcher] ] (release request)
+09-12 23:52:39.197 10094 10247 I WM-WorkerWrapper: Work [ id=4ab5ebc9-f923-44a9-8ee4-03fc513c5308, tags={ com.levelinfinite.southpole.gamepad.launcher.model.timing.HourlyWork } ] was cancelled
+09-12 23:52:39.197 10094 10247 I WM-WorkerWrapper: java.util.concurrent.CancellationException: Task was cancelled.
+09-12 23:52:39.197 10094 10247 I WM-WorkerWrapper: 	at androidx.work.impl.utils.futures.AbstractFuture.cancellationExceptionWithCause(AbstractFuture.java:1184)
+09-12 23:52:39.197 10094 10247 I WM-WorkerWrapper: 	at androidx.work.impl.utils.futures.AbstractFuture.getDoneValue(AbstractFuture.java:514)
+09-12 23:52:39.197 10094 10247 I WM-WorkerWrapper: 	at androidx.work.impl.utils.futures.AbstractFuture.get(AbstractFuture.java:475)
+09-12 23:52:39.197 10094 10247 I WM-WorkerWrapper: 	at androidx.work.impl.WorkerWrapper$2.run(WorkerWrapper.java:311)
+09-12 23:52:39.197 10094 10247 I WM-WorkerWrapper: 	at androidx.work.impl.utils.SerialExecutor$Task.run(SerialExecutor.java:91)
+09-12 23:52:39.197 10094 10247 I WM-WorkerWrapper: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1167)
+09-12 23:52:39.197 10094 10247 I WM-WorkerWrapper: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+09-12 23:52:39.197 10094 10247 I WM-WorkerWrapper: 	at java.lang.Thread.run(Thread.java:923)
+09-12 23:52:39.234  1451 28288 D CompatibilityInfo: mCompatibilityFlags - 4
+09-12 23:52:39.234  1451 28288 D CompatibilityInfo: applicationDensity - 320
+09-12 23:52:39.234  1451 28288 D CompatibilityInfo: applicationScale - 1.0
+09-12 23:52:39.241  1451 12372 D ConnectivityService: requestNetwork for uid/pid:10161/10094 NetworkRequest [ TRACK_DEFAULT id=1300, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10161 AdministratorUids: [] RequestorUid: 10161 RequestorPackageName: com.levelinfinite.southpole.gamepad.launcher] ]
+09-12 23:52:39.241  1451  1879 D ConnectivityService: NetReassign [1300 : null → 138]
+09-12 23:52:39.242  1451  1863 D WifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=1300, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10161 AdministratorUids: [] RequestorUid: 10161 RequestorPackageName: com.levelinfinite.southpole.gamepad.launcher] ] with score 60 and providerId 2
+09-12 23:52:39.242  1451  1863 D UntrustedWifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=1300, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10161 AdministratorUids: [] RequestorUid: 10161 RequestorPackageName: com.levelinfinite.southpole.gamepad.launcher] ] with score 60 and providerId 2
+09-12 23:52:39.243  1451  1938 D Ethernet: got request NetworkRequest [ TRACK_DEFAULT id=1300, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10161 AdministratorUids: [] RequestorUid: 10161 RequestorPackageName: com.levelinfinite.southpole.gamepad.launcher] ] with score 60 and providerId 2
+09-12 23:52:41.328  1975  1975 D KeyguardUpdateMonitor: received broadcast android.intent.action.BATTERY_CHANGED
+09-12 23:52:41.328  1975  1975 D KeyguardUpdateMonitor: handleBatteryUpdate
+09-12 23:52:41.333  2324  2324 D DeviceStatisticsService: chargerType=2 batteryLevel=100 totalBatteryCapacity=6085000
+09-12 23:52:44.107  1451  1478 I system_server: Background young concurrent copying GC freed 382562(18MB) AllocSpace objects, 76(3224KB) LOS objects, 47% free, 24MB/46MB, paused 447us total 323.975ms
+09-12 23:52:44.124  1451  1485 W System  : A resource failed to call release. 
+09-12 23:52:32.789  1451  7605 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=com.cutoolee.gamego/com.retroarch.browser.mainmenu.MainMenuActivity (has extras)} from uid 2000
+09-12 23:52:32.852  1451  1572 I ActivityManager: Start proc 24994:com.cutoolee.gamego/u0a223 for pre-top-activity {com.cutoolee.gamego/com.retroarch.browser.mainmenu.MainMenuActivity}
+09-12 23:52:32.905  1451  7605 I ActivityTaskManager: The Process com.cutoolee.gamego Already Exists in BG. So sending its PID: 24994
+09-12 23:52:33.048  1451  7605 I ActivityTaskManager: The Process com.cutoolee.gamego Already Exists in BG. So sending its PID: 24994
+09-12 23:52:33.101 23741 23741 D MAPPER-Detector: getCurrentPackage com.cutoolee.gamego false
+09-12 23:52:33.101 23741 23741 D QuickSetting-MAPPER-Service: onChange com.cutoolee.gamego current: com.tencent.tmgp.supercell.clashofclans (MapperService.kt:420)
+09-12 23:52:33.102 23741 23741 D QuickSetting-MAPPER-Service: loadCurrentForegroundAppConfigAndStartMapper com.cutoolee.gamego (MapperService.kt:297)
+09-12 23:52:33.102 23741 23741 D QuickSetting-MAPPER-Config: loadConfig com.cutoolee.gamego (ConfigManager.kt:63)
+09-12 23:52:33.103 23741 23741 E QuickSetting-MAPPER-Service: com.cutoolee.gamego has no config file but support mapper (MapperService.kt:316)
+09-12 23:52:33.104 23741 23741 W QuickSetting-MAPPER-Service: stopMapper magnificationEnabled: -1 com.cutoolee.gamego (MapperService.kt:379)
+09-12 23:52:33.105 23741 23741 D QuickSetting-MAPPER-Service: callbackListener com.cutoolee.gamego (MapperService.kt:399)
+09-12 23:52:33.106 23741 23741 V QuickSetting-MAPPER-Service: isNowMapperOn com.cutoolee.gamego false (MapperService.kt:96)
+09-12 23:52:33.188 24994 24994 I RetroArch: [ENV] Storage permission resolved (granted: 1).
+09-12 23:52:33.226  1451 12372 W UriGrantsManagerService: No permission grants found for com.cutoolee.gamego
+09-12 23:52:33.269 24994 25048 I RetroArch: [ENV] Android version (major : 11, minor : 0, rel : 0)
+09-12 23:52:33.269 24994 25048 I RetroArch: [ENV] Checking arguments passed from intent ...
+09-12 23:52:33.269 24994 25048 I RetroArch: [ENV] Libretro path: "/data/user/0/com.cutoolee.gamego/cores/mgba_libretro_android.so".
+09-12 23:52:33.269 24994 25048 I RetroArch: [ENV] Auto-start game "/storage/emulated/0/Roms/GBA/龙珠大冒险.zip".
+09-12 23:52:33.280  1451  1567 I ActivityTaskManager: Displayed com.cutoolee.gamego/com.retroarch.browser.mainmenu.MainMenuActivity: +474ms
+09-12 23:52:33.308 24994 25048 I RetroArch: [ENV] Derived config file: "/storage/emulated/0/Android/data/com.cutoolee.gamego/files/retroarch.cfg".
+09-12 23:52:33.308 24994 25048 I RetroArch: Testing permissions for /storage/emulated/0
+09-12 23:52:33.573 24994 25048 I RetroArch: Create /storage/emulated/0/.retroarch in /storage/emulated/0 true
+09-12 23:52:33.578 24994 25048 I RetroArch: [ENV] Application location: "/data/user/0/com.cutoolee.gamego".
+09-12 23:52:33.579 24994 25048 I RetroArch: [ENV] Default savefile folder: "/storage/emulated/0/GameGo/saves".
+09-12 23:52:33.579 24994 25048 I RetroArch: [ENV] Default savestate folder: "/storage/emulated/0/GameGo/states".
+09-12 23:52:33.579 24994 25048 I RetroArch: [ENV] Default system folder: "/storage/emulated/0/GameGo/system".
+09-12 23:52:33.579 24994 25048 I RetroArch: [ENV] Default screenshot folder: "/storage/emulated/0/GameGo/screenshots".
+09-12 23:52:33.580 24994 25048 I RetroArch: [ENV] App version code: 1789227983.
+09-12 23:52:35.588 23741 23741 D MAPPER-Detector: getCurrentPackage com.cutoolee.gamego false
+09-12 23:52:32.725 23741 23741 V QuickSetting-MAPPER-display: Start (0,0) Select (0,0) Mode (0,0)
+09-12 23:52:32.730  1451  1832 I InputReader: Reconfiguring input devices, changes=ENABLED_STATE | 
+09-12 23:52:32.789  1451  7605 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=com.cutoolee.gamego/com.retroarch.browser.mainmenu.MainMenuActivity (has extras)} from uid 2000
+09-12 23:52:32.852  1451  1572 I ActivityManager: Start proc 24994:com.cutoolee.gamego/u0a223 for pre-top-activity {com.cutoolee.gamego/com.retroarch.browser.mainmenu.MainMenuActivity}
+09-12 23:52:32.905  1451  7605 I ActivityTaskManager: The Process com.cutoolee.gamego Already Exists in BG. So sending its PID: 24994
+09-12 23:52:33.048  1451  7605 I ActivityTaskManager: The Process com.cutoolee.gamego Already Exists in BG. So sending its PID: 24994
+09-12 23:52:33.101 23741 23741 D MAPPER-Detector: getCurrentPackage com.cutoolee.gamego false
+09-12 23:52:33.101 23741 23741 D QuickSetting-MAPPER-Service: onChange com.cutoolee.gamego current: com.tencent.tmgp.supercell.clashofclans (MapperService.kt:420)
+09-12 23:52:33.102 23741 23741 D QuickSetting-MAPPER-Service: loadCurrentForegroundAppConfigAndStartMapper com.cutoolee.gamego (MapperService.kt:297)
+09-12 23:52:33.102 23741 23741 D QuickSetting-MAPPER-Config: loadConfig com.cutoolee.gamego (ConfigManager.kt:63)
+09-12 23:52:33.103 23741 23741 E QuickSetting-MAPPER-Service: com.cutoolee.gamego has no config file but support mapper (MapperService.kt:316)
+09-12 23:52:33.104 23741 23741 V QuickSetting-MAPPER-display: Start (0,0) Select (0,0) Mode (0,0)
+09-12 23:52:33.104 23741 23741 W QuickSetting-MAPPER-Service: stopMapper magnificationEnabled: -1 com.cutoolee.gamego (MapperService.kt:379)
+09-12 23:52:33.105 23741 23741 D QuickSetting-MAPPER-Service: callbackListener com.cutoolee.gamego (MapperService.kt:399)
+09-12 23:52:33.106  1451  1832 I InputReader: Reconfiguring input devices, changes=ENABLED_STATE | 
+09-12 23:52:33.106 23741 23741 V QuickSetting-MAPPER-Service: isNowMapperOn com.cutoolee.gamego false (MapperService.kt:96)
+09-12 23:52:33.188 24994 24994 I RetroArch: [ENV] Storage permission resolved (granted: 1).
+09-12 23:52:33.197 24994 24994 I RetroActivity: isSustainedPerformanceModeSupported? false
+09-12 23:52:33.226  1451 12372 W UriGrantsManagerService: No permission grants found for com.cutoolee.gamego
+09-12 23:52:33.269 24994 25048 I RetroArch: [ENV] Android version (major : 11, minor : 0, rel : 0)
+09-12 23:52:33.269 24994 25048 I RetroArch: [ENV] Checking arguments passed from intent ...
+09-12 23:52:33.269 24994 25048 I RetroArch: [ENV] Libretro path: "/data/user/0/com.cutoolee.gamego/cores/mgba_libretro_android.so".
+09-12 23:52:33.269 24994 25048 I RetroArch: [ENV] Auto-start game "/storage/emulated/0/Roms/GBA/龙珠大冒险.zip".
+09-12 23:52:33.280  1451  1567 I ActivityTaskManager: Displayed com.cutoolee.gamego/com.retroarch.browser.mainmenu.MainMenuActivity: +474ms
+09-12 23:52:33.298  3726  3726 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():3301 
+09-12 23:52:33.299  3726  3726 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1979 
+09-12 23:52:33.308 24994 25048 I RetroArch: [ENV] Derived config file: "/storage/emulated/0/Android/data/com.cutoolee.gamego/files/retroarch.cfg".
+09-12 23:52:33.308 24994 25048 I RetroArch: Testing permissions for /storage/emulated/0
+09-12 23:52:33.573 24994 25048 I RetroArch: Create /storage/emulated/0/.retroarch in /storage/emulated/0 true
+09-12 23:52:33.578 24994 25048 I RetroArch: [ENV] Application location: "/data/user/0/com.cutoolee.gamego".
+09-12 23:52:33.579 24994 25048 I RetroArch: [ENV] Default savefile folder: "/storage/emulated/0/GameGo/saves".
+09-12 23:52:33.579 24994 25048 I RetroArch: [ENV] Default savestate folder: "/storage/emulated/0/GameGo/states".
+09-12 23:52:33.579 24994 25048 I RetroArch: [ENV] Default system folder: "/storage/emulated/0/GameGo/system".
+09-12 23:52:33.579 24994 25048 I RetroArch: [ENV] Default screenshot folder: "/storage/emulated/0/GameGo/screenshots".
+09-12 23:52:33.580 24994 25048 I RetroArch: [ENV] App version code: 1789227983.
+09-12 23:52:33.616 24994 25048 I RetroActivity: isSustainedPerformanceModeSupported? false
+09-12 23:52:34.001   887 23748 D audio_hw_primary: adev_get_parameters:vr_audio_mode_on
+09-12 23:52:34.001   887 23748 I audio_hw_primary: getting vr mode to 0
+09-12 23:52:34.001   887 23748 D audio_hw_primary: adev_get_parameters: exit: returns - vr_audio_mode_on=false
+09-12 23:52:34.001  1035  1324 I hash_map_utils: key: 'vr_audio_mode_on' value: ''
+09-12 23:52:34.001  1035  1324 I AudioPolicyManagerCustom: VR mode is 0, switch to primary output if request is for fast|raw
+09-12 23:52:34.464  1451 12535 I InputManager-JNI: Setting pointer capture to enabled.
+09-12 23:52:34.465  1451  1832 I InputReader: Reconfiguring input devices, changes=
+09-12 23:52:35.588 23741 23741 D MAPPER-Detector: getCurrentPackage com.cutoolee.gamego false
+09-12 23:52:38.788   887 23971 E soundtrigger: audio_extn_sound_trigger_update_stream_status: invalid input device 0x0, for event 2
+09-12 23:52:39.197 10094 10247 I WM-WorkerWrapper: Work [ id=4ab5ebc9-f923-44a9-8ee4-03fc513c5308, tags={ com.levelinfinite.southpole.gamepad.launcher.model.timing.HourlyWork } ] was cancelled
+09-12 23:53:35.345 25148 25148 D AndroidRuntime: Calling main entry com.android.commands.input.Input
+09-12 23:54:08.966 25202 25202 D AndroidRuntime: Calling main entry com.android.commands.input.Input

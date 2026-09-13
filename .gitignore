@@ -295,6 +295,9 @@ param.sfo
 # Visual Studio Code
 .vscode/
 
+# Local GameGo Android development output
+/dist/local/
+
 # Clazy
 *.clazy.yaml
 

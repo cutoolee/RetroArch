@@ -11146,7 +11146,7 @@ static const struct
  * compiler that pads this struct fails here instead of
  * misindexing at runtime. */
 typedef char msg_hash_chs_blob_check[
-      (sizeof(msg_hash_chs_blob) == (128105u
+      (sizeof(msg_hash_chs_blob) == (128174u
 #ifdef ANDROID
        + 220u
 #endif

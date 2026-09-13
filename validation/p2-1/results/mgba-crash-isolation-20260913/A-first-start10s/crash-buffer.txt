@@ -1,0 +1,34 @@
+--------- beginning of crash
+09-13 09:08:34.579  4514  4544 F libc    : Fatal signal 7 (SIGBUS), code 2 (BUS_ADRERR), fault addr 0x7522aca708 in tid 4544 (Thread-4), pid 4514 (cutoolee.gamego)
+09-13 09:08:34.709  4579  4579 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+09-13 09:08:34.709  4579  4579 F DEBUG   : Build fingerprint: 'Logitech/GR0006/GR0006:11/SQ02K.00.0018/SQ02K.60.0228:user/release-keys'
+09-13 09:08:34.709  4579  4579 F DEBUG   : Revision: '0'
+09-13 09:08:34.709  4579  4579 F DEBUG   : ABI: 'arm64'
+09-13 09:08:34.722  4579  4579 F DEBUG   : Timestamp: 2026-09-13 09:08:34+0800
+09-13 09:08:34.722  4579  4579 F DEBUG   : pid: 4514, tid: 4544, name: Thread-4  >>> com.cutoolee.gamego <<<
+09-13 09:08:34.722  4579  4579 F DEBUG   : uid: 10223
+09-13 09:08:34.722  4579  4579 F DEBUG   : signal 7 (SIGBUS), code 2 (BUS_ADRERR), fault addr 0x7522aca708
+09-13 09:08:34.722  4579  4579 F DEBUG   :     x0  000000787c0fe9f8  x1  00000000000000f4  x2  00000075230a87c4  x3  0000000000000120
+09-13 09:08:34.722  4579  4579 F DEBUG   :     x4  000000787c0fe888  x5  000000778c02b820  x6  0000000000000000  x7  0000000000000000
+09-13 09:08:34.722  4579  4579 F DEBUG   :     x8  00000000000000f4  x9  0000000000000001  x10 000000000000003f  x11 0000000000000000
+09-13 09:08:34.722  4579  4579 F DEBUG   :     x12 0000000000000001  x13 0000000000000000  x14 0000000000000001  x15 0000000000000008
+09-13 09:08:34.722  4579  4579 F DEBUG   :     x16 0000007522b7af00  x17 000000787f4e5400  x18 000000751ee6a000  x19 000000787c7bc000
+09-13 09:08:34.722  4579  4579 F DEBUG   :     x20 000000787c0fd000  x21 000000787c0fe000  x22 00000000000019f8  x23 000000007fffffff
+09-13 09:08:34.722  4579  4579 F DEBUG   :     x24 0000000000044e0f  x25 0000000000000000  x26 0000000000000001  x27 0000000000000001
+09-13 09:08:34.722  4579  4579 F DEBUG   :     x28 0000000000000001  x29 00000075230a87f0
+09-13 09:08:34.722  4579  4579 F DEBUG   :     lr  0000007522b30490  sp  00000075230a87f0  pc  0000007522aca708  pst 0000000020001000
+09-13 09:08:34.743  4579  4579 F DEBUG   : backtrace:
+09-13 09:08:34.743  4579  4579 F DEBUG   :     NOTE: Function names and BuildId information is missing for some frames due
+09-13 09:08:34.743  4579  4579 F DEBUG   :     NOTE: to unreadable libraries. For unwinds of apps, only shared libraries
+09-13 09:08:34.743  4579  4579 F DEBUG   :     NOTE: found under the lib/ directory are readable.
+09-13 09:08:34.743  4579  4579 F DEBUG   :       #00 pc 00000000000b3708  /data/data/com.cutoolee.gamego/cores/mgba_libretro_android.so
+09-13 09:08:34.743  4579  4579 F DEBUG   :       #01 pc 000000000011948c  /data/data/com.cutoolee.gamego/cores/mgba_libretro_android.so
+09-13 09:08:34.743  4579  4579 F DEBUG   :       #02 pc 0000000000115620  /data/data/com.cutoolee.gamego/cores/mgba_libretro_android.so
+09-13 09:08:34.743  4579  4579 F DEBUG   :       #03 pc 00000000001436d8  /data/data/com.cutoolee.gamego/cores/mgba_libretro_android.so
+09-13 09:08:34.743  4579  4579 F DEBUG   :       #04 pc 0000000000ddf2d8  /data/app/~~oBainyyK4StVdr-90ufx_g==/com.cutoolee.gamego-ONJ2rclzLeFrnsVmi7xRQA==/lib/arm64/libretroarch-activity.so (core_run+296) (BuildId: 48e6068385ed8801606e65181984d79d1c83d514)
+09-13 09:08:34.743  4579  4579 F DEBUG   :       #05 pc 0000000000dc7840  /data/app/~~oBainyyK4StVdr-90ufx_g==/com.cutoolee.gamego-ONJ2rclzLeFrnsVmi7xRQA==/lib/arm64/libretroarch-activity.so (runloop_iterate+2848) (BuildId: 48e6068385ed8801606e65181984d79d1c83d514)
+09-13 09:08:34.743  4579  4579 F DEBUG   :       #06 pc 0000000000dc6a04  /data/app/~~oBainyyK4StVdr-90ufx_g==/com.cutoolee.gamego-ONJ2rclzLeFrnsVmi7xRQA==/lib/arm64/libretroarch-activity.so (rarch_main+636) (BuildId: 48e6068385ed8801606e65181984d79d1c83d514)
+09-13 09:08:34.743  4579  4579 F DEBUG   :       #07 pc 000000000104dd24  /data/app/~~oBainyyK4StVdr-90ufx_g==/com.cutoolee.gamego-ONJ2rclzLeFrnsVmi7xRQA==/lib/arm64/libretroarch-activity.so (BuildId: 48e6068385ed8801606e65181984d79d1c83d514)
+09-13 09:08:34.743  4579  4579 F DEBUG   :       #08 pc 0000000000deb39c  /data/app/~~oBainyyK4StVdr-90ufx_g==/com.cutoolee.gamego-ONJ2rclzLeFrnsVmi7xRQA==/lib/arm64/libretroarch-activity.so (BuildId: 48e6068385ed8801606e65181984d79d1c83d514)
+09-13 09:08:34.743  4579  4579 F DEBUG   :       #09 pc 00000000000b008c  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64) (BuildId: f4881cdb04823cc0d8c0fa3f95c4db2e)
+09-13 09:08:34.743  4579  4579 F DEBUG   :       #10 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: f4881cdb04823cc0d8c0fa3f95c4db2e)

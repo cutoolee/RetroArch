@@ -1,0 +1,21 @@
+P1-B2 device evidence
+======================
+ADB: /tmp/android-platform-tools.Q7zEnq/platform-tools/adb
+Serial: 2419TNW44608
+Model: GR0006
+Device: GR0006
+Android release: 11
+SDK: 30
+Display: 1080x1920, density 320
+Battery: 100%, status 5
+Formal package: com.retroarch.aarch64
+Formal version: 1.22.2_GIT (versionCode 1789198637)
+Formal data directory: /data/user/0/com.retroarch.aarch64
+Validation package: com.retroarch.aarch64.p1b2
+Validation version: 1.22.2_GIT (versionCode 1789198639)
+Validation data directory: /data/user/0/com.retroarch.aarch64.p1b2
+Validation signature digest shown by dumpsys: 56058c21
+MANAGE_EXTERNAL_STORAGE app-op: allow (validation package only)
+mGBA core: app-private cores/mgba_libretro_android.so, ARM64, SHA256 abdcb33611b3cd6380fe75c010184a174c124a3a3c64c822064ed388ba6ec9a7
+
+Both package IDs were present simultaneously. No pm clear was run.

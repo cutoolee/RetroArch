@@ -37,6 +37,7 @@
 
 #define MSG_QUEUE_PENDING_MAX          32
 #define MSG_QUEUE_ONSCREEN_MAX         4
+#define HH_WIDGET_PREVIEW_SLOT_COUNT   10
 
 #define MSG_QUEUE_ANIMATION_DURATION   330
 #define TASK_FINISHED_DURATION         3000
@@ -256,6 +257,12 @@ typedef struct dispgfx_widget
    uintptr_t gfx_widgets_icons_textures[
    MENU_WIDGETS_ICON_LAST];
    uintptr_t gfx_widgets_generic_tag;
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   uintptr_t hh_quick_menu_preview_textures[HH_WIDGET_PREVIEW_SLOT_COUNT];
+   char hh_quick_menu_preview_paths[HH_WIDGET_PREVIEW_SLOT_COUNT][PATH_MAX_LENGTH];
+   unsigned long hh_quick_menu_preview_mtimes[HH_WIDGET_PREVIEW_SLOT_COUNT];
+   unsigned long hh_quick_menu_preview_sizes[HH_WIDGET_PREVIEW_SLOT_COUNT];
+#endif
 
    size_t current_msgs_size;
 

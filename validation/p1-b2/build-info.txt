@@ -1,0 +1,22 @@
+P1-B2 CI build evidence
+========================
+Workflow run: 34681143020
+Commit: 6c6a01dda22c566fd158b931ec327254037b120a
+Artifact: handheld-p1-b2-runtime-harness
+APK: RetroArch-runtime-p1b2-test.apk
+APK SHA256: c68a502140c7c48b8da38bcfb6739741b4226671e61ad5655a77e415989efbd4
+Application ID: com.retroarch.aarch64.p1b2
+APK_ASSETS_GATE: PASS
+P1B2_NATIVE_SYMBOLS: PASS
+FRONTEND_ASSETS_PRESENT: PASS
+Chinese fallback font: assets/assets/pkg/chinese-fallback-font.ttf
+Ozone regular font: assets/assets/ozone/regular.ttf
+Ozone bold font: assets/assets/ozone/bold.ttf
+Ozone icons: assets/assets/ozone/png/icons
+
+Install:
+  adb install -r /tmp/p1b2-artifacts-34681143020-new/harness/RetroArch-runtime-p1b2-test.apk
+  Success
+
+The validation APK and the formal Enabled APK were installed side by side.
+No adb uninstall or pm clear was run during the successful validation pass.

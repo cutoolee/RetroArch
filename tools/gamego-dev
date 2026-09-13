@@ -1,0 +1,259 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT=$(cd "$(dirname "$0")/.." && pwd)
+ANDROID_DIR="$ROOT/pkg/android/phoenix"
+GRADLEW="$ANDROID_DIR/gradlew"
+DIST_APK="$ROOT/dist/local/GameGo-dev-aarch64.apk"
+E2E_DIST_APK="$ROOT/dist/local/GameGo-e2e-aarch64.apk"
+CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/gamego/dev.env"
+SERIAL="${GAMEGO_DEVICE_SERIAL:-2419TNW44608}"
+
+# shellcheck disable=SC1091
+source "$ROOT/tools/gamego-build-common.sh"
+SERIAL="${GAMEGO_DEVICE_SERIAL:-$GAMEGO_DEVICE_SERIAL_DEFAULT}"
+
+load_private_config() {
+  local line key value
+  if [[ ! -f "$CONFIG_FILE" ]]; then
+    return
+  fi
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ "$line" =~ ^[[:space:]]*$ ]] && continue
+    line="${line#export }"
+    key="${line%%=*}"
+    value="${line#*=}"
+    [[ "$value" == \$HOME/* ]] && value="$HOME/${value#\$HOME/}"
+    case "$key" in
+      DEV_STORE_FILE|DEV_STORE_PASSWORD|DEV_KEY_ALIAS|DEV_KEY_PASSWORD)
+        if [[ -z "${!key+x}" ]]; then
+          export "$key=$value"
+        fi
+        ;;
+    esac
+  done < "$CONFIG_FILE"
+}
+
+load_private_config
+: "${DEV_STORE_FILE:=$GAMEGO_KEYSTORE}"
+: "${DEV_KEY_ALIAS:=$GAMEGO_KEY_ALIAS}"
+export DEV_STORE_FILE DEV_KEY_ALIAS
+
+sdk_dir() {
+  local candidate
+  for candidate in "${ANDROID_HOME:-}" "${ANDROID_SDK_ROOT:-}" "$HOME/Library/Android/sdk"; do
+    if [[ -n "$candidate" && -d "$candidate" ]]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+  return 1
+}
+
+find_java() {
+  if [[ -n "${JAVA_HOME:-}" && -x "$JAVA_HOME/bin/java" ]]; then
+    return 0
+  fi
+  if command -v brew >/dev/null 2>&1; then
+    local brew_java
+    brew_java="$(brew --prefix openjdk@21 2>/dev/null || true)"
+    if [[ -x "$brew_java/bin/java" ]]; then
+      export JAVA_HOME="$brew_java"
+      export PATH="$JAVA_HOME/bin:$PATH"
+      return 0
+    fi
+  fi
+  return 1
+}
+
+status=0
+check_env() {
+  local sdk build_tools ndk adb java_major perms
+  status=0
+  if [[ "$(uname -s)" == "Darwin" && -n "${BASH_VERSION:-}" ]]; then printf 'PLATFORM=PASS\n'; else printf 'PLATFORM=FAIL (macOS bash/zsh compatible shell required)\n'; status=1; fi
+  if find_java; then
+    java_major="$("$JAVA_HOME/bin/java" -version 2>&1 | sed -n 's/.*version "\([0-9]*\).*/\1/p' | head -1)"
+    if [[ "$java_major" == "21" ]]; then printf 'JAVA=PASS\n'; else printf 'JAVA=FAIL (Java 21 required)\n'; status=1; fi
+  else
+    printf 'JAVA=FAIL (install with: brew install openjdk@21)\n'
+    status=1
+  fi
+
+  if sdk="$(sdk_dir)"; then
+    export ANDROID_SDK_ROOT="$sdk" ANDROID_HOME="$sdk" PATH="$sdk/platform-tools:$PATH"
+    printf 'ANDROID_SDK_ROOT=%s\nANDROID_HOME=%s\nANDROID_SDK=PASS\n' "$sdk" "$sdk"
+  else
+    printf 'ANDROID_SDK=FAIL\n'; status=1
+  fi
+  if [[ -n "${sdk:-}" ]] && ndk="$sdk/ndk/29.0.14206865" && [[ -x "$ndk/toolchains/llvm/prebuilt/darwin-arm64/bin/clang" || -x "$ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang" ]]; then printf 'ANDROID_NDK=PASS\nNDK=PASS\n'; else printf 'ANDROID_NDK=FAIL (29.0.14206865 required)\nNDK=FAIL\n'; status=1; fi
+  if [[ -n "${sdk:-}" && -x "$sdk/build-tools/36.0.0/aapt2" && -x "$sdk/build-tools/36.0.0/apksigner" ]]; then printf 'ANDROID_BUILD_TOOLS=PASS\nBUILD_TOOLS=PASS\n'; else printf 'ANDROID_BUILD_TOOLS=FAIL\nBUILD_TOOLS=FAIL\n'; status=1; fi
+  if [[ -n "${sdk:-}" && -f "$sdk/platforms/android-36/android.jar" ]]; then printf 'ANDROID_PLATFORM=PASS\n'; else printf 'ANDROID_PLATFORM=FAIL\n'; status=1; fi
+  if [[ -n "${sdk:-}" && -x "$sdk/platform-tools/adb" ]]; then printf 'ANDROID_PLATFORM_TOOLS=PASS\nPLATFORM_TOOLS=PASS\n'; else printf 'ANDROID_PLATFORM_TOOLS=FAIL\nPLATFORM_TOOLS=FAIL\n'; status=1; fi
+  if [[ -n "${sdk:-}" && -d "$sdk/platform-tools" && -x "$sdk/platform-tools/adb" ]]; then adb="$sdk/platform-tools/adb"; elif command -v adb >/dev/null 2>&1; then adb="$(command -v adb)"; else adb=""; fi
+  if [[ -n "$adb" ]]; then printf 'ADB=PASS\n'; else printf 'ADB=FAIL\n'; status=1; fi
+  if [[ -x "$GRADLEW" ]] && "$GRADLEW" --version >/dev/null 2>&1; then printf 'GRADLE_WRAPPER=PASS\n'; else printf 'GRADLE_WRAPPER=FAIL\n'; status=1; fi
+  if [[ -f "${DEV_STORE_FILE:-$GAMEGO_KEYSTORE}" ]]; then printf 'KEYSTORE=PASS\n'; else printf 'KEYSTORE=FAIL (%s)\n' "$GAMEGO_KEYSTORE"; status=1; fi
+  if [[ -n "${DEV_STORE_FILE:-}" && -n "${DEV_STORE_PASSWORD:-}" && -n "${DEV_KEY_ALIAS:-}" && -n "${DEV_KEY_PASSWORD:-}" ]]; then printf 'SIGNING_CONFIG=PASS\n'; else printf 'SIGNING_CONFIG=FAIL (configure %s)\n' "$CONFIG_FILE"; status=1; fi
+  if [[ -f "$CONFIG_FILE" ]]; then
+    perms="$(stat -f '%Lp' "$CONFIG_FILE" 2>/dev/null || stat -c '%a' "$CONFIG_FILE" 2>/dev/null || true)"
+    if [[ "$perms" != "600" ]]; then printf 'SIGNING_CONFIG=FAIL (chmod 600 %s)\n' "$CONFIG_FILE"; status=1; fi
+  fi
+  if [[ -n "$adb" ]] && "$adb" -s "$SERIAL" get-state 2>/dev/null | grep -qx device; then printf 'DEVICE=PASS\n'; else printf 'DEVICE=FAIL (%s not connected as device)\n' "$SERIAL"; status=1; fi
+  if [[ "$status" -eq 0 ]]; then printf 'LOCAL_BUILD_READY=YES\n'; else printf 'LOCAL_BUILD_READY=NO\n'; fi
+}
+
+latest_build_tools() { find "$1/build-tools" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -1; }
+
+apk_gate() {
+  local apk="$1" sdk tools package signer
+  sdk="$(sdk_dir)"; tools="$(latest_build_tools "$sdk")"
+  [[ -x "$tools/aapt2" && -x "$tools/apksigner" ]] || { echo 'APK tools not found in Android SDK' >&2; return 1; }
+  package="$("$tools/aapt2" dump packagename "$apk" | tr -d '\r\n')"
+  if [[ "$package" == "$GAMEGO_PACKAGE" ]]; then echo 'PACKAGE_GATE=PASS'; else echo "PACKAGE_GATE=FAIL ($package)"; return 1; fi
+  if "$tools/aapt2" dump badging "$apk" | grep -F "application-label:'$GAMEGO_APP_NAME'" >/dev/null; then :; else echo 'APP_NAME_GATE=FAIL'; return 1; fi
+  signer="$("$tools/apksigner" verify --print-certs "$apk" 2>/dev/null | sed -n 's/.*SHA-256 digest: //p' | head -1 | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
+  expected_signer="$(printf '%s' "$GAMEGO_SIGNER_SHA256" | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
+  if [[ "$signer" == "$expected_signer" ]]; then echo 'SIGNING_GATE=PASS'; else echo 'SIGNING_GATE=FAIL'; return 1; fi
+  if unzip -l "$apk" | grep -E "lib/$GAMEGO_ABI/.*\.so" >/dev/null; then echo 'ABI_GATE=PASS'; else echo 'ABI_GATE=FAIL'; return 1; fi
+}
+
+build_apk() {
+  local apk
+  mkdir -p "$ROOT/dist/local"
+  (cd "$ANDROID_DIR" && GAMEGO_PRODUCT="$GAMEGO_PRODUCT" HAVE_HANDHELD_RUNTIME="$HAVE_HANDHELD_RUNTIME" HAVE_HANDHELD_QUICK_MENU="$HAVE_HANDHELD_QUICK_MENU" P1B2_VALIDATION_APK="$P1B2_VALIDATION_APK" HAVE_HANDHELD_RUNTIME_TEST_HARNESS="$HAVE_HANDHELD_RUNTIME_TEST_HARNESS" HAVE_GAMEGO_E2E_HARNESS="${HAVE_GAMEGO_E2E_HARNESS:-0}" "$GRADLEW" assembleAarch64Debug --no-daemon \
+    -PGAMEGO_PRODUCT="$GAMEGO_PRODUCT" -PHAVE_HANDHELD_RUNTIME="$HAVE_HANDHELD_RUNTIME" -PHAVE_HANDHELD_QUICK_MENU="$HAVE_HANDHELD_QUICK_MENU" -PP1B2_VALIDATION_APK="$P1B2_VALIDATION_APK" -PHAVE_HANDHELD_RUNTIME_TEST_HARNESS="$HAVE_HANDHELD_RUNTIME_TEST_HARNESS" -PHAVE_GAMEGO_E2E_HARNESS="${HAVE_GAMEGO_E2E_HARNESS:-0}" \
+    )
+  apk="$(find "$ANDROID_DIR/build/outputs/apk" -type f -name '*.apk' -print 2>/dev/null | grep -E '/aarch64/debug/|aarch64-debug' | sort | tail -1)"
+  [[ -n "$apk" && -f "$apk" ]] || { echo 'AArch64 debug APK not found' >&2; return 1; }
+  cp "$apk" "$DIST_APK"
+  apk_gate "$DIST_APK"
+  echo "APK_PATH=$DIST_APK"
+  echo "APK_SHA256=$(shasum -a 256 "$DIST_APK" | awk '{print $1}')"
+}
+
+e2e_apk_gate() {
+  apk_gate "$E2E_DIST_APK"
+  sdk="$(sdk_dir)"
+  if "$sdk/build-tools/36.0.0/aapt2" dump xmltree "$E2E_DIST_APK" --file AndroidManifest.xml 2>/dev/null \
+      | grep -F 'com.retroarch.gamego.GameGoE2eHarnessReceiver' >/dev/null \
+      && "$sdk/build-tools/36.0.0/aapt2" dump xmltree "$E2E_DIST_APK" --file AndroidManifest.xml 2>/dev/null \
+      | grep -F 'com.cutoolee.gamego.E2E_COMMAND' >/dev/null; then
+    echo 'E2E_HARNESS=PASS'
+  else
+    echo 'E2E_HARNESS=FAIL'
+    return 1
+  fi
+}
+
+build_e2e_apk() {
+  HAVE_GAMEGO_E2E_HARNESS=1 DIST_APK="$E2E_DIST_APK" build_apk
+  e2e_apk_gate
+}
+
+e2e_adb() {
+  local sdk adb
+  sdk="$(sdk_dir)"
+  adb="$sdk/platform-tools/adb"
+  device_ready "$adb" || { echo "Device $SERIAL is not ready" >&2; return 1; }
+  "$adb" -s "$SERIAL" "$@"
+}
+
+e2e_command() {
+  local command output crash_line process_pid
+  command="$1"
+  e2e_adb shell am broadcast -n "$GAMEGO_PACKAGE/com.retroarch.gamego.GameGoE2eHarnessReceiver" \
+    -a com.cutoolee.gamego.E2E_COMMAND --es command "$command" >/dev/null
+  sleep 2
+  output="$(e2e_adb logcat -v brief -d -s GAMEGO_E2E:I '*:S' \
+      | sed -n 's/.*: GAMEGO_E2E //p; s/.*: \(CONTENT_STATE=.*\)$/\1/p' | tail -1)"
+  if [[ -z "$output" ]]; then
+    echo 'E2E_RESULT=NOT_OBSERVED'
+    return 1
+  fi
+  if [[ "$output" == *'BRIDGE_UNAVAILABLE'* || "$output" == *'RUNTIME_STATE=UNINITIALIZED'* ]]; then
+    crash_line="$(e2e_adb logcat -b crash -d | grep -E 'Fatal signal|SIGSEGV|signal 11|>>> com\.cutoolee\.gamego <<<' | tail -1 || true)"
+    process_pid="$(e2e_adb shell pidof "$GAMEGO_PACKAGE" 2>/dev/null | tr -d '\r' | tr -d ' ' || true)"
+    if [[ -z "$process_pid" && -n "$crash_line" ]]; then
+      echo 'PROCESS_ALIVE=NO'
+      echo 'PROCESS_CRASHED=YES'
+      echo 'CRASH_SIGNAL=SIGSEGV'
+      echo 'RESULT=CONTENT_PROCESS_CRASHED'
+      return 1
+    fi
+  fi
+  echo "$output"
+}
+
+run_tests() {
+  cd "$ROOT"
+  validation/p2.1/tests/test_gr0006_menu_profile.sh
+  validation/p2/tests/test_quick_menu.sh
+  validation/p2.1/tests/test_bridge.sh
+  validation/p2-1/scripts/check-gamego-package.sh
+  validation/p2-1/scripts/check-evidence.sh
+  git diff --check
+}
+
+device_ready() { local adb="$1"; "$adb" -s "$SERIAL" get-state 2>/dev/null | grep -qx device; }
+
+case "${1:-}" in
+  doctor) check_env; exit "$status" ;;
+  test) run_tests ;;
+  build)
+    check_env; [[ "$status" -eq 0 ]] || exit 1
+    build_apk
+    ;;
+  install|build-install)
+    no_build=0; [[ "${2:-}" == '--no-build' ]] && no_build=1
+    check_env; [[ "$status" -eq 0 ]] || exit 1
+    if [[ "$no_build" -eq 0 ]]; then build_apk; else [[ -f "$DIST_APK" ]] || { echo "Missing $DIST_APK; run build first" >&2; exit 1; }; apk_gate "$DIST_APK"; fi
+    sdk="$(sdk_dir)"; adb="$(command -v adb 2>/dev/null || true)"; [[ -x "$sdk/platform-tools/adb" ]] && adb="$sdk/platform-tools/adb"
+    device_ready "$adb" || { echo "Device $SERIAL is not ready" >&2; exit 1; }
+    if "$adb" -s "$SERIAL" shell pm path "$GAMEGO_PACKAGE" >/dev/null 2>&1; then "$adb" -s "$SERIAL" install -r "$DIST_APK"; else "$adb" -s "$SERIAL" install "$DIST_APK"; fi
+    echo 'INSTALL=PASS'
+    [[ "$1" == 'build-install' ]] && { echo 'GAMEGO LOCAL BUILD PASS'; echo "APK: $DIST_APK"; echo "PACKAGE: $GAMEGO_PACKAGE"; echo "SIGNER: ${GAMEGO_SIGNER_SHA256:0:11}..."; echo "DEVICE: $SERIAL"; echo 'INSTALL: PASS'; }
+    ;;
+  e2e-start)
+    check_env; [[ "$status" -eq 0 ]] || exit 1
+    build_e2e_apk
+    sdk="$(sdk_dir)"; adb="$sdk/platform-tools/adb"
+    device_ready "$adb" || { echo "Device $SERIAL is not ready" >&2; exit 1; }
+    if "$adb" -s "$SERIAL" shell pm path "$GAMEGO_PACKAGE" >/dev/null 2>&1; then "$adb" -s "$SERIAL" install -r "$E2E_DIST_APK" >/dev/null; else "$adb" -s "$SERIAL" install "$E2E_DIST_APK" >/dev/null; fi
+    "$adb" -s "$SERIAL" logcat -c
+    "$adb" -s "$SERIAL" shell am force-stop "$GAMEGO_PACKAGE"
+    "$adb" -s "$SERIAL" shell am start -n "$GAMEGO_PACKAGE/com.retroarch.browser.mainmenu.MainMenuActivity" >/dev/null
+    sleep 10
+    rom="${GAMEGO_E2E_ROM:-/storage/emulated/0/Roms/GBA/龙珠大冒险.zip}"
+    core="${GAMEGO_E2E_CORE:-/data/data/$GAMEGO_PACKAGE/cores/mgba_libretro_android.so}"
+    "$adb" -s "$SERIAL" shell am start -n "$GAMEGO_PACKAGE/com.retroarch.browser.retroactivity.RetroActivityFuture" --es ROM "$rom" --es LIBRETRO "$core" >/dev/null
+    echo 'E2E_START=PASS'
+    ;;
+  e2e-input)
+    [[ "$#" -eq 2 ]] || { echo "Usage: $0 e2e-input {menu|up|down|left|right|confirm|back}" >&2; exit 2; }
+    check_env; [[ "$status" -eq 0 ]] || exit 1
+    e2e_command "$2"
+    ;;
+  e2e-status)
+    check_env; [[ "$status" -eq 0 ]] || exit 1
+    e2e_command status
+    ;;
+  e2e-evidence)
+    check_env; [[ "$status" -eq 0 ]] || exit 1
+    mkdir -p "$ROOT/validation/p2-1/results/e2e"
+    e2e_adb logcat -d -s GAMEGO_E2E:I '*:S' > "$ROOT/validation/p2-1/results/e2e/logcat.txt"
+    e2e_command status | tee "$ROOT/validation/p2-1/results/e2e/status.txt"
+    echo "E2E_EVIDENCE_DIR=$ROOT/validation/p2-1/results/e2e"
+    ;;
+  run)
+    check_env; [[ "$status" -eq 0 ]] || exit 1
+    sdk="$(sdk_dir)"; adb="${sdk:+$sdk/platform-tools/adb}"; [[ -x "$adb" ]] || adb="$(command -v adb)"
+    device_ready "$adb" || { echo "Device $SERIAL is not ready" >&2; exit 1; }
+    activity="$("$adb" -s "$SERIAL" shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.LAUNCHER "$GAMEGO_PACKAGE" 2>/dev/null | tr -d '\r' | tail -1)"
+    [[ "$activity" == "$GAMEGO_PACKAGE"/* ]] || { echo 'Launcher activity not found' >&2; exit 1; }
+    "$adb" -s "$SERIAL" shell am start -n "$activity" >/dev/null
+    echo 'LAUNCH=PASS'
+    ;;
+  clean) (cd "$ANDROID_DIR" && "$GRADLEW" clean --no-daemon); rm -f "$DIST_APK" ;;
+  *) echo "Usage: $0 {doctor|test|build|install [--no-build]|run|build-install|e2e-start|e2e-input|e2e-status|e2e-evidence|clean}" >&2; exit 2 ;;
+esac

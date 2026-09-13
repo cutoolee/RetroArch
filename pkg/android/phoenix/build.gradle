@@ -24,6 +24,91 @@ allprojects {
 
 apply plugin: 'com.android.application'
 
+def handheldRuntimeFlag = project.findProperty("HAVE_HANDHELD_RUNTIME")
+if (handheldRuntimeFlag == null) {
+  handheldRuntimeFlag = System.getenv("HAVE_HANDHELD_RUNTIME") ?: "1"
+}
+if (!(handheldRuntimeFlag in ["0", "1"])) {
+  throw new GradleException("HAVE_HANDHELD_RUNTIME must be 0 or 1")
+}
+
+def handheldQuickMenuFlag = project.findProperty("HAVE_HANDHELD_QUICK_MENU")
+if (handheldQuickMenuFlag == null) {
+  handheldQuickMenuFlag = System.getenv("HAVE_HANDHELD_QUICK_MENU") ?: (handheldRuntimeFlag == "1" ? "1" : "0")
+}
+if (!(handheldQuickMenuFlag in ["0", "1"])) {
+  throw new GradleException("HAVE_HANDHELD_QUICK_MENU must be 0 or 1")
+}
+if (handheldQuickMenuFlag == "1" && handheldRuntimeFlag != "1") {
+  throw new GradleException("HAVE_HANDHELD_QUICK_MENU requires HAVE_HANDHELD_RUNTIME=1")
+}
+
+def handheldRuntimeHarnessFlag = project.findProperty("HAVE_HANDHELD_RUNTIME_TEST_HARNESS")
+if (handheldRuntimeHarnessFlag == null) {
+  handheldRuntimeHarnessFlag = System.getenv("HAVE_HANDHELD_RUNTIME_TEST_HARNESS") ?: "0"
+}
+if (!(handheldRuntimeHarnessFlag in ["0", "1"])) {
+  throw new GradleException("HAVE_HANDHELD_RUNTIME_TEST_HARNESS must be 0 or 1")
+}
+if (handheldRuntimeHarnessFlag == "1" && handheldRuntimeFlag != "1") {
+  throw new GradleException("HAVE_HANDHELD_RUNTIME_TEST_HARNESS requires HAVE_HANDHELD_RUNTIME=1")
+}
+
+def gamegoProductFlag = project.findProperty("GAMEGO_PRODUCT")
+if (gamegoProductFlag == null) {
+  gamegoProductFlag = System.getenv("GAMEGO_PRODUCT") ?: "0"
+}
+if (!(gamegoProductFlag in ["0", "1"])) {
+  throw new GradleException("GAMEGO_PRODUCT must be 0 or 1")
+}
+
+def p1b2ValidationApkFlag = project.findProperty("P1B2_VALIDATION_APK")
+if (p1b2ValidationApkFlag == null) {
+  p1b2ValidationApkFlag = System.getenv("P1B2_VALIDATION_APK") ?: "0"
+}
+if (!(p1b2ValidationApkFlag in ["0", "1"])) {
+  throw new GradleException("P1B2_VALIDATION_APK must be 0 or 1")
+}
+if (p1b2ValidationApkFlag == "1" && handheldRuntimeHarnessFlag != "1") {
+  throw new GradleException("P1B2_VALIDATION_APK requires HAVE_HANDHELD_RUNTIME_TEST_HARNESS=1")
+}
+if (gamegoProductFlag == "1" && p1b2ValidationApkFlag == "1") {
+  throw new GradleException("GAMEGO_PRODUCT cannot use P1B2_VALIDATION_APK")
+}
+
+def gamegoE2eHarnessFlag = project.findProperty("HAVE_GAMEGO_E2E_HARNESS")
+if (gamegoE2eHarnessFlag == null) {
+  gamegoE2eHarnessFlag = System.getenv("HAVE_GAMEGO_E2E_HARNESS") ?: "0"
+}
+if (!(gamegoE2eHarnessFlag in ["0", "1"])) {
+  throw new GradleException("HAVE_GAMEGO_E2E_HARNESS must be 0 or 1")
+}
+if (gamegoE2eHarnessFlag == "1" && gamegoProductFlag != "1") {
+  throw new GradleException("HAVE_GAMEGO_E2E_HARNESS requires GAMEGO_PRODUCT=1")
+}
+
+def developmentStoreFile = project.findProperty("DEV_STORE_FILE")
+if (developmentStoreFile == null) {
+  developmentStoreFile = System.getenv("DEV_STORE_FILE")
+}
+def developmentStorePassword = project.findProperty("DEV_STORE_PASSWORD")
+if (developmentStorePassword == null) {
+  developmentStorePassword = System.getenv("DEV_STORE_PASSWORD")
+}
+def developmentKeyAlias = project.findProperty("DEV_KEY_ALIAS")
+if (developmentKeyAlias == null) {
+  developmentKeyAlias = System.getenv("DEV_KEY_ALIAS")
+}
+def developmentKeyPassword = project.findProperty("DEV_KEY_PASSWORD")
+if (developmentKeyPassword == null) {
+  developmentKeyPassword = System.getenv("DEV_KEY_PASSWORD")
+}
+def developmentSigningConfigured = developmentStoreFile && developmentStorePassword
+    && developmentKeyAlias && developmentKeyPassword
+if (developmentSigningConfigured && !file(developmentStoreFile).isFile()) {
+  throw new GradleException("DEV_STORE_FILE does not exist: ${developmentStoreFile}")
+}
+
 android {
   namespace "com.retroarch"
 
@@ -44,9 +129,16 @@ android {
     targetSdkVersion 36
     externalNativeBuild {
       ndkBuild {
-        arguments "-j${Runtime.runtime.availableProcessors()}"
+        arguments "-j${Runtime.runtime.availableProcessors()}",
+                  "HAVE_HANDHELD_RUNTIME=${handheldRuntimeFlag}",
+                  "HAVE_HANDHELD_QUICK_MENU=${handheldQuickMenuFlag}",
+                  "HAVE_GAMEGO_PRODUCT=${gamegoProductFlag}",
+                  "HAVE_HANDHELD_RUNTIME_TEST_HARNESS=${handheldRuntimeHarnessFlag}",
+                  "HAVE_GAMEGO_E2E_HARNESS=${gamegoE2eHarnessFlag}"
       }
     }
+    manifestPlaceholders.p1b2HarnessEnabled = handheldRuntimeHarnessFlag == "1" ? "true" : "false"
+    manifestPlaceholders.gamegoE2eHarnessEnabled = gamegoE2eHarnessFlag == "1" ? "true" : "false"
     versionCode = (System.currentTimeMillis() / 1000).toInteger()
     versionName "${getManifestAttribute("versionName")}_GIT"
   }
@@ -67,8 +159,11 @@ android {
       dimension "variant"
     }
     aarch64 {
-      applicationIdSuffix '.aarch64'
-      resValue "string", "app_name", "RetroArch (AArch64)"
+      if (gamegoProductFlag == "1")
+        applicationId "com.cutoolee.gamego"
+      else
+        applicationIdSuffix p1b2ValidationApkFlag == "1" ? '.aarch64.p1b2' : '.aarch64'
+      resValue "string", "app_name", gamegoProductFlag == "1" ? "GameGo" : "RetroArch (AArch64)"
       buildConfigField "boolean", "PLAY_STORE_BUILD", "false"
 
       dimension "variant"
@@ -140,6 +235,10 @@ android {
       jni.srcDirs = []
       res.srcDirs = ['res', '../phoenix-common/res']
     }
+    debug {
+      manifest.srcFile 'src/debug/AndroidManifest.xml'
+      java.srcDirs += ['src/debug']
+    }
     normal {
       java.srcDirs += ['../play-core-stub']
     }
@@ -165,6 +264,14 @@ android {
   }
 
   signingConfigs {
+    if (developmentSigningConfigured) {
+      development {
+        storeFile file(developmentStoreFile)
+        storePassword developmentStorePassword
+        keyAlias developmentKeyAlias
+        keyPassword developmentKeyPassword
+      }
+    }
     if (project.hasProperty("RELEASE_STORE_FILE")) {
       release {
         storeFile file(RELEASE_STORE_FILE)
@@ -176,6 +283,10 @@ android {
   }
 
   buildTypes {
+    debug {
+      if (developmentSigningConfigured)
+        signingConfig signingConfigs.development
+    }
     if (project.hasProperty("RELEASE_STORE_FILE")) {
       release {
         signingConfig signingConfigs.release

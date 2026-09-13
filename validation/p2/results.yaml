@@ -1,0 +1,41 @@
+task: P2.0.5 Quick Menu Visual & UX
+ui_status: PASS
+runtime_integration: NOT_CONNECTED
+implementation:
+  reused: [state_machine, six_menu_items, actions, slot_bounds, confirm_dialog, ACTION_PENDING]
+  scope: [handheld/ui, validation/p2]
+  visual_polish: [panel_shadow, header_rule, muted_cards, state_color_hierarchy, safe_margins]
+  preview: preview/index.html
+  preview_count: 33
+checks:
+  unit_navigation_actions_dialogs_slots_feedback: PASS
+  pending_duplicate_protection_all_six_actions: PASS
+  capabilities_and_preview_fallback: PASS
+  utf8_bounded_copy: PASS
+  geometry_and_render_bounds:
+    640x480: PASS
+    1280x720: PASS
+    1920x1080: PASS
+  address_and_undefined_behavior_sanitizers: PASS
+  architecture_boundary: PASS
+  diff_whitespace: PASS
+  compiler:
+    name: Apple Clang 21.0.0
+    mode: C89 with inherited stdbool extension
+    note: Existing bool ABI preserved; C99-extension diagnostic suppressed, other warnings are errors.
+  evidence: test-output.txt
+visual_review:
+  method: Local SVG thumbnails from the production C painter
+  inspected: [main, restart_cancel, load_empty, pending, save_success, error]
+  resolutions: [640x480, 1280x720, 1920x1080]
+  state_treatments: [focused, disabled, pending, success, error, confirm_scrim]
+  browser_gallery: BLOCKED_BROWSER_URL_POLICY
+  note: Static preview artifacts are provided; this is not a device/GFX validation.
+p1_regression:
+  standalone_host_runtime_tests: NOT_FOUND_IN_CHECKOUT
+  android_environment_check: BLOCKED_ENVIRONMENT
+  environment_evidence: p1-environment.txt
+  missing: [working_Java_runtime, adb_in_PATH, configured_Android_SDK]
+  device_smoke_rerun: BLOCKED_ENVIRONMENT
+  p1_b2_harness_and_ci_modified: false
+  existing_p1_gate_status_overwritten: false

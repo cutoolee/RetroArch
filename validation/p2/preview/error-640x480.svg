@@ -1,0 +1,84 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='640' height='480' viewBox='0 0 640 480'><rect width='100%' height='100%' fill='#456657'/>
+<rect x='0' y='0' width='640' height='480' rx='0' fill='#07131c' fill-opacity='0.85098' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<rect x='121.333' y='94' width='397.333' height='292' rx='6' fill='#000000' fill-opacity='0.4' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<rect x='123.333' y='96' width='393.333' height='288' rx='4.66667' fill='#0b1b27' fill-opacity='1' stroke='#102b38' stroke-opacity='1' stroke-width='0.333333'/>
+<defs><clipPath id='c0'><rect x='135.333' y='106.667' width='56.6667' height='10.6667'/></clipPath></defs>
+<text x='135.333' y='115.36' fill='#64f5b1' font-size='9.33333' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c0)'>GAMEGO</text>
+<defs><clipPath id='c1'><rect x='194.667' y='106.667' width='310' height='10.6667'/></clipPath></defs>
+<text x='194.667' y='115.36' fill='#9bb8b0' font-size='9.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c1)'>/  快捷菜单</text>
+<rect x='252' y='124.667' width='252.667' height='0.666667' rx='0' fill='#102b38' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c2'><rect x='135.333' y='132.667' width='369.333' height='13.3333'/></clipPath></defs>
+<text x='135.333' y='142.693' fill='#eaf7f1' font-size='9.33333' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c2)'>Pokémon Emerald</text>
+<defs><clipPath id='c3'><rect x='135.333' y='148' width='369.333' height='10.6667'/></clipPath></defs>
+<text x='135.333' y='156.213' fill='#9bb8b0' font-size='8' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c3)'>Game Boy Advance</text>
+<defs><clipPath id='c4'><rect x='135.333' y='158.667' width='369.333' height='8'/></clipPath></defs>
+<text x='135.333' y='164.587' fill='#9bb8b0' font-size='5.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c4)'>离线 UI 演示</text>
+<defs><clipPath id='c5'><rect x='135.333' y='166' width='369.333' height='25.3333'/></clipPath></defs>
+<text x='135.333' y='182.027' fill='#eaf7f1' font-size='9.33333' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c5)'>保存进度</text>
+<rect x='135.333' y='166' width='369.333' height='100' rx='4.66667' fill='#145841' fill-opacity='1' stroke='#64f5b1' stroke-opacity='1' stroke-width='0.666667'/>
+<rect x='140.667' y='171.333' width='60' height='40.6667' rx='4.66667' fill='#07131c' fill-opacity='0.85098' stroke='#5f7774' stroke-opacity='1' stroke-width='0.333333'/>
+<rect x='140.667' y='171.333' width='60' height='40.6667' rx='0' fill='#598b85' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<rect x='140.667' y='189.633' width='60' height='22.3667' rx='0' fill='#355b42' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<rect x='166.467' y='189.633' width='9' height='22.3667' rx='0' fill='#c8b589' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c6'><rect x='140.667' y='171.333' width='60' height='40.6667'/></clipPath></defs>
+<text x='140.667' y='193.131' fill='#ffffff' font-size='4.06667' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c6)'>MOCK PREVIEW</text>
+<defs><clipPath id='c7'><rect x='206' y='171.333' width='298.667' height='10'/></clipPath></defs>
+<text x='206' y='179.693' fill='#eaf7f1' font-size='9.33333' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c7)'>Slot 0  /  9</text>
+<defs><clipPath id='c8'><rect x='206' y='183.333' width='298.667' height='8'/></clipPath></defs>
+<text x='206' y='189.253' fill='#9bb8b0' font-size='5.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c8)'>2026-09-12 14:30</text>
+<defs><clipPath id='c9'><rect x='206' y='192.667' width='298.667' height='8'/></clipPath></defs>
+<text x='206' y='198.587' fill='#9bb8b0' font-size='5.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c9)'>绿荫镇</text>
+<defs><clipPath id='c10'><rect x='206' y='202.667' width='298.667' height='8'/></clipPath></defs>
+<text x='206' y='208.587' fill='#64f5b1' font-size='5.33333' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c10)'>A 保存到此位置</text>
+<rect x='135.333' y='279.333' width='35.6' height='11.3333' rx='4.66667' fill='#145841' fill-opacity='1' stroke='#64f5b1' stroke-opacity='1' stroke-width='0.666667'/>
+<defs><clipPath id='c11'><rect x='138' y='279.333' width='30.2667' height='11.3333'/></clipPath></defs>
+<text x='138' y='286.92' fill='#eaf7f1' font-size='5.33333' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c11)'>&gt;0 </text>
+<rect x='172.267' y='279.333' width='35.6' height='11.3333' rx='4.66667' fill='#0b1b27' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c12'><rect x='174.933' y='279.333' width='30.2667' height='11.3333'/></clipPath></defs>
+<text x='174.933' y='286.92' fill='#eaf7f1' font-size='5.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c12)'> 1 </text>
+<rect x='209.2' y='279.333' width='35.6' height='11.3333' rx='4.66667' fill='#0b1b27' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c13'><rect x='211.867' y='279.333' width='30.2667' height='11.3333'/></clipPath></defs>
+<text x='211.867' y='286.92' fill='#eaf7f1' font-size='5.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c13)'> 2 </text>
+<rect x='246.133' y='279.333' width='35.6' height='11.3333' rx='4.66667' fill='#0b1b27' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c14'><rect x='248.8' y='279.333' width='30.2667' height='11.3333'/></clipPath></defs>
+<text x='248.8' y='286.92' fill='#eaf7f1' font-size='5.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c14)'> 3 </text>
+<rect x='283.067' y='279.333' width='35.6' height='11.3333' rx='4.66667' fill='#0b1b27' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c15'><rect x='285.733' y='279.333' width='30.2667' height='11.3333'/></clipPath></defs>
+<text x='285.733' y='286.92' fill='#eaf7f1' font-size='5.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c15)'> 4 </text>
+<rect x='320' y='279.333' width='35.6' height='11.3333' rx='4.66667' fill='#0b1b27' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c16'><rect x='322.667' y='279.333' width='30.2667' height='11.3333'/></clipPath></defs>
+<text x='322.667' y='286.92' fill='#eaf7f1' font-size='5.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c16)'> 5 </text>
+<rect x='356.933' y='279.333' width='35.6' height='11.3333' rx='4.66667' fill='#0b1b27' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c17'><rect x='359.6' y='279.333' width='30.2667' height='11.3333'/></clipPath></defs>
+<text x='359.6' y='286.92' fill='#eaf7f1' font-size='5.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c17)'> 6 </text>
+<rect x='393.867' y='279.333' width='35.6' height='11.3333' rx='4.66667' fill='#0b1b27' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c18'><rect x='396.533' y='279.333' width='30.2667' height='11.3333'/></clipPath></defs>
+<text x='396.533' y='286.92' fill='#eaf7f1' font-size='5.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c18)'> 7 </text>
+<rect x='430.8' y='279.333' width='35.6' height='11.3333' rx='4.66667' fill='#0b1b27' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c19'><rect x='433.467' y='279.333' width='30.2667' height='11.3333'/></clipPath></defs>
+<text x='433.467' y='286.92' fill='#eaf7f1' font-size='5.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c19)'> 8 </text>
+<rect x='467.733' y='279.333' width='35.6' height='11.3333' rx='4.66667' fill='#0b1b27' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c20'><rect x='470.4' y='279.333' width='30.2667' height='11.3333'/></clipPath></defs>
+<text x='470.4' y='286.92' fill='#eaf7f1' font-size='5.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c20)'> 9 </text>
+<rect x='135.333' y='347.333' width='369.333' height='8' rx='4.66667' fill='#145841' fill-opacity='1' stroke='#ff8f86' stroke-opacity='1' stroke-width='0.333333'/>
+<defs><clipPath id='c21'><rect x='143.333' y='347.333' width='353.333' height='8'/></clipPath></defs>
+<text x='143.333' y='353.253' fill='#ff8f86' font-size='5.33333' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c21)'>! 操作失败</text>
+<defs><clipPath id='c22'><rect x='182' y='347.333' width='314.667' height='8'/></clipPath></defs>
+<text x='182' y='353.253' fill='#eaf7f1' font-size='5.33333' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c22)'>保存失败，请重试</text>
+<rect x='135.333' y='353.333' width='369.333' height='0.666667' rx='0' fill='#102b38' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<rect x='135.333' y='359.333' width='18' height='15.3333' rx='7.66667' fill='#0b1b27' fill-opacity='1' stroke='#64f5b1' stroke-opacity='1' stroke-width='0.333333'/>
+<defs><clipPath id='c23'><rect x='135.333' y='359.333' width='18' height='15.3333'/></clipPath></defs>
+<text x='135.333' y='369.88' fill='#64f5b1' font-size='8' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c23)'>A</text>
+<defs><clipPath id='c24'><rect x='157.333' y='359.333' width='33.3333' height='16'/></clipPath></defs>
+<text x='157.333' y='370.213' fill='#9bb8b0' font-size='8' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c24)'>确认</text>
+<rect x='187.333' y='359.333' width='18' height='15.3333' rx='7.66667' fill='#102b38' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c25'><rect x='187.333' y='359.333' width='18' height='15.3333'/></clipPath></defs>
+<text x='187.333' y='369.88' fill='#9bb8b0' font-size='8' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c25)'>B</text>
+<defs><clipPath id='c26'><rect x='209.333' y='359.333' width='33.3333' height='16'/></clipPath></defs>
+<text x='209.333' y='370.213' fill='#9bb8b0' font-size='8' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c26)'>返回</text>
+<rect x='239.333' y='359.333' width='26.6667' height='15.3333' rx='7.66667' fill='#102b38' fill-opacity='1' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c27'><rect x='239.333' y='359.333' width='26.6667' height='15.3333'/></clipPath></defs>
+<text x='239.333' y='369.88' fill='#9bb8b0' font-size='8' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c27)'>↑↓</text>
+<defs><clipPath id='c28'><rect x='271.333' y='359.333' width='33.3333' height='16'/></clipPath></defs>
+<text x='271.333' y='370.213' fill='#9bb8b0' font-size='8' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' clip-path='url(#c28)'>选择</text>
+</svg>

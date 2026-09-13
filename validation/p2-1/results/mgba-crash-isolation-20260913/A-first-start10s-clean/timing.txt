@@ -1,0 +1,8 @@
+FIRST_START=2026-09-13 09:09:27
+FIRST_PID=4734
+FIRST_RESUMED=    mResumedActivity: ActivityRecord{f2c0177 u0 com.cutoolee.gamego/com.retroarch.browser.mainmenu.MainMenuActivity t448}
+CONTENT_START=2026-09-13 09:09:38
+A_CONTENT_BOOT=PASS
+A_SURVIVED_5S=YES
+A_SURVIVED_30S=YES
+A_NATIVE_CRASH=NO

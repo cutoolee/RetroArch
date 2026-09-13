@@ -1,0 +1,238 @@
+name: Handheld Runtime P1-B Android Integration
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  p1-b1-build:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: ["1", "0"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install Android SDK 36, Build Tools 36 and NDK 29
+        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;29.0.14206865"
+      - name: Verify Android build environment
+        run: handheld/test/validation/p1-b1/check_android_environment.sh pkg/android/phoenix/gradlew
+      - name: Prepare RetroArch Frontend Assets
+        env:
+          RUNTIME_FLAG: ${{ matrix.runtime }}
+        run: |
+          set -euo pipefail
+          staging="handheld-dist/runtime-${RUNTIME_FLAG}"
+          mkdir -p "$staging"
+          cp handheld/distribution/resources.lock "$staging/resources.lock"
+          ANDROID_ASSETS_DIR="$GITHUB_WORKSPACE/pkg/android/phoenix/assets" \
+            handheld/distribution/prepare_android_assets.sh \
+            | tee "$staging/ASSET_PREPARE_EVIDENCE.txt"
+      - name: Build AArch64 APK with Runtime flag ${{ matrix.runtime }}
+        working-directory: pkg/android/phoenix
+        run: |
+          set -o pipefail
+          ./gradlew clean assembleAarch64Debug --no-daemon --info \
+            -PHAVE_HANDHELD_RUNTIME=${{ matrix.runtime }} \
+            2>&1 | tee "../../../p1-b1-build-runtime-${{ matrix.runtime }}.log"
+      - name: Collect APK, SHA256 and Runtime link evidence
+        env:
+          RUNTIME_FLAG: ${{ matrix.runtime }}
+        run: |
+          set -euo pipefail
+          outputs_root="pkg/android/phoenix/build/outputs"
+          echo "Gradle APK outputs (diagnostic):"
+          if [ -d "$outputs_root" ]; then
+            find "$outputs_root" -type f \
+              \( -name "*.apk" -o -name "output-metadata.json" \) \
+              -print | sort
+          else
+            echo "MISSING $outputs_root"
+          fi
+          echo "All APKs under the Android build directory (diagnostic):"
+          find pkg/android/phoenix/build -type f -name "*.apk" -print 2>/dev/null | sort || true
+
+          mapfile -t apk_candidates < <(python3 - "$outputs_root" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          outputs_root = Path(sys.argv[1])
+          candidates = []
+          for metadata_path in sorted(outputs_root.rglob("output-metadata.json")):
+              try:
+                  metadata = json.loads(metadata_path.read_text())
+              except (OSError, json.JSONDecodeError) as exc:
+                  print(f"Unable to parse {metadata_path}: {exc}", file=sys.stderr)
+                  continue
+              if metadata.get("variantName") != "aarch64Debug":
+                  continue
+              for element in metadata.get("elements", []):
+                  output_file = element.get("outputFile")
+                  if output_file:
+                      candidates.append(metadata_path.parent / output_file)
+
+          if len(candidates) != 1:
+              print(
+                  f"Expected exactly one aarch64Debug APK, found {len(candidates)}:",
+                  file=sys.stderr,
+              )
+              for candidate in candidates:
+                  print(candidate, file=sys.stderr)
+              raise SystemExit(1)
+
+          print(candidates[0])
+          PY
+          )
+          apk="${apk_candidates[0]}"
+          test -f "$apk"
+
+          staging="handheld-dist/runtime-${RUNTIME_FLAG}"
+          mkdir -p "$staging"
+          if [ "$RUNTIME_FLAG" = "1" ]; then
+            staged_apk="$staging/RetroArch-runtime-enabled.apk"
+          else
+            staged_apk="$staging/RetroArch-runtime-disabled.apk"
+          fi
+          cp "$apk" "$staged_apk"
+          handheld/distribution/verify_android_apk_assets.sh \
+            "$staged_apk" \
+            "handheld/distribution/resources.lock" \
+            "$staging/APK_ASSET_EVIDENCE.txt"
+          evidence="$staging/RUNTIME_LINK_EVIDENCE.txt"
+          : > "$evidence"
+          echo "HAVE_HANDHELD_RUNTIME=${RUNTIME_FLAG}" >> "$evidence"
+          echo "Expected compile define: -DHAVE_HANDHELD_RUNTIME=${RUNTIME_FLAG}" >> "$evidence"
+          if [ "$RUNTIME_FLAG" = "1" ]; then
+            grep -E "griffin\.c|HAVE_HANDHELD_RUNTIME=1" "p1-b1-build-runtime-${RUNTIME_FLAG}.log" >> "$evidence"
+            nm_tool="${ANDROID_NDK_ROOT:-$ANDROID_HOME/ndk/29.0.14206865}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-nm"
+            test -x "$nm_tool"
+            find pkg/android/phoenix/build -type f -name 'libretroarch-activity.so' -print -exec "$nm_tool" -g {} \; | grep -E 'hh_runtime_(init|submit_command|owner_tick)' >> "$evidence"
+            if find pkg/android/phoenix/build -type f -name 'libretroarch-activity.so' -exec "$nm_tool" -g {} \; | grep -q 'Java_com_retroarch_p1b2_P1B2HarnessReceiver_'; then
+              echo "P1-B2 harness unexpectedly present in normal Enabled APK" >&2
+              exit 1
+            fi
+            echo "HAVE_HANDHELD_RUNTIME_TEST_HARNESS=0 (normal build default)" >> "$evidence"
+          else
+            if grep -E -- "-DHAVE_HANDHELD_RUNTIME=1" "p1-b1-build-runtime-${RUNTIME_FLAG}.log"; then
+              echo "Runtime define unexpectedly present in disabled build" >&2
+              exit 1
+            fi
+            echo "HAVE_HANDHELD_RUNTIME_TEST_HARNESS=0 (normal build default)" >> "$evidence"
+            echo "Runtime symbols intentionally absent because feature flag is disabled" >> "$evidence"
+          fi
+          handheld/test/validation/p1-b1/generate_build_manifest.sh \
+            "$RUNTIME_FLAG" "$staged_apk" \
+            "$staging/BUILD_MANIFEST.json" \
+            "$evidence" "p1-b1-build-runtime-${RUNTIME_FLAG}.log"
+          cp "p1-b1-build-runtime-${RUNTIME_FLAG}.log" "$staging/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: handheld-p1-b1-runtime-${{ matrix.runtime }}
+          path: handheld-dist/runtime-${{ matrix.runtime }}
+
+  p1-b2-harness-build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install Android SDK 36, Build Tools 36 and NDK 29
+        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;29.0.14206865"
+      - name: Verify Android build environment
+        run: handheld/test/validation/p1-b1/check_android_environment.sh pkg/android/phoenix/gradlew
+      - name: Prepare RetroArch Frontend Assets
+        run: |
+          set -euo pipefail
+          staging="handheld-dist/p1-b2-harness"
+          mkdir -p "$staging"
+          cp handheld/distribution/resources.lock "$staging/resources.lock"
+          ANDROID_ASSETS_DIR="$GITHUB_WORKSPACE/pkg/android/phoenix/assets" \
+            handheld/distribution/prepare_android_assets.sh \
+            | tee "$staging/ASSET_PREPARE_EVIDENCE.txt"
+      - name: Build AArch64 P1-B2 validation APK
+        working-directory: pkg/android/phoenix
+        run: |
+          set -o pipefail
+          ./gradlew clean assembleAarch64Debug --no-daemon --info \
+            -PHAVE_HANDHELD_RUNTIME=1 \
+            -PHAVE_HANDHELD_RUNTIME_TEST_HARNESS=1 \
+            -PP1B2_VALIDATION_APK=1 \
+            2>&1 | tee "../../../p1-b2-harness-build.log"
+      - name: Collect P1-B2 APK and validation evidence
+        run: |
+          set -euo pipefail
+          outputs_root="pkg/android/phoenix/build/outputs"
+          mapfile -t apk_candidates < <(python3 - "$outputs_root" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          outputs_root = Path(sys.argv[1])
+          candidates = []
+          for metadata_path in sorted(outputs_root.rglob("output-metadata.json")):
+              metadata = json.loads(metadata_path.read_text())
+              if metadata.get("variantName") != "aarch64Debug":
+                  continue
+              for element in metadata.get("elements", []):
+                  output_file = element.get("outputFile")
+                  if output_file:
+                      candidates.append(metadata_path.parent / output_file)
+          if len(candidates) != 1:
+              raise SystemExit(f"Expected one aarch64Debug APK, found {len(candidates)}: {candidates}")
+          print(candidates[0])
+          PY
+          )
+          apk="${apk_candidates[0]}"
+          test -f "$apk"
+          staging="handheld-dist/p1-b2-harness"
+          staged_apk="$staging/RetroArch-runtime-p1b2-test.apk"
+          cp "$apk" "$staged_apk"
+          aapt2="${ANDROID_HOME}/build-tools/36.0.0/aapt2"
+          test -x "$aapt2"
+          application_id="$($aapt2 dump packagename "$staged_apk" | tr -d '\r\n')"
+          test "$application_id" = "com.retroarch.aarch64.p1b2"
+          handheld/distribution/verify_android_apk_assets.sh \
+            "$staged_apk" handheld/distribution/resources.lock \
+            "$staging/APK_ASSET_EVIDENCE.txt"
+          nm_tool="${ANDROID_NDK_ROOT:-$ANDROID_HOME/ndk/29.0.14206865}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-nm"
+          test -x "$nm_tool"
+          find pkg/android/phoenix/build -type f -name 'libretroarch-activity.so' -print \
+            -exec "$nm_tool" -g {} \; \
+            | grep -E 'Java_com_retroarch_p1b2_P1B2HarnessReceiver_native(Init|Snapshot|Command)' \
+            > "$staging/P1B2_NATIVE_SYMBOL_EVIDENCE.txt"
+          apk_sha256="$(sha256sum "$staged_apk" | awk '{print $1}')"
+          commit="$(git rev-parse HEAD)"
+          {
+            echo "COMMIT=$commit"
+            echo "HAVE_HANDHELD_RUNTIME=1"
+            echo "HAVE_HANDHELD_RUNTIME_TEST_HARNESS=1"
+            echo "P1B2_VALIDATION_APK=1"
+            echo "APPLICATION_ID=$application_id"
+            echo "APK_FILENAME=$(basename "$staged_apk")"
+            echo "APK_SHA256=$apk_sha256"
+            echo "APK_ASSETS_GATE=PASS"
+            echo "P1B2_NATIVE_SYMBOLS=PASS"
+          } | tee "$staging/P1B2_HARNESS_EVIDENCE.txt"
+          cp p1-b2-harness-build.log "$staging/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: handheld-p1-b2-runtime-harness
+          path: handheld-dist/p1-b2-harness

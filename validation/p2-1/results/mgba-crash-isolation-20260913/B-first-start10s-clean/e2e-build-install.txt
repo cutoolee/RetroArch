@@ -1,0 +1,106 @@
+PLATFORM=PASS
+JAVA=PASS
+ANDROID_SDK_ROOT=/Users/yujian/Library/Android/sdk
+ANDROID_HOME=/Users/yujian/Library/Android/sdk
+ANDROID_SDK=PASS
+ANDROID_NDK=PASS
+NDK=PASS
+ANDROID_BUILD_TOOLS=PASS
+BUILD_TOOLS=PASS
+ANDROID_PLATFORM=PASS
+ANDROID_PLATFORM_TOOLS=PASS
+PLATFORM_TOOLS=PASS
+ADB=PASS
+GRADLE_WRAPPER=PASS
+KEYSTORE=PASS
+SIGNING_CONFIG=PASS
+DEVICE=PASS
+LOCAL_BUILD_READY=YES
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.3.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :
+WARNING: [CXX5202] This app only has 32-bit [armeabi-v7a,x86] native libraries. Beginning August 1, 2019 Google Play store requires that all apps that include native libraries must provide 64-bit versions. For more information, visit https://g.co/64-bit-requirement
+[CXX5202] This app only has 32-bit [armeabi-v7a,x86] native libraries. Beginning August 1, 2019 Google Play store requires that all apps that include native libraries must provide 64-bit versions. For more information, visit https://g.co/64-bit-requirement
+WARNING: [CXX5202] This app only has 32-bit [armeabi-v7a,x86] native libraries. Beginning August 1, 2019 Google Play store requires that all apps that include native libraries must provide 64-bit versions. For more information, visit https://g.co/64-bit-requirement
+[CXX5202] This app only has 32-bit [armeabi-v7a,x86] native libraries. Beginning August 1, 2019 Google Play store requires that all apps that include native libraries must provide 64-bit versions. For more information, visit https://g.co/64-bit-requirement
+Warning: SDK processing. This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
+
+> Task :preBuild UP-TO-DATE
+> Task :preAarch64DebugBuild UP-TO-DATE
+> Task :mergeAarch64DebugNativeDebugMetadata NO-SOURCE
+> Task :generateAarch64DebugBuildConfig
+> Task :generateAarch64DebugResValues UP-TO-DATE
+> Task :generateAarch64DebugResources UP-TO-DATE
+> Task :packageAarch64DebugResources UP-TO-DATE
+> Task :processAarch64DebugNavigationResources
+> Task :parseAarch64DebugLocalResources UP-TO-DATE
+> Task :generateAarch64DebugRFile UP-TO-DATE
+> Task :compileAarch64DebugKotlin NO-SOURCE
+> Task :javaPreCompileAarch64Debug UP-TO-DATE
+
+> Task :compileAarch64DebugJavaWithJavac
+注: /Users/yujian/Documents/RetroArch-GameGo/pkg/android/phoenix-common/src/com/retroarch/browser/retroactivity/RetroActivityCommon.java使用或覆盖了已过时的 API。
+注: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+
+> Task :generateAarch64DebugAssets UP-TO-DATE
+> Task :mergeAarch64DebugAssets UP-TO-DATE
+> Task :compressAarch64DebugAssets UP-TO-DATE
+> Task :processAarch64DebugJavaRes NO-SOURCE
+> Task :mergeAarch64DebugJavaResource UP-TO-DATE
+> Task :checkAarch64DebugDuplicateClasses UP-TO-DATE
+> Task :desugarAarch64DebugFileDependencies UP-TO-DATE
+> Task :mergeExtDexAarch64Debug UP-TO-DATE
+> Task :mergeLibDexAarch64Debug UP-TO-DATE
+> Task :checkAarch64DebugAarMetadata UP-TO-DATE
+> Task :mapAarch64DebugSourceSetPaths UP-TO-DATE
+> Task :compileAarch64DebugNavigationResources UP-TO-DATE
+> Task :mergeAarch64DebugResources UP-TO-DATE
+> Task :createAarch64DebugCompatibleScreenManifests
+> Task :extractDeepLinksAarch64Debug
+
+> Task :processAarch64DebugMainManifest
+/Users/yujian/Documents/RetroArch-GameGo/pkg/android/phoenix/AndroidManifest.xml:28:9-41 Warning:
+	android:extractNativeLibs should not be specified in this source AndroidManifest.xml file. See https://d.android.com/guide/topics/manifest/application-element#extractNativeLibs for more information.
+The AGP Upgrade Assistant can remove the attribute from the AndroidManifest.xml file and update the build file accordingly. See https://d.android.com/studio/build/agp-upgrade-assistant for more information.
+
+> Task :processAarch64DebugManifest
+> Task :configureNdkBuildDebug[arm64-v8a]
+> Task :buildNdkBuildDebug[arm64-v8a]
+> Task :configureNdkBuildDebug[x86_64]
+> Task :buildNdkBuildDebug[x86_64]
+> Task :mergeAarch64DebugJniLibFolders UP-TO-DATE
+> Task :validateSigningAarch64Debug UP-TO-DATE
+> Task :writeAarch64DebugAppMetadata UP-TO-DATE
+> Task :writeAarch64DebugSigningConfigVersions UP-TO-DATE
+> Task :processAarch64DebugManifestForPackage
+> Task :mergeAarch64DebugNativeLibs
+> Task :processAarch64DebugResources
+> Task :stripAarch64DebugDebugSymbols
+> Task :dexBuilderAarch64Debug
+> Task :mergeProjectDexAarch64Debug
+> Task :packageAarch64Debug
+> Task :createAarch64DebugApkListingFileRedirect
+> Task :assembleAarch64Debug
+
+[Incubating] Problems report is available at: file:///Users/yujian/Documents/RetroArch-GameGo/pkg/android/phoenix/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.3.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 13s
+40 actionable tasks: 19 executed, 21 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.3.1/userguide/configuration_cache_enabling.html
+PACKAGE_GATE=PASS
+SIGNING_GATE=PASS
+ABI_GATE=PASS
+APK_PATH=/Users/yujian/Documents/RetroArch-GameGo/dist/local/GameGo-e2e-aarch64.apk
+APK_SHA256=bd24aaa81f8c74f9f2a30ae56561a0745918285dc25c471079aebbd3f111f747
+PACKAGE_GATE=PASS
+SIGNING_GATE=PASS
+ABI_GATE=PASS
+E2E_HARNESS=PASS
+E2E_START=PASS

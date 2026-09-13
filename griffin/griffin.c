@@ -1922,3 +1922,25 @@ SMB CLIENT
 #ifdef HAVE_SMBCLIENT
 #include "../libretro-common/vfs/vfs_implementation_smb.c"
 #endif
+
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME
+/* Keep the product boundary in handheld/. These files are included in the
+ * existing Android amalgamation so the adapter shares RA's internal symbols
+ * without creating a second runtime/library target. */
+#include "../handheld/runtime/hh_runtime_error.c"
+#include "../handheld/runtime/hh_runtime_query.c"
+#include "../handheld/runtime/hh_runtime_command.c"
+#include "../handheld/runtime/hh_runtime_save.c"
+#include "../handheld/runtime/hh_runtime_menu.c"
+#include "../handheld/runtime/hh_runtime_task.c"
+#include "../handheld/runtime/hh_runtime_queue.c"
+#include "../handheld/runtime/hh_runtime.c"
+#if defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+#include "../handheld/ui/hh_quick_menu.c"
+#include "../handheld/ui/hh_quick_menu_actions.c"
+#include "../handheld/ui/hh_quick_menu_layout.c"
+#include "../handheld/ui/hh_quick_menu_render.c"
+#include "../handheld/ui/hh_quick_menu_state.c"
+#include "../handheld/bridge/hh_bridge.c"
+#endif
+#endif

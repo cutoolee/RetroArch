@@ -1,0 +1,300 @@
+09-12 23:51:34.017   903   903 I sensors-hal: batch:242, android.sensor.gyroscope/41, period=16000000, max_latency=0
+09-12 23:51:34.017   903   903 I sensors-hal: set_config:63, sample_period_ns is adjusted to 16000000 based on min/max delay_ns
+09-12 23:51:34.017   903   903 I sensors-hal: batch:251, android.sensor.gyroscope/41, period=16000000, max_latency=0 request completed
+09-12 23:51:34.018   903 24516 I sensors-hal: ssc_conn_resp_cb:663, resp_value = 0
+09-12 23:51:34.053 24402 24518 D cutoolee.gameg: PlayerBase::PlayerBase()
+09-12 23:51:34.054 24402 24518 D cutoolee.gameg: TrackPlayerBase::TrackPlayerBase()
+09-12 23:51:34.054 24402 24518 I libOpenSLES: Emulating old channel mask behavior (ignoring positional mask 0x3, using default mask 0x3 based on channel count of 2)
+09-12 23:51:34.054 24402 24518 W libOpenSLES: AudioPlayer: the usecase used will be ll, not ull
+09-12 23:51:34.054 24402 24518 W AudioTrack: set(): notificationFrames=-43 clamped to the range -1 to -8
+09-12 23:51:34.058   887   887 D audio_hw_primary: adev_get_parameters:vr_audio_mode_on
+09-12 23:51:34.058   887   887 I audio_hw_primary: getting vr mode to 0
+09-12 23:51:34.058   887   887 D audio_hw_primary: adev_get_parameters: exit: returns - vr_audio_mode_on=false
+09-12 23:51:34.059  1035  1324 I hash_map_utils: key: 'vr_audio_mode_on' value: ''
+09-12 23:51:34.059  1035  1324 I AudioPolicyManagerCustom: VR mode is 0, switch to primary output if request is for fast|raw
+09-12 23:51:34.060  1035  1324 D AudioFlinger: Client defaulted notificationFrames to 192 for frameCount 1536
+09-12 23:51:34.062  1035  1324 D AF::TrackHandle: OpPlayAudio: track:483 usage:1 not muted
+09-12 23:51:34.064   887   887 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=false
+09-12 23:51:34.064   887   887 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:51:34.066 24402 24518 I AudioTrack: createTrack_l(0): AUDIO_OUTPUT_FLAG_FAST successful; frameCount 0 -> 1536
+09-12 23:51:34.067   887  3724 W audio_hw_primary: out_write: underrun(2541) frames_by_time(25245) > out->last_fifo_frames_remaining(384)
+09-12 23:51:34.070  1451  7605 I system_server: oneway function results will be dropped but finished with status OK and parcel size 8
+09-12 23:51:34.096   887 23971 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=true
+09-12 23:51:34.096   887 23971 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:51:34.103 24592 18527 I FileLockLib: [24592]file 61 unlocked. fl.pid=0
+09-12 23:51:34.106   887   887 I EffectsFactory: EffectCreate() create_effect
+09-12 23:51:34.108  2204  4078 D QCNEJ/WlanStaInfoRelay: Received action: android.net.wifi.RSSI_CHANGED
+09-12 23:51:34.110  1035  1276 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-12 23:51:34.110  1035  1276 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-12 23:51:34.111 24592 24923 D HTTPDNS : Network onCapabilitiesChanged(138)
+09-12 23:51:34.112   887   887 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=false
+09-12 23:51:34.112 10094 10201 D GPL-NetworkManager: onCapabilitiesChanged net status change!  (NetworkManager.kt:58)
+09-12 23:51:34.112   887   887 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:51:34.113   887 23971 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+09-12 23:51:34.113   887 23971 D ACDB-LOADER: ACDB -> send_audvoltable
+09-12 23:51:34.113   887 23971 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE
+09-12 23:51:34.113   887 23971 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-12 23:51:34.113   887 23971 D ACDB-LOADER: Error: ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE Returned = -19
+09-12 23:51:34.113   887 23971 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE, vol index 5
+09-12 23:51:34.113   887 23971 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-12 23:51:34.113   887 23971 D ACDB-LOADER: Error: ACDB AudProc vol returned = -19
+09-12 23:51:34.113   887 23971 D ACDB-LOADER: ACDB -> AUDIO_SET_VOL_CAL cal type = 40
+09-12 23:51:34.113   887 23971 W msm8974_platform: platform_send_gain_dep_cal: Usecase list is empty
+09-12 23:51:34.113   887  3724 W audio_hw_primary: out_write: underrun(2542) frames_by_time(959) > out->last_fifo_frames_remaining(384)
+09-12 23:51:34.113 22746 22772 W GCloudCore: [2026-09-12 23:51:34 113] | Warning | [GCloudCore] |22772| :0|| [NetworkChangeHelper]Network State not change:2
+09-12 23:51:34.118  1451 28288 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:51:34.191  2121  2141 I rkstack.proces: Background concurrent copying GC freed 44983(1725KB) AllocSpace objects, 14(840KB) LOS objects, 49% free, 2721KB/5443KB, paused 30us total 109.992ms
+09-12 23:51:34.220 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.220 24402 24519 D AudioTrack: stop(798): called with 6192 frames delivered
+09-12 23:51:34.236 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.236 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.242 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.242 24402 24519 D AudioTrack: stop(798): called with 144 frames delivered
+09-12 23:51:34.254 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.254 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.286 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.287 24402 24519 D AudioTrack: stop(798): called with 1584 frames delivered
+09-12 23:51:34.304 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.305 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.320 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.320 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.336 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.336 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.356 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.356 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.368 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.368 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.390 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.390 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.391 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.391 24402 24519 D AudioTrack: stop(798): called with 144 frames delivered
+09-12 23:51:34.404 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.405 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.420 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.420 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.436 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.436 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.453 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.453 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.472 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.472 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.488 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.488 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.504 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.504 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.520 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.520 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.537 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.537 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.557 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.557 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.573 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.573 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.588 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.588 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.604 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.604 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.621 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.621 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.636 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.636 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.656 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.656 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.673 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.673 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.688 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.688 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.705 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.705 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.721 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.721 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.725 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.725 24402 24519 D AudioTrack: stop(798): called with 144 frames delivered
+09-12 23:51:34.757 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.758 24402 24519 D AudioTrack: stop(798): called with 1584 frames delivered
+09-12 23:51:34.772 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.772 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.790 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.790 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.804 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.804 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.838 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.838 24402 24519 D AudioTrack: stop(798): called with 1584 frames delivered
+09-12 23:51:34.856 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.857 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.873 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.873 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:34.888 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.888 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.896 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.896 24402 24519 D AudioTrack: stop(798): called with 144 frames delivered
+09-12 23:51:34.908 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.908 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.920 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.920 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:34.973 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.973 24402 24519 D AudioTrack: stop(798): called with 2448 frames delivered
+09-12 23:51:34.992 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:34.992 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:35.004 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.004 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:35.025 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.025 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:35.040 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.040 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:35.056 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.056 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:35.076 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.076 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:35.088 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.088 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:35.140 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.140 24402 24519 D AudioTrack: stop(798): called with 2448 frames delivered
+09-12 23:51:35.174 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.175 24402 24519 D AudioTrack: stop(798): called with 1584 frames delivered
+09-12 23:51:35.193 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.193 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:35.201  2121  2555 D NetlinkTracker/wlan0: addressUpdated: 240e:37b:1aed:0:d4ce:9aff:fe21:2418/64 on wlan0 flags 256 scope 0
+09-12 23:51:35.204 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.204 24402 24519 D AudioTrack: stop(798): called with 144 frames delivered
+09-12 23:51:35.208 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.208 24402 24519 D AudioTrack: stop(798): called with 576 frames delivered
+09-12 23:51:35.210  2121 20938 D NetlinkTracker/wlan0: addressUpdated: 240e:37b:1aed:0:b8dc:3a2:3f42:9c60/64 on wlan0 flags 1 scope 0
+09-12 23:51:35.224 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.224 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:35.240 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.240 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:35.257 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.257 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:35.276 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.276 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:35.292 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.292 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:35.297 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.298 24402 24519 D AudioTrack: stop(798): called with 144 frames delivered
+09-12 23:51:35.310 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.310 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:35.324 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.324 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:35.341 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.341 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:35.377 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.377 24402 24519 D AudioTrack: stop(798): called with 1584 frames delivered
+09-12 23:51:35.393 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.393 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:35.408 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.408 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:35.425 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.425 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:35.440 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.441 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:35.492 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.492 24402 24519 D AudioTrack: stop(798): called with 2448 frames delivered
+09-12 23:51:35.509 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.509 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:35.525 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.525 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:35.576 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.576 24402 24519 D AudioTrack: stop(798): called with 2448 frames delivered
+09-12 23:51:35.593 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.593 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:35.608 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.608 24402 24519 D AudioTrack: stop(798): called with 720 frames delivered
+09-12 23:51:35.642 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.642 24402 24519 D AudioTrack: stop(798): called with 1584 frames delivered
+09-12 23:51:35.692 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.692 24402 24519 D AudioTrack: stop(798): called with 2448 frames delivered
+09-12 23:51:35.726 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.726 24402 24519 D AudioTrack: stop(798): called with 1584 frames delivered
+09-12 23:51:35.776 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.776 24402 24519 D AudioTrack: stop(798): called with 2448 frames delivered
+09-12 23:51:35.810 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.810 24402 24519 D AudioTrack: stop(798): called with 1584 frames delivered
+09-12 23:51:35.861 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.861 24402 24519 D AudioTrack: stop(798): called with 2448 frames delivered
+09-12 23:51:35.894 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.894 24402 24519 D AudioTrack: stop(798): called with 1584 frames delivered
+09-12 23:51:35.945 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:35.945 24402 24519 D AudioTrack: stop(798): called with 2448 frames delivered
+09-12 23:51:36.012 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:36.012 24402 24519 D AudioTrack: stop(798): called with 3168 frames delivered
+09-12 23:51:36.028 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:36.028 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:36.031  1209  1209 D AudioAnalytics: gc(1700, 2000): log size:1700 item map size:22, item map items:1700
+09-12 23:51:36.096 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:36.096 24402 24519 D AudioTrack: stop(798): called with 3168 frames delivered
+09-12 23:51:36.128 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:36.128 24402 24519 D AudioTrack: stop(798): called with 1584 frames delivered
+09-12 23:51:36.145 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:36.145 24402 24519 D AudioTrack: stop(798): called with 864 frames delivered
+09-12 23:51:36.197 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:36.197 24402 24519 D AudioTrack: stop(798): called with 2448 frames delivered
+09-12 23:51:36.330 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:36.330 24402 24519 D AudioTrack: stop(798): called with 6336 frames delivered
+09-12 23:51:36.350  1451  1831 D InputDispatcher: Waiting to send key to Window{d637605 u0 com.cutoolee.gamego/com.retroarch.browser.mainmenu.MainMenuActivity} because there are unprocessed events that may cause focus to change
+09-12 23:51:36.848 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:36.848 24402 24519 D AudioTrack: stop(798): called with 24912 frames delivered
+09-12 23:51:37.147  2204  4078 D QCNEJ/WlanStaInfoRelay: Received action: android.net.wifi.RSSI_CHANGED
+09-12 23:51:37.147 24592 18527 I FileLockLib: [24592]file 61 unlocked. fl.pid=0
+09-12 23:51:37.161 24592 24923 D HTTPDNS : Network onCapabilitiesChanged(138)
+09-12 23:51:37.162 10094 10201 D GPL-NetworkManager: onCapabilitiesChanged net status change!  (NetworkManager.kt:58)
+09-12 23:51:37.163 22746 22772 W GCloudCore: [2026-09-12 23:51:37 163] | Warning | [GCloudCore] |22772| :0|| [NetworkChangeHelper]Network State not change:2
+09-12 23:51:37.689 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:37.689 24402 24519 D AudioTrack: stop(798): called with 40320 frames delivered
+09-12 23:51:37.706 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:37.706 24402 24519 D AudioTrack: stop(798): called with 144 frames delivered
+09-12 23:51:37.707 24402 24519 D cutoolee.gameg: PlayerBase::stop() from IPlayer
+09-12 23:51:37.708 24402 24519 D AudioTrack: stop(798): called with 576 frames delivered
+09-12 23:51:37.786  1451 12372 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:51:37.813   887   887 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=true
+09-12 23:51:37.813   887   887 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:51:37.814   887   887 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+09-12 23:51:37.814   887   887 D ACDB-LOADER: ACDB -> send_audvoltable
+09-12 23:51:37.814   887   887 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE
+09-12 23:51:37.814   887   887 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-12 23:51:37.815   887   887 D ACDB-LOADER: Error: ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE_SIZE Returned = -19
+09-12 23:51:37.815   887   887 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_INSTANCE_GAIN_DEP_STEP_TABLE, vol index 0
+09-12 23:51:37.815   887   887 D android.hardware.audio.service: Failed to fetch the lookup information of the device 0000000F 
+09-12 23:51:37.815   887   887 D ACDB-LOADER: Error: ACDB AudProc vol returned = -19
+09-12 23:51:37.815   887   887 D ACDB-LOADER: ACDB -> AUDIO_SET_VOL_CAL cal type = 40
+09-12 23:51:37.815   887   887 W msm8974_platform: platform_send_gain_dep_cal: Usecase list is empty
+09-12 23:51:37.815   887 23971 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+09-12 23:51:37.815   887 23971 W msm8974_platform: platform_send_gain_dep_cal: Usecase list is empty
+09-12 23:51:37.819  1035  1276 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-12 23:51:37.822  1035  1276 I chatty  : uid=1041(audioserver) ApmOutput identical 1 line
+09-12 23:51:37.822  1035  1276 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-12 23:51:38.815   887 23971 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=false
+09-12 23:51:38.815   887 23971 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:51:38.816   887  3724 W audio_hw_primary: out_write: underrun(2543) frames_by_time(48240) > out->last_fifo_frames_remaining(384)
+09-12 23:51:38.858   887 23971 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=true
+09-12 23:51:38.858   887 23971 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:51:39.860   887 23971 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=false
+09-12 23:51:39.860   887 23971 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:51:39.861   887  3724 W audio_hw_primary: out_write: underrun(2544) frames_by_time(48301) > out->last_fifo_frames_remaining(384)
+09-12 23:51:39.902   887 23971 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=true
+09-12 23:51:39.903   887 23971 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:51:40.904   887 23971 D audio_hw_primary: out_set_parameters: enter: usecase(1: low-latency-playback) kvpairs: suspend_playback=false
+09-12 23:51:40.904   887 23971 D audio_hw_extn: audio_extn_fm_set_parameters: Enter
+09-12 23:51:40.918   887 23971 D audio_hw_primary: out_standby: enter: stream (0xecb40010) usecase(1: low-latency-playback)
+09-12 23:51:41.003   887 23971 D audio_hw_primary: disable_audio_route: reset and update mixer path: low-latency-playback
+09-12 23:51:41.013   887 23971 E soundtrigger: audio_extn_sound_trigger_update_stream_status: invalid input device 0x0, for event 2
+09-12 23:51:41.014   887 23971 D soundtrigger: audio_extn_sound_trigger_update_stream_status: uc_info->id 1 of type 0 for Event 2, with Raise=0
+09-12 23:51:41.014   887 23971 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+09-12 23:51:41.014   887 23971 I msm8974_platform: platform_get_custom_mtmx_params: no matching param with id 0 ip_ch 2 op_ch 2 uc_id 1 snd_dev 2
+09-12 23:51:41.014   887 23971 D hardware_info: hw_info_append_hw_type : device_name = speaker
+09-12 23:51:41.014   887 23971 D audio_hw_primary: disable_snd_device: snd_device(2: speaker)
+09-12 23:51:41.014   887 23971 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+09-12 23:51:41.032   887 23971 D hardware_info: hw_info_append_hw_type : device_name = vi-feedback
+09-12 23:51:41.032   887 23971 D audio_hw_primary: disable_snd_device: snd_device(217: vi-feedback)
+09-12 23:51:41.032   887 23971 D msm8974_platform: platform_split_snd_device: snd_device(217) num devices(0) new_snd_devices(0)
+09-12 23:51:41.033   887 23971 I soundtrigger: audio_extn_sound_trigger_update_device_status: device 0xd9 of type 1 for Event 0, with Raise=0
+09-12 23:51:41.033   887 23971 D audio_hw_primary: disable_audio_route: reset and update mixer path: spkr-vi-record
+09-12 23:51:41.035   887 23971 D soundtrigger: audio_extn_sound_trigger_update_stream_status: uc_info->id 53 of type 1 for Event 2, with Raise=0
+09-12 23:51:41.035   887 23971 I soundtrigger: audio_extn_sound_trigger_update_device_status: device 0x2 of type 0 for Event 0, with Raise=0
+09-12 23:51:41.035   887 23971 D audio_hw_primary: out_standby: exit
+09-12 23:51:41.041  1451 12372 I system_server: oneway function results will be dropped but finished with status OK and parcel size 4
+09-12 23:51:43.801  2121 20938 D NetlinkTracker/wlan0: addressUpdated: 240e:37b:1aed:0:d4ce:9aff:fe21:2418/64 on wlan0 flags 256 scope 0
+09-12 23:51:43.801  2121 20938 D NetlinkTracker/wlan0: addressUpdated: 240e:37b:1aed:0:b8dc:3a2:3f42:9c60/64 on wlan0 flags 1 scope 0
+09-12 23:51:45.268 22746 22746 W Thread-108: type=1400 audit(0.0:25701): avc: denied { read } for name="cache" dev="dm-7" ino=16 scontext=u:r:untrusted_app:s0:c190,c256,c512,c768 tcontext=u:object_r:cache_file:s0 tclass=lnk_file permissive=0 app=com.tencent.tmgp.supercell.clashofclans
+09-12 23:51:53.120  2121 20938 D NetlinkTracker/wlan0: addressUpdated: 240e:37b:1aed:0:d4ce:9aff:fe21:2418/64 on wlan0 flags 256 scope 0
+09-12 23:51:53.122  2121 20938 D NetlinkTracker/wlan0: addressUpdated: 240e:37b:1aed:0:b8dc:3a2:3f42:9c60/64 on wlan0 flags 1 scope 0

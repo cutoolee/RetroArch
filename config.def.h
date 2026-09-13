@@ -1612,7 +1612,7 @@
 #endif
 
 /* Take screenshots for save states */
-#if defined(__x86_64__) || defined(_M_X64)
+#if defined(__x86_64__) || defined(_M_X64) || defined(ANDROID)
 #define DEFAULT_SAVESTATE_THUMBNAIL_ENABLE true
 #else
 #define DEFAULT_SAVESTATE_THUMBNAIL_ENABLE false

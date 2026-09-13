@@ -1,0 +1,2 @@
+request_id: NOT_OBSERVABLE
+reason: synthetic A/Mode events did not reach the GameGo input pipeline; no command was accepted

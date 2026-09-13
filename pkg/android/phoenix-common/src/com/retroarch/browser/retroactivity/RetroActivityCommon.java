@@ -106,7 +106,7 @@ public class RetroActivityCommon extends NativeActivity
   public int screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
 
   /* USB HID rumble: action string for the runtime permission broadcast. */
-  private static final String ACTION_USB_PERMISSION = "com.retroarch.USB_PERMISSION";
+  private static final String ACTION_USB_PERMISSION = BuildConfig.APPLICATION_ID + ".USB_PERMISSION";
 
   /* Supported USB VID/PID constants for Sony controllers (controlTransfer rumble). */
   private static final int VID_SONY      = 0x054C;
