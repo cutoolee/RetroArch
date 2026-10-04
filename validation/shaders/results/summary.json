@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-04",
+  "platform": "Android arm64-v8a",
+  "core": "mGBA",
+  "ui_resolutions_checked": [
+    "640x480",
+    "1280x720",
+    "1920x1080"
+  ],
+  "checks": {
+    "ui_boundary_and_C89_syntax": "passed",
+    "ui_navigation_and_touch": "passed",
+    "address_and_undefined_behavior_sanitizers": "passed",
+    "bridge_debounce_and_pending_events": "passed",
+    "bundle_references_and_seeding": "passed",
+    "slang_vertex_and_fragment_compilation": "passed",
+    "GLSL_live_preview": "passed",
+    "Vulkan_Slang_all_six_effects": "passed",
+    "cancel_restores_original_frame": "passed",
+    "failed_shader_restores_last_good_preview": "passed",
+    "explicit_off_game_preset_restart": "passed",
+    "game_core_global_saving": "passed",
+    "core_removal_inheritance_survives_restart": "passed",
+    "original_game_core_global_presets_restored": "passed"
+  },
+  "rendered_frame_changes_against_original": {
+    "shader-off": true,
+    "shader-lcd": false,
+    "shader-soft": true
+  },
+  "vulkan_rendered_frame_changes_against_stock": {
+    "1": false,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+  },
+  "apk": "dist/local/GameGo-dev-aarch64.apk",
+  "apk_sha256": "01a7ba67a181ee9f7caa12608b3b5bb781c7ad91e464d18b6cc342acfa09a681",
+  "limitations": [
+    "Dynamic gameplay preview and parameter editing are deferred.",
+    "No sustained gameplay FPS benchmark was performed."
+  ]
+}

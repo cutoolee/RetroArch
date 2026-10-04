@@ -14,8 +14,13 @@ static const char *hh_gamego_e2e_page(hh_quick_menu_page_t page)
 {
    switch (page)
    {
+      case HH_QUICK_MENU_PAGE_CONTROLS: return "CONTROLS";
+      case HH_QUICK_MENU_PAGE_CONTROL_EDIT: return "CONTROL_EDIT";
       case HH_QUICK_MENU_PAGE_SAVE: return "SAVE";
       case HH_QUICK_MENU_PAGE_LOAD: return "LOAD";
+      case HH_QUICK_MENU_PAGE_SHADER: return "SHADER";
+      case HH_QUICK_MENU_PAGE_SHADER_SCOPE: return "SHADER_SCOPE";
+      case HH_QUICK_MENU_PAGE_RECENT: return "RECENT";
       default: return "MAIN";
    }
 }
@@ -68,7 +73,13 @@ static jstring hh_gamego_e2e_status(JNIEnv *env)
          "SAVE_SUBMIT_REQUEST_ID=%llu SAVE_ACCEPTED_REQUEST_ID=%llu "
          "SAVE_COMPLETED_REQUEST_ID=%llu SAVE_GENERATION=%llu "
          "LOAD_SUBMIT_REQUEST_ID=%llu LOAD_ACCEPTED_REQUEST_ID=%llu "
-         "LOAD_COMPLETED_REQUEST_ID=%llu LOAD_GENERATION=%llu",
+         "LOAD_COMPLETED_REQUEST_ID=%llu LOAD_GENERATION=%llu "
+         "SHADER_COUNT=%u SHADER_SELECTION=%u SHADER_ACTIVE=%d "
+         "SHADER_VALID=%s SHADER_FULLSCREEN=%s SHADER_SCOPE=%u "
+         "RECENT_COUNT=%lu RECENT_SELECTION=%lu RECENT_THUMBNAIL=%s "
+         "RECENT_VIDEO=%s CONTENT_NAME=%s CORE_NAME=%s "
+         "CONTROL_PLAYER=%u CONTROL_ROW=%u CONTROL_MODE=%u CONTROL_MASK=%u "
+         "CONTROL_PERIOD=%u CONTROL_VALID=%u CONTROL_DIRTY=%u",
          runtime.content_loaded ? "RUNNING" : "NO_CONTENT",
          hh_bridge_is_open(bridge) ? "YES" : "NO",
          view ? hh_gamego_e2e_page(view->page) : "MAIN",
@@ -94,7 +105,22 @@ static jstring hh_gamego_e2e_status(JNIEnv *env)
          (unsigned long long)io.load_submit_request_id,
          (unsigned long long)io.load_accepted_request_id,
          (unsigned long long)io.load_completed_request_id,
-         (unsigned long long)io.load_generation);
+         (unsigned long long)io.load_generation,
+         view ? (unsigned)view->shader_count : 0U,
+         view ? (unsigned)view->shader_selected : 0U,
+         view ? view->shader_active_id : 0,
+         view && view->shader_valid ? "YES" : "NO",
+         view && view->shader_fullscreen ? "YES" : "NO",
+         view ? (unsigned)view->shader_scope : 0U,
+         view ? (unsigned long)view->recent_count : 0UL,
+         view ? (unsigned long)view->recent_selected : 0UL,
+         view ? view->recent_thumbnail : "",
+         view ? view->recent_video : "",
+         runtime.content_name, runtime.core_name,
+         view ? view->control_player : 0, view ? view->control_selected : 0,
+         view ? view->control_mode : 0, view ? view->control_mask : 0,
+         view ? view->control_period : 0, view ? view->controls_valid : 0,
+         view ? view->controls_dirty : 0);
    __android_log_print(ANDROID_LOG_INFO, HH_GAMEGO_E2E_TAG, "%s", line);
    return (*env)->NewStringUTF(env, line);
 }

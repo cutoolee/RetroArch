@@ -1,0 +1,43 @@
+{
+  "device": "2419TNW44608",
+  "model": "GR0006",
+  "core": "FCEUmm (SVN 236ccdf)",
+  "application": "com.retroarch.aarch64",
+  "content": "/storage/emulated/0/Roms/FC/魂斗罗1.zip",
+  "option_path": "/storage/emulated/0/GameGo/config/FCEUmm/FCEUmm.opt",
+  "turbo_before": "None",
+  "turbo_after": "Player 1",
+  "turbo_delay": 3,
+  "method": "Run the installed arm64 core on the device in an isolated process with a generated NROM test cartridge. The cartridge reads the NES controller register into system RAM. After four warmup frames, sample 60 frames while holding one input. Confirm the running application option in the native menu. Enable Player 1 through the menu, close content normally, and verify persisted configuration.",
+  "results": {
+    "normal_a": {
+      "on": 60,
+      "off": 0
+    },
+    "normal_b": {
+      "on": 60,
+      "off": 0
+    },
+    "disabled_turbo_a": {
+      "on": 0,
+      "off": 60
+    },
+    "disabled_turbo_b": {
+      "on": 0,
+      "off": 60
+    },
+    "enabled_turbo_a": {
+      "on": 15,
+      "off": 45
+    },
+    "enabled_turbo_b": {
+      "on": 15,
+      "off": 45
+    }
+  },
+  "limitations": [
+    "No physical button actuation captured. Android injected events are reported as Virtual and cannot prove the physical device path.",
+    "Core probe bypasses frontend input and remapping; it proves the installed core option behavior.",
+    "The controller binding screenshot was taken after Android event injection and shows fallback mapping."
+  ]
+}

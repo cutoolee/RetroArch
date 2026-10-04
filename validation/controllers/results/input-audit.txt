@@ -1,0 +1,28 @@
+--------- beginning of main
+--------- beginning of system
+10-04 16:24:53.014 23442 23472 I GG_INPUT: frame=840 port=0 mask=1 scalar=1
+10-04 16:24:53.048 23442 23472 I GG_INPUT: frame=843 port=0 mask=0 scalar=0
+10-04 16:24:53.088 23442 23472 I GG_INPUT: frame=846 port=0 mask=1 scalar=1
+10-04 16:24:53.142 23442 23472 I GG_INPUT: frame=849 port=0 mask=0 scalar=0
+10-04 16:24:53.195 23442 23472 I GG_INPUT: frame=852 port=0 mask=1 scalar=1
+10-04 16:24:53.237 23442 23472 I GG_INPUT: frame=855 port=0 mask=0 scalar=0
+10-04 16:24:53.290 23442 23472 I GG_INPUT: frame=858 port=0 mask=1 scalar=1
+10-04 16:24:53.339 23442 23472 I GG_INPUT: frame=861 port=0 mask=0 scalar=0
+10-04 16:24:53.387 23442 23472 I GG_INPUT: frame=864 port=0 mask=1 scalar=1
+10-04 16:24:53.439 23442 23472 I GG_INPUT: frame=867 port=0 mask=0 scalar=0
+10-04 16:24:53.490 23442 23472 I GG_INPUT: frame=870 port=0 mask=1 scalar=1
+10-04 16:24:53.538 23442 23472 I GG_INPUT: frame=873 port=0 mask=0 scalar=0
+10-04 16:24:53.588 23442 23472 I GG_INPUT: frame=876 port=0 mask=1 scalar=1
+10-04 16:24:53.641 23442 23472 I GG_INPUT: frame=879 port=0 mask=0 scalar=0
+10-04 16:24:53.690 23442 23472 I GG_INPUT: frame=882 port=0 mask=1 scalar=1
+10-04 16:24:53.740 23442 23472 I GG_INPUT: frame=885 port=0 mask=0 scalar=0
+10-04 16:24:53.791 23442 23472 I GG_INPUT: frame=888 port=0 mask=1 scalar=1
+10-04 16:24:53.839 23442 23472 I GG_INPUT: frame=891 port=0 mask=0 scalar=0
+10-04 16:24:53.889 23442 23472 I GG_INPUT: frame=894 port=0 mask=1 scalar=1
+10-04 16:24:53.939 23442 23472 I GG_INPUT: frame=897 port=0 mask=0 scalar=0
+10-04 16:24:53.991 23442 23472 I GG_INPUT: frame=900 port=0 mask=1 scalar=1
+10-04 16:24:54.042 23442 23472 I GG_INPUT: frame=903 port=0 mask=0 scalar=0
+10-04 16:24:54.090 23442 23472 I GG_INPUT: frame=906 port=0 mask=1 scalar=1
+10-04 16:24:54.140 23442 23472 I GG_INPUT: frame=909 port=0 mask=0 scalar=0
+10-04 16:24:54.933 23442 23472 I GG_INPUT: frame=956 port=0 mask=259 scalar=259
+10-04 16:24:56.144 23442 23472 I GG_INPUT: frame=1029 port=0 mask=0 scalar=0

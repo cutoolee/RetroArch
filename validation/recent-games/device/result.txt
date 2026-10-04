@@ -1,0 +1,52 @@
+GameGo recent games device verification — 2026-10-04
+
+Device: Logitech GR0006, Android 11, serial 2419TNW44608
+Package: com.retroarch.aarch64
+Installed APK: dist/local/GameGo-e2e-aarch64.apk
+SHA256: 12ffaf1c8a1c77e6e21d86efef2cb146dc0694435b8abe3ddc1e7a34814c6eb8
+Installation: adb install -r; same package and development signer.
+Startup: tools/gamego-dev e2e-start, including first launch and 10-second wait.
+
+PASS: Recent games entry and 11 history records on the device.
+PASS: Chinese names from metadata.pegasus.txt, including file/files groups.
+PASS: GBA/FC artwork in media/<title>/boxfront.png.
+PASS: Arcade artwork in media/<ROM stem>/boxFront.jpg after correcting lookup.
+PASS: Six visible rows scroll with selection; selected artwork changes.
+PASS: Missing HelloWorld core/content is disabled; confirm leaves current content paused.
+PASS: Back returns to the main GameGo menu.
+PASS: GBA 龙珠大冒险 -> FC 魂斗罗1 -> GBA 龙珠大冒险 -> Arcade 恐龙新世纪.
+PASS: Successful loading closes the menu and resumes content; screenshots show each game.
+PASS: Android touchscreen taps enter the recent page, select 魂斗罗1 and confirm loading.
+PASS: Local UI/bridge/metadata/package/evidence tests and git diff --check.
+PASS: Metadata AddressSanitizer/UndefinedBehaviorSanitizer checks.
+
+Direction/confirm/back tests use the native E2E bridge input harness on the device.
+Touch tests use adb input tap through Android input delivery.
+Physical handheld buttons were not manually actuated.
+
+Latest installation and retest: process 7427 remained alive across core switches;
+retest-crash-buffer.txt is empty. Final screen is the recent games page with content paused.
+
+Earlier startup attempts crashed inside the mGBA core before recent-page testing.
+Cold startup subsequently succeeded, and the latest installation/retest did not reproduce
+the failure. Root cause remains undetermined; no core/config replacement was used to
+bypass it. See startup-crash.txt and startup-logcat.txt. The early 01-game-running.png
+actually shows the frontend after a crash and is not evidence of content running.
+
+Key evidence:
+  build-install.txt: APK gates and fixed startup checkpoints.
+  08-dino-cover-fixed.png: Arcade JPG artwork and Chinese name.
+  10-contra-loaded.png / 10-contra-status.txt: FC loaded and resumed.
+  11-scrolled-list.png: Selection 7/11 with artwork.
+  12-unavailable-selected.png / 12-unavailable-status.txt: Disabled entry.
+  13-back-status.txt: Back returns to MAIN.
+  14-gba-return.png / 14-gba-return-status.txt: Cross-core return to mGBA.
+  18-touch-selected.png / 19-touch-confirm-status.txt: Touch selection/loading.
+  20-latest-arcade-loaded.png / 20-latest-arcade-status.txt: Latest APK loads FBNeo.
+  final-recent-games.png / final-status.txt: Final device UI/status.
+  retest-logcat.txt / retest-crash-buffer.txt: Latest retest logs.
+
+The Android keyboard-source keyevent probes (15/16 files) did not open the menu;
+they do not verify physical gamepad buttons. Native status returned with a queued
+input can describe the state before the owner thread consumes it; separate status
+queries and screenshots are the completion evidence.

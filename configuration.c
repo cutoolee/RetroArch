@@ -9902,6 +9902,15 @@ bool input_remapping_load_file(void *data, const char *path)
             char ident[128];
             int _remap = -1;
 
+            snprintf(ident, sizeof(ident), "%s_action_%s", prefix, key_string);
+            if (config_get_int(conf, ident, &_remap) && _remap > 0 && _remap <= 0xffff)
+               settings->uints.input_action_mask[i][j] = (unsigned)_remap;
+            snprintf(ident, sizeof(ident), "%s_action_period_%s", prefix, key_string);
+            if (settings->uints.input_action_mask[i][j]
+                  && config_get_int(conf, ident, &_remap) && _remap >= 2 && _remap <= 60)
+               settings->uints.input_action_period[i][j] = (unsigned)_remap;
+            _remap = -1;
+
             fill_pathname_join_delim(ident, s1,
                   key_string, '_', sizeof(ident));
 
@@ -10108,6 +10117,18 @@ bool input_remapping_save_file(const char *path)
 
          fill_pathname_join_delim(_ident, s1,
                key_string, '_', sizeof(_ident));
+
+         if (j < 16)
+         {
+            char action_ident[128];
+            if (settings->uints.input_action_mask[i][j])
+            {
+               snprintf(action_ident, sizeof(action_ident), "%s_action_%s", prefix, key_string);
+               config_set_int(conf, action_ident, settings->uints.input_action_mask[i][j]);
+               snprintf(action_ident, sizeof(action_ident), "%s_action_period_%s", prefix, key_string);
+               config_set_int(conf, action_ident, settings->uints.input_action_period[i][j]);
+            }
+         }
 
          /* Only save modified button values */
          if (remap_id == j)

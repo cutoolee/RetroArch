@@ -67,12 +67,19 @@
 #include "../menu/menu_driver.h"
 #endif
 
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+#include "../handheld/bridge/hh_bridge.h"
+#endif
+
+#include "input_action.h"
+
 #include "../accessibility.h"
 #include "../command.h"
 #include "../config.def.keybinds.h"
 #include "../configuration.h"
 #include "../core_info.h"
 #include "../driver.h"
+#include "../dynamic.h"
 #include "../frontend/frontend_driver.h"
 #include "../list_special.h"
 #include "../paths.h"
@@ -1945,9 +1952,14 @@ static int16_t input_state_device(
                bool bind_valid       = input_st->libretro_input_binds[port]
                   && RETRO_KEYBIND_VALID(&(*input_st->libretro_input_binds[port])[id]);
                unsigned remap_button = settings->uints.input_remap_ids[port][id];
+               bool action = id < 16 && settings->bools.input_remap_binds_enable
+                  && settings->uints.input_action_mask[port][id] != 0;
+#ifdef HAVE_MENU
+               action = action && !(menu_state_get_ptr()->flags & MENU_ST_FLAG_ALIVE);
+#endif
 
                /* TODO/FIXME: What on earth is this code doing...? */
-               if (!(bind_valid && (id != remap_button)))
+               if (!action && !(bind_valid && (id != remap_button)))
                {
                   if (button_mask)
                   {
@@ -1987,7 +1999,7 @@ static int16_t input_state_device(
                    * is ignored */
                   if (   (menu_driver_alive
                       || !input_remap_binds_enable)
-                      || (id == remap_button))
+                      || (id == remap_button && !action))
                      res |= 1;
                }
 #endif
@@ -6478,9 +6490,19 @@ static bool input_overlay_want_hidden(void)
    settings_t *settings = config_get_ptr();
    bool hide            = false;
 
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME
+   hide = (runloop_state_get_ptr()->current_core.flags
+         & RETRO_CORE_FLAG_GAME_LOADED) != 0;
+#endif
+
 #ifdef HAVE_MENU
    if (settings->bools.input_overlay_hide_in_menu)
-      hide = (menu_state_get_ptr()->flags & MENU_ST_FLAG_ALIVE) != 0;
+   {
+      hide = hide || (menu_state_get_ptr()->flags & MENU_ST_FLAG_ALIVE) != 0;
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+      hide = hide || hh_bridge_is_open(hh_bridge_active());
+#endif
+   }
 #endif
    if (settings->bools.input_overlay_hide_when_gamepad_connected
          && !settings->bools.input_overlay_pointer_enable)
@@ -7419,6 +7441,7 @@ void input_driver_poll(void)
 
    if (input_st->flags & INP_FLAG_BLOCK_LIBRETRO_INPUT)
    {
+      memset(input_st->input_action_phase, 0, sizeof(input_st->input_action_phase));
       for (i = 0; i < max_users; i++)
       {
          input_st->turbo_btns.frame_enable[i] = 0;
@@ -7723,6 +7746,21 @@ void input_driver_poll(void)
                         current_button_value |= BIT256_GET(ol_state->buttons, j);
                   }
 #endif
+                  if (settings->uints.input_action_mask[i][j])
+                  {
+                     unsigned target;
+                     unsigned output = input_action_step(
+                           settings->uints.input_action_mask[i][j],
+                           settings->uints.input_action_period[i][j],
+                           current_button_value != 0,
+                           &input_st->input_action_phase[i][j]);
+                     for (target = 0; target < 16; target++)
+                        if (output & (1U << target))
+                           BIT256_SET(handle->buttons[i], target);
+                     continue;
+                  }
+                  input_st->input_action_phase[i][j] = 0;
+
                   remap_valid                   =
                         (current_button_value == 1)
                      && (j != remap_button)
@@ -7823,6 +7861,9 @@ void input_driver_poll(void)
                break;
          }
          } /* if (do_remap) */
+         else
+            memset(input_st->input_action_phase[i], 0,
+                  sizeof(input_st->input_action_phase[i]));
       } /* for (i = 0; i < max_users; i++) */
    }
 
@@ -8130,6 +8171,12 @@ void input_remapping_deinit(bool save_remap)
 
       free(runloop_st->name.remapfile);
    }
+   memset(config_get_ptr()->uints.input_action_mask, 0,
+         sizeof(config_get_ptr()->uints.input_action_mask));
+   memset(config_get_ptr()->uints.input_action_period, 0,
+         sizeof(config_get_ptr()->uints.input_action_period));
+   memset(input_state_get_ptr()->input_action_phase, 0,
+         sizeof(input_state_get_ptr()->input_action_phase));
    runloop_st->name.remapfile   = NULL;
    runloop_st->flags           &= ~(RUNLOOP_FLAG_REMAPS_CORE_ACTIVE
                                |    RUNLOOP_FLAG_REMAPS_CONTENT_DIR_ACTIVE
@@ -8141,6 +8188,10 @@ void input_remapping_set_defaults(bool clear_cache)
    unsigned i, j;
    settings_t *settings        = config_get_ptr();
 
+   memset(settings->uints.input_action_mask, 0, sizeof(settings->uints.input_action_mask));
+   memset(settings->uints.input_action_period, 0, sizeof(settings->uints.input_action_period));
+   memset(input_state_get_ptr()->input_action_phase, 0,
+         sizeof(input_state_get_ptr()->input_action_phase));
    for (i = 0; i < MAX_USERS; i++)
    {
       /* Button/keyboard remaps */
@@ -8202,10 +8253,14 @@ void input_driver_collect_system_input(input_driver_state_t *input_st,
 #ifdef HAVE_MENU
    bool all_users_control_menu         = settings->bools.input_all_users_control_menu;
    bool display_kb                     = menu_input_dialog_get_display_kb();
+   bool handheld_menu_is_alive        = false;
    bool menu_is_alive                  = (menu_state_get_ptr()->flags &
          MENU_ST_FLAG_ALIVE) ? true : false;
    bool menu_input_active              = menu_is_alive &&
          !(settings->bools.menu_unified_controls && !display_kb);
+#endif
+#if defined(HAVE_MENU) && defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   handheld_menu_is_alive = hh_bridge_is_open(hh_bridge_active());
 #endif
    joypad_info.axis_threshold          = settings->floats.input_axis_threshold;
 
@@ -8227,7 +8282,7 @@ void input_driver_collect_system_input(input_driver_state_t *input_st,
       binds_auto                             = &input_autoconf_binds[joypad_info.joy_idx][RARCH_ENABLE_HOTKEY];
 
 #ifdef HAVE_MENU
-      if (menu_is_alive && joypad)
+      if ((menu_is_alive || handheld_menu_is_alive) && joypad)
       {
          uint8_t s;
          uint8_t a;
@@ -8235,8 +8290,11 @@ void input_driver_collect_system_input(input_driver_state_t *input_st,
          /* Read input from analog sticks according to settings. */
          for (s = RETRO_DEVICE_INDEX_ANALOG_LEFT; s <= RETRO_DEVICE_INDEX_ANALOG_RIGHT; s++)
          {
-            if (     (settings->bools.menu_disable_left_analog  && s == RETRO_DEVICE_INDEX_ANALOG_LEFT)
-                  || (settings->bools.menu_disable_right_analog && s == RETRO_DEVICE_INDEX_ANALOG_RIGHT))
+            if (handheld_menu_is_alive && (port != 0 || s != RETRO_DEVICE_INDEX_ANALOG_LEFT))
+               continue;
+            if (!handheld_menu_is_alive
+                  && ((settings->bools.menu_disable_left_analog && s == RETRO_DEVICE_INDEX_ANALOG_LEFT)
+                     || (settings->bools.menu_disable_right_analog && s == RETRO_DEVICE_INDEX_ANALOG_RIGHT)))
                continue;
 
             for (a = RETRO_DEVICE_ID_ANALOG_X; a <= RETRO_DEVICE_ID_ANALOG_Y; a++)

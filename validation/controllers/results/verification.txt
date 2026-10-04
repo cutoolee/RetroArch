@@ -1,0 +1,18 @@
+GameGo controls verification — 2026-10-04
+
+PASS: C89 input action helper under address/undefined sanitizers.
+PASS: runtime per-player isolation, arbitrary ABC target masks, invalid targets/periods,
+      and two-controller assignment swapping using mocked connected devices.
+PASS: controls UI and bridge tests, including failed save and duplicate protection.
+PASS: existing UI checks at 640x480, 1280x720 and 1920x1080.
+PASS: Android arm64-v8a and x86_64 native compilation, package/signing/ABI gates.
+PASS: device FCEUmm per-game remap roundtrip: player 1 Y -> B, period 6;
+      player 2 Y -> B+A, period 0. Both recovered after force-stop/relaunch.
+PASS: device FBNeo SF2 game remap: Y -> Weak Kick + Weak Punch + Medium Kick.
+PASS: standalone audit core inside actual GameGo: overlay A -> button 0 turbo,
+      transitions every 3 frames; overlay B -> mask 259 (three simultaneous buttons).
+      Scalar input and bitmask input match; release returns zero.
+
+Physical simultaneous operation of two controllers has not been verified.
+Device input audit uses the actual touch overlay and shared remapping pipeline.
+Audit-only ROM, core and remaps were removed. User turbo core option retained.

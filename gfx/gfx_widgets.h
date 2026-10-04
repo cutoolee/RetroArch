@@ -38,6 +38,7 @@
 #define MSG_QUEUE_PENDING_MAX          32
 #define MSG_QUEUE_ONSCREEN_MAX         4
 #define HH_WIDGET_PREVIEW_SLOT_COUNT   10
+#define HH_WIDGET_RECENT_TEXTURE_COUNT 10
 
 #define MSG_QUEUE_ANIMATION_DURATION   330
 #define TASK_FINISHED_DURATION         3000
@@ -258,10 +259,23 @@ typedef struct dispgfx_widget
    MENU_WIDGETS_ICON_LAST];
    uintptr_t gfx_widgets_generic_tag;
 #if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   uintptr_t hh_quick_menu_background;
+   unsigned long hh_quick_menu_background_generation;
+   bool hh_quick_menu_background_attempted;
    uintptr_t hh_quick_menu_preview_textures[HH_WIDGET_PREVIEW_SLOT_COUNT];
    char hh_quick_menu_preview_paths[HH_WIDGET_PREVIEW_SLOT_COUNT][PATH_MAX_LENGTH];
    unsigned long hh_quick_menu_preview_mtimes[HH_WIDGET_PREVIEW_SLOT_COUNT];
    unsigned long hh_quick_menu_preview_sizes[HH_WIDGET_PREVIEW_SLOT_COUNT];
+   unsigned hh_quick_menu_preview_widths[HH_WIDGET_PREVIEW_SLOT_COUNT];
+   unsigned hh_quick_menu_preview_heights[HH_WIDGET_PREVIEW_SLOT_COUNT];
+   uintptr_t hh_quick_menu_recent_textures[HH_WIDGET_RECENT_TEXTURE_COUNT];
+   char hh_quick_menu_recent_paths[HH_WIDGET_RECENT_TEXTURE_COUNT][PATH_MAX_LENGTH];
+   unsigned long hh_quick_menu_recent_mtimes[HH_WIDGET_RECENT_TEXTURE_COUNT];
+   unsigned long hh_quick_menu_recent_sizes[HH_WIDGET_RECENT_TEXTURE_COUNT];
+   unsigned hh_quick_menu_recent_widths[HH_WIDGET_RECENT_TEXTURE_COUNT];
+   unsigned hh_quick_menu_recent_heights[HH_WIDGET_RECENT_TEXTURE_COUNT];
+   uint64_t hh_quick_menu_recent_used[HH_WIDGET_RECENT_TEXTURE_COUNT];
+   uint64_t hh_quick_menu_recent_clock;
 #endif
 
    size_t current_msgs_size;

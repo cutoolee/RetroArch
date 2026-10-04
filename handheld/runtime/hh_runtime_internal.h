@@ -15,6 +15,7 @@
 #include "menu/menu_driver.h"
 #include "paths.h"
 #include "runloop.h"
+#include "playlist.h"
 
 #define HH_RUNTIME_QUEUE_CAPACITY 32
 
@@ -62,11 +63,22 @@ extern hh_runtime_state_t hh_runtime_state;
 
 hh_result_t hh_runtime_execute_command(
       hh_command_type_t type, int int_arg);
+hh_result_t hh_runtime_shader_command(hh_command_type_t type, int argument);
+bool hh_runtime_shader_supported(void);
+hh_result_t hh_runtime_controls_command(hh_command_type_t type, int argument);
+void hh_runtime_shader_discard(void);
 void hh_runtime_refresh_snapshot(void);
 void hh_runtime_emit_event(uint64_t request_id,
       hh_event_type_t type, hh_result_t result);
 void hh_runtime_set_last_error(hh_result_t result);
 bool hh_runtime_command_is_state_io(hh_command_type_t type);
+hh_result_t hh_runtime_recent_paths(const struct playlist_entry *entry,
+      char *content_path, size_t content_size,
+      char *core_path, size_t core_size);
+size_t hh_runtime_recent_entry_index(size_t index);
+void hh_runtime_recent_fallback(const struct playlist_entry *entry,
+      const char *content_path, const char *core_path, char *out, size_t size);
+void hh_runtime_recent_capture_tick(void);
 
 void hh_runtime_state_task_begin(uint64_t id, hh_command_type_t type);
 void hh_runtime_state_task_end(hh_result_t result);

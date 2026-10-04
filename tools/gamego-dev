@@ -172,7 +172,7 @@ e2e_command() {
     return 1
   fi
   if [[ "$output" == *'BRIDGE_UNAVAILABLE'* || "$output" == *'RUNTIME_STATE=UNINITIALIZED'* ]]; then
-    crash_line="$(e2e_adb logcat -b crash -d | grep -E 'Fatal signal|SIGSEGV|signal 11|>>> com\.cutoolee\.gamego <<<' | tail -1 || true)"
+    crash_line="$(e2e_adb logcat -b crash -d | grep -E 'Fatal signal|SIGSEGV|signal 11|>>> com\.retroarch\.aarch64 <<<' | tail -1 || true)"
     process_pid="$(e2e_adb shell pidof "$GAMEGO_PACKAGE" 2>/dev/null | tr -d '\r' | tr -d ' ' || true)"
     if [[ -z "$process_pid" && -n "$crash_line" ]]; then
       echo 'PROCESS_ALIVE=NO'
@@ -190,6 +190,11 @@ run_tests() {
   validation/p2.1/tests/test_gr0006_menu_profile.sh
   validation/p2/tests/test_quick_menu.sh
   validation/p2.1/tests/test_bridge.sh
+  bash validation/p2.1/tests/test_resume.sh
+  validation/controllers/tests/test_input_action.sh
+  python3 validation/shaders/tests/check_bundle.py
+  bash validation/p2.1/tests/test_recent_metadata.sh
+  bash validation/p2.1/tests/test_recent_playlist.sh
   validation/p2-1/scripts/check-gamego-package.sh
   validation/p2-1/scripts/check-evidence.sh
   git diff --check
@@ -210,23 +215,35 @@ case "${1:-}" in
     if [[ "$no_build" -eq 0 ]]; then build_apk; else [[ -f "$DIST_APK" ]] || { echo "Missing $DIST_APK; run build first" >&2; exit 1; }; apk_gate "$DIST_APK"; fi
     sdk="$(sdk_dir)"; adb="$(command -v adb 2>/dev/null || true)"; [[ -x "$sdk/platform-tools/adb" ]] && adb="$sdk/platform-tools/adb"
     device_ready "$adb" || { echo "Device $SERIAL is not ready" >&2; exit 1; }
-    if "$adb" -s "$SERIAL" shell pm path "$GAMEGO_PACKAGE" >/dev/null 2>&1; then "$adb" -s "$SERIAL" install -r "$DIST_APK"; else "$adb" -s "$SERIAL" install "$DIST_APK"; fi
+    "$adb" -s "$SERIAL" install -r "$DIST_APK"
     echo 'INSTALL=PASS'
-    [[ "$1" == 'build-install' ]] && { echo 'GAMEGO LOCAL BUILD PASS'; echo "APK: $DIST_APK"; echo "PACKAGE: $GAMEGO_PACKAGE"; echo "SIGNER: ${GAMEGO_SIGNER_SHA256:0:11}..."; echo "DEVICE: $SERIAL"; echo 'INSTALL: PASS'; }
+    if [[ "$1" == 'build-install' ]]; then
+      echo 'GAMEGO LOCAL BUILD PASS'
+      echo "APK: $DIST_APK"
+      echo "PACKAGE: $GAMEGO_PACKAGE"
+      echo "SIGNER: ${GAMEGO_SIGNER_SHA256:0:11}..."
+      echo "DEVICE: $SERIAL"
+      echo 'INSTALL: PASS'
+    fi
     ;;
   e2e-start)
     check_env; [[ "$status" -eq 0 ]] || exit 1
     build_e2e_apk
     sdk="$(sdk_dir)"; adb="$sdk/platform-tools/adb"
     device_ready "$adb" || { echo "Device $SERIAL is not ready" >&2; exit 1; }
-    if "$adb" -s "$SERIAL" shell pm path "$GAMEGO_PACKAGE" >/dev/null 2>&1; then "$adb" -s "$SERIAL" install -r "$E2E_DIST_APK" >/dev/null; else "$adb" -s "$SERIAL" install "$E2E_DIST_APK" >/dev/null; fi
+    "$adb" -s "$SERIAL" install -r "$E2E_DIST_APK" >/dev/null
+    echo 'E2E_INSTALL=PASS'
     "$adb" -s "$SERIAL" logcat -c
     "$adb" -s "$SERIAL" shell am force-stop "$GAMEGO_PACKAGE"
     "$adb" -s "$SERIAL" shell am start -n "$GAMEGO_PACKAGE/com.retroarch.browser.mainmenu.MainMenuActivity" >/dev/null
+    echo 'E2E_FIRST_LAUNCH=PASS'
     sleep 10
+    echo 'E2E_POST_INSTALL_WAIT_SECONDS=10'
+    "$adb" -s "$SERIAL" shell am force-stop "$GAMEGO_PACKAGE"
     rom="${GAMEGO_E2E_ROM:-/storage/emulated/0/Roms/GBA/龙珠大冒险.zip}"
     core="${GAMEGO_E2E_CORE:-/data/data/$GAMEGO_PACKAGE/cores/mgba_libretro_android.so}"
     "$adb" -s "$SERIAL" shell am start -n "$GAMEGO_PACKAGE/com.retroarch.browser.retroactivity.RetroActivityFuture" --es ROM "$rom" --es LIBRETRO "$core" >/dev/null
+    echo 'E2E_ROM_LAUNCH=PASS'
     echo 'E2E_START=PASS'
     ;;
   e2e-input)

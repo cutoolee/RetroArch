@@ -13,6 +13,7 @@ extern "C" {
 #define HH_RUNTIME_CONTENT_NAME_MAX 256
 #define HH_RUNTIME_CORE_NAME_MAX 128
 #define HH_RUNTIME_CORE_VERSION_MAX 64
+#define HH_RUNTIME_PATH_MAX 4096
 
 typedef enum hh_result
 {
@@ -27,7 +28,9 @@ typedef enum hh_result
    HH_ERR_LOAD_FAILED,
    HH_ERR_SCREENSHOT_FAILED,
    HH_ERR_RA_COMMAND_FAILED,
-   HH_ERR_INTERNAL
+   HH_ERR_INTERNAL,
+   HH_ERR_SHADER_LOAD_FAILED,
+   HH_ERR_SHADER_RESTORE_FAILED
 } hh_result_t;
 
 typedef enum hh_runtime_mode
@@ -49,6 +52,7 @@ typedef enum hh_capability
    HH_CAP_LOAD_STATE,
    HH_CAP_SCREENSHOT,
    HH_CAP_RA_MENU,
+   HH_CAP_SHADER,
    HH_CAP_COUNT
 } hh_capability_t;
 
@@ -63,8 +67,64 @@ typedef enum hh_command_type
    HH_CMD_SAVE_STATE,
    HH_CMD_LOAD_STATE,
    HH_CMD_SCREENSHOT,
-   HH_CMD_OPEN_RA_MENU
+   HH_CMD_OPEN_RA_MENU,
+   HH_CMD_QUIT,
+   HH_CMD_LOAD_RECENT,
+   HH_CMD_SHADER_BEGIN,
+   HH_CMD_SHADER_PREVIEW,
+   HH_CMD_SHADER_APPLY,
+   HH_CMD_SHADER_REMOVE,
+   HH_CMD_SHADER_CANCEL,
+   HH_CMD_CONTROLS_SET,
+   HH_CMD_CONTROLS_SAVE,
+   HH_CMD_CONTROLS_DEVICE
 } hh_command_type_t;
+
+#define HH_RUNTIME_CONTROL_BUTTONS 16
+#define HH_RUNTIME_CONTROL_PLAYERS 16
+
+typedef struct hh_runtime_controls
+{
+   unsigned masks[16];
+   unsigned periods[16];
+   bool custom[16];
+   char sources[16][64];
+   char targets[16][64];
+   bool available[16];
+   char devices[16][128];
+   unsigned device_ids[16];
+   unsigned device_count;
+   unsigned device_index;
+   unsigned player_count;
+} hh_runtime_controls_t;
+
+#define HH_RUNTIME_SHADER_COUNT 8
+
+typedef struct hh_runtime_shader_entry
+{
+   int id;
+   char name[64];
+   char description[128];
+   char detail[128];
+} hh_runtime_shader_entry_t;
+
+typedef struct hh_runtime_shader_list
+{
+   hh_runtime_shader_entry_t entries[HH_RUNTIME_SHADER_COUNT];
+   size_t count;
+   int active_id;
+   char source[128];
+   bool valid;
+   bool removable[3];
+} hh_runtime_shader_list_t;
+
+typedef struct hh_runtime_recent_game
+{
+   char title[HH_RUNTIME_CONTENT_NAME_MAX];
+   char thumbnail[HH_RUNTIME_PATH_MAX];
+   char video[HH_RUNTIME_PATH_MAX];
+   bool available;
+} hh_runtime_recent_game_t;
 
 typedef struct hh_runtime_snapshot
 {
@@ -97,7 +157,10 @@ typedef enum hh_event_type
    /* ACCEPTED events above are queue acknowledgement only. These are emitted
     * by the state task callbacks after the final save/load result is known. */
    HH_EVENT_STATE_SAVE_COMPLETED,
-   HH_EVENT_STATE_LOAD_COMPLETED
+   HH_EVENT_STATE_LOAD_COMPLETED,
+   HH_EVENT_QUIT,
+   HH_EVENT_SHADER_CHANGED,
+   HH_EVENT_CONTROLS_CHANGED
 } hh_event_type_t;
 
 /* P1 compatibility names; these events mean upstream command acceptance,

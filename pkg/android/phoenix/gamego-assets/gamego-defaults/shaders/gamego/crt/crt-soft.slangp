@@ -1,0 +1,4 @@
+#reference "zfast_crt_nogeo.slangp"
+parameters = "SCANLINE_WEIGHT;MASK_DARK"
+SCANLINE_WEIGHT = "3.0"
+MASK_DARK = "0.15"

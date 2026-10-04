@@ -24,10 +24,20 @@ static hh_event_type_t hh_runtime_event_for_command(hh_command_type_t type,
 {
    switch (type)
    {
+      case HH_CMD_CONTROLS_SET:
+      case HH_CMD_CONTROLS_SAVE:
+      case HH_CMD_CONTROLS_DEVICE: return HH_EVENT_CONTROLS_CHANGED;
+      case HH_CMD_SHADER_BEGIN:
+      case HH_CMD_SHADER_PREVIEW:
+      case HH_CMD_SHADER_APPLY:
+      case HH_CMD_SHADER_REMOVE:
+      case HH_CMD_SHADER_CANCEL: return HH_EVENT_SHADER_CHANGED;
       case HH_CMD_PAUSE:          return HH_EVENT_PAUSED;
       case HH_CMD_RESUME:         return HH_EVENT_RESUMED;
       case HH_CMD_RESET:          return HH_EVENT_RESET;
       case HH_CMD_CLOSE_CONTENT:  return HH_EVENT_CONTENT_CLOSED;
+      case HH_CMD_QUIT:           return HH_EVENT_QUIT;
+      case HH_CMD_LOAD_RECENT:    return HH_EVENT_CONTENT_LOADED;
       case HH_CMD_SET_STATE_SLOT: return HH_EVENT_STATE_SLOT_CHANGED;
       case HH_CMD_SAVE_STATE:     return HH_EVENT_STATE_SAVE_ACCEPTED;
       case HH_CMD_LOAD_STATE:     return HH_EVENT_STATE_LOAD_ACCEPTED;
@@ -113,7 +123,7 @@ hh_result_t hh_runtime_submit_command(
 
    if (!request_id)
       return HH_ERR_INVALID_ARGUMENT;
-   if (type <= HH_CMD_NONE || type > HH_CMD_OPEN_RA_MENU)
+   if (type <= HH_CMD_NONE || type > HH_CMD_CONTROLS_DEVICE)
       return HH_ERR_INVALID_ARGUMENT;
    if (type == HH_CMD_SCREENSHOT && !hh_runtime_has_capability(HH_CAP_SCREENSHOT))
       return HH_ERR_UNSUPPORTED;
@@ -132,6 +142,13 @@ hh_result_t hh_runtime_submit_command(
    {
       slock_unlock(hh_runtime_state.lock);
       return HH_ERR_BUSY;
+   }
+   if (type == HH_CMD_LOAD_RECENT
+         && (int_arg < 0 || hh_runtime_state.operation_busy
+            || hh_runtime_state.state_task_busy))
+   {
+      slock_unlock(hh_runtime_state.lock);
+      return int_arg < 0 ? HH_ERR_INVALID_ARGUMENT : HH_ERR_BUSY;
    }
 
    request = hh_runtime_find_free_request();
@@ -225,6 +242,7 @@ void hh_runtime_owner_tick(void)
    slock_unlock(hh_runtime_state.lock);
    hh_runtime_state_task_publish();
    hh_runtime_dispatch_pending();
+   hh_runtime_recent_capture_tick();
 }
 
 hh_result_t hh_runtime_set_event_callback(

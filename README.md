@@ -49,6 +49,15 @@ More developer-centric stuff is found [here](https://docs.libretro.com/developme
 ```
 
 详见 [Local GameGo Android Development](docs/local-android-development.md)。
+真机 E2E 使用固定流程，不能在安装后直接启动 ROM：
+
+```sh
+./tools/gamego-dev e2e-start
+./tools/gamego-dev e2e-status
+./tools/gamego-dev e2e-evidence
+```
+
+详见 [GameGo 本地 Android 真机 E2E 固定流程](docs/gamego-local-e2e-runbook.md)。
 
 ## Related projects
 

@@ -640,6 +640,7 @@ typedef struct
    bool osk_textbox_focus;
    turbo_buttons_t turbo_btns; /* int32_t alignment */
    hold_buttons_t hold_btns;   /* int32_t alignment */
+   unsigned input_action_phase[MAX_USERS][16];
 
    input_mapper_t mapper;          /* uint32_t alignment */
    input_remap_cache_t remapping_cache;

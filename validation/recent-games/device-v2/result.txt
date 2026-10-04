@@ -1,0 +1,35 @@
+GameGo 最近游戏 v2 验证结果（2026-10-04）
+
+设备：Logitech GR0006 / Android 11 / 2419TNW44608
+包名：com.retroarch.aarch64
+APK：dist/local/GameGo-e2e-aarch64.apk
+SHA256：e0bebbb9ac1579af2cf99f78e14f63fe092ef939e0eac4f955a1caa5d9d25c17
+设备 base.apk 与构建产物 SHA256 一致。
+
+PASS：完整本地测试，metadata ASAN/UBSAN，APK 构建、包名、签名、ABI 门槛。
+PASS：按 e2e-start 覆盖安装，MainMenu 首次启动后预热 10 秒，再加载 ROM。
+PASS：原始历史 11 条，按内容路径去重后 9 个游戏；不同 core 的同一路径只保留最新记录。
+PASS：过滤后的末尾条目（可见索引 8 / 原始索引 10）正确加载 B2 测试游戏。最终 APK 再验证从 mGBA 切换至 FinalBurn Neo，加载 dino 成功。
+PASS：GBA、街机演示视频实际播放。两张 GBA 截图显示不同演示画面；切换至街机替换视频，返回主菜单移除视频。实现采用静音、循环播放。
+PASS：B2 无 metadata、无现有图片时使用 RetroArch 名称和启动截图。排除 RetroArch 返回的不存在的缩略图路径后，截图兜底正常显示。
+PASS：B2 空槽创建进度后，预览改用 state.png；当前运行另一游戏时也能找到该进度缩略图。
+PASS：每次启动固定截图一次，有封面、视频或存档时也执行。单元测试覆盖精确 10 秒边界、同游戏重新启动、暂停后延迟执行、不同游戏和禁止重复截图。
+PASS：B2 重新启动观察到截图缓存仅一次从 1791095548 更新至 1791095728；最终 APK 的 GBA 截图在连续 34 秒观察中保持 1791095897，进程始终为 15515。
+
+预览顺序：视频 → 现有图片 → 最近存档缩略图 → 启动截图。
+暂停、闲置或 RetroArch 菜单阻挡时，截图延迟到游戏恢复；每次启动仍只尝试一次。
+
+主要证据：
+verified-build-install.log、verified-installed-sha256.txt、final-tests.log
+resume-history.lpl、final-b2-running-status.txt；末尾索引 8 加载后的成功状态另见本轮工具输出，最初文件查询处于加载间隙。
+verified-video-gba-1.png、verified-video-gba-2.png、verified-video-arcade.png、verified-video-hidden.png、verified-video-logcat.txt
+final-screenshot-fallback.png、final-screenshot-fallback-status.txt
+verified-other-game-state.png、verified-other-game-state-status.txt
+final-b2-relaunch-capture.txt、verified-gba-capture.txt
+verified-arcade-load-status.txt、verified-arcade-load.png、verified-crash-buffer.txt
+
+验证期间另一个着色器任务曾覆盖安装并重启应用；因此较早 resume/final 前缀文件仅作为补充证据，最终安装与视频、跨游戏进度、跨核心加载以 verified 前缀证据为准。截图重启采样后段跨越该重启，最终 34 秒采样使用同一进程。
+
+未卸载或清除应用数据，未修改或删除已有 core/config/存档。仅在 B2 原本为空的槽位新增测试进度。
+
+最终设备保留在最近游戏页面（恐龙新世纪演示视频），游戏暂停，便于直接检查。

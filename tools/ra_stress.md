@@ -531,8 +531,8 @@ on, and read a full native backtrace without touching the device.
 adb shell pm list packages | grep -E 'cutoolee|retroarch'
 ```
 
-Use `com.cutoolee.gamego` for GameGo device validation. Official RetroArch
-packages remain separate. Then:
+Use `com.retroarch.aarch64` for GameGo device validation. This is also the
+official RetroArch64 package ID. Then:
 
 ```sh
 adb shell ip route                     # the device's IP on your network
@@ -546,10 +546,10 @@ death.
 ```sh
 python3 tools/ra_stress.py \
   --host 192.168.1.57 \
-  --core    /data/data/com.cutoolee.gamego/cores/fbneo_libretro_android.so \
+  --core    /data/data/com.retroarch.aarch64/cores/fbneo_libretro_android.so \
   --content "/storage/emulated/0/GameGo/roms/FBNeo - Arcade Games/galaxian.zip" \
   --input \
-  --relaunch-cmd 'adb shell am start -n com.cutoolee.gamego/com.retroarch.browser.mainmenu.MainMenuActivity' \
+  --relaunch-cmd 'adb shell am start -n com.retroarch.aarch64/com.retroarch.browser.mainmenu.MainMenuActivity' \
   --mode fuzz --fuzz-runs 50
 ```
 

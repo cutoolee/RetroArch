@@ -1,0 +1,33 @@
+--------- beginning of crash
+10-04 23:39:36.537 14600 14632 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0 in tid 14632 (Thread-3), pid 14600 (troarch.aarch64)
+10-04 23:39:36.672 14669 14669 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+10-04 23:39:36.672 14669 14669 F DEBUG   : Build fingerprint: 'Logitech/GR0006/GR0006:11/SQ02K.00.0018/SQ02K.60.0228:user/release-keys'
+10-04 23:39:36.672 14669 14669 F DEBUG   : Revision: '0'
+10-04 23:39:36.672 14669 14669 F DEBUG   : ABI: 'arm64'
+10-04 23:39:36.675 14669 14669 F DEBUG   : Timestamp: 2026-10-04 23:39:36+0800
+10-04 23:39:36.675 14669 14669 F DEBUG   : pid: 14600, tid: 14632, name: Thread-3  >>> com.retroarch.aarch64 <<<
+10-04 23:39:36.675 14669 14669 F DEBUG   : uid: 10202
+10-04 23:39:36.675 14669 14669 F DEBUG   : signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0
+10-04 23:39:36.675 14669 14669 F DEBUG   : Cause: null pointer dereference
+10-04 23:39:36.675 14669 14669 F DEBUG   :     x0  0000006db9bb2280  x1  000000000000031f  x2  0000000000000007  x3  0000000000000048
+10-04 23:39:36.675 14669 14669 F DEBUG   :     x4  0000000000000009  x5  0000000000000001  x6  0000006db8224070  x7  0000000000000019
+10-04 23:39:36.675 14669 14669 F DEBUG   :     x8  0000000000000000  x9  0000006dc06d27d4  x10 0000000000000003  x11 0000000000000000
+10-04 23:39:36.675 14669 14669 F DEBUG   :     x12 0000000000000000  x13 00000000ffff4d06  x14 0000000000000001  x15 0000006e99614190
+10-04 23:39:36.675 14669 14669 F DEBUG   :     x16 0000006dc0626118  x17 0000006dbfc85908  x18 0000006dbd3f0000  x19 0000006db99fd000
+10-04 23:39:36.675 14669 14669 F DEBUG   :     x20 0000006dbdfd3000  x21 0000006e0f942040  x22 0000007039637050  x23 0000006db9a86018
+10-04 23:39:36.675 14669 14669 F DEBUG   :     x24 0000000000000000  x25 0000000000000200  x26 0000000000000000  x27 0000000000000008
+10-04 23:39:36.675 14669 14669 F DEBUG   :     x28 0000000000000010  x29 0000006dbdfd28d0
+10-04 23:39:36.675 14669 14669 F DEBUG   :     lr  0000006db95a28e8  sp  0000006dbdfd2870  pc  0000000000000000  pst 0000000060001000
+10-04 23:39:36.702 14669 14669 F DEBUG   : backtrace:
+10-04 23:39:36.702 14669 14669 F DEBUG   :     NOTE: Function names and BuildId information is missing for some frames due
+10-04 23:39:36.702 14669 14669 F DEBUG   :     NOTE: to unreadable libraries. For unwinds of apps, only shared libraries
+10-04 23:39:36.702 14669 14669 F DEBUG   :     NOTE: found under the lib/ directory are readable.
+10-04 23:39:36.702 14669 14669 F DEBUG   :       #00 pc 0000000000000000  <unknown>
+10-04 23:39:36.702 14669 14669 F DEBUG   :       #01 pc 00000000000f68e4  /data/data/com.retroarch.aarch64/cores/fceumm_libretro_android.so
+10-04 23:39:36.702 14669 14669 F DEBUG   :       #02 pc 0000000000e07020  /data/app/~~BmwP-7ulBP1QOa_CP3L3CA==/com.retroarch.aarch64-XnFCZZNhF8MQ8prLLRHuuA==/lib/arm64/libretroarch-activity.so (core_run+296) (BuildId: ddbea9f37ac550932e09826009f29e9fe8d57818)
+10-04 23:39:36.702 14669 14669 F DEBUG   :       #03 pc 0000000000deeb70  /data/app/~~BmwP-7ulBP1QOa_CP3L3CA==/com.retroarch.aarch64-XnFCZZNhF8MQ8prLLRHuuA==/lib/arm64/libretroarch-activity.so (runloop_iterate+3064) (BuildId: ddbea9f37ac550932e09826009f29e9fe8d57818)
+10-04 23:39:36.702 14669 14669 F DEBUG   :       #04 pc 0000000000dedc5c  /data/app/~~BmwP-7ulBP1QOa_CP3L3CA==/com.retroarch.aarch64-XnFCZZNhF8MQ8prLLRHuuA==/lib/arm64/libretroarch-activity.so (rarch_main+648) (BuildId: ddbea9f37ac550932e09826009f29e9fe8d57818)
+10-04 23:39:36.702 14669 14669 F DEBUG   :       #05 pc 000000000108c7b0  /data/app/~~BmwP-7ulBP1QOa_CP3L3CA==/com.retroarch.aarch64-XnFCZZNhF8MQ8prLLRHuuA==/lib/arm64/libretroarch-activity.so (BuildId: ddbea9f37ac550932e09826009f29e9fe8d57818)
+10-04 23:39:36.702 14669 14669 F DEBUG   :       #06 pc 0000000000e130ec  /data/app/~~BmwP-7ulBP1QOa_CP3L3CA==/com.retroarch.aarch64-XnFCZZNhF8MQ8prLLRHuuA==/lib/arm64/libretroarch-activity.so (BuildId: ddbea9f37ac550932e09826009f29e9fe8d57818)
+10-04 23:39:36.702 14669 14669 F DEBUG   :       #07 pc 00000000000b008c  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+64) (BuildId: f4881cdb04823cc0d8c0fa3f95c4db2e)
+10-04 23:39:36.702 14669 14669 F DEBUG   :       #08 pc 00000000000503c8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: f4881cdb04823cc0d8c0fa3f95c4db2e)

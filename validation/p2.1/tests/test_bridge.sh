@@ -9,6 +9,7 @@ cc -std=c99 -Wall -Wextra -Werror -I"$root" -I"$root/handheld/ui" \
   "$root/handheld/ui/hh_quick_menu_layout.c" \
   "$root/handheld/ui/hh_quick_menu_render.c" \
   "$root/handheld/ui/hh_quick_menu_state.c" \
+  "$root/handheld/ui/hh_quick_menu_controls.c" \
   "$root/handheld/bridge/hh_bridge.c" "$root/validation/p2.1/tests/test_bridge.c" \
   -o "$build/test_bridge"
 "$build/test_bridge"

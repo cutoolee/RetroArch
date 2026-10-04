@@ -16,6 +16,8 @@ const char *hh_result_to_string(hh_result_t result)
       case HH_ERR_SCREENSHOT_FAILED:   return "SCREENSHOT_FAILED";
       case HH_ERR_RA_COMMAND_FAILED:  return "RA_COMMAND_FAILED";
       case HH_ERR_INTERNAL:            return "INTERNAL";
+      case HH_ERR_SHADER_LOAD_FAILED: return "SHADER_LOAD_FAILED";
+      case HH_ERR_SHADER_RESTORE_FAILED: return "SHADER_RESTORE_FAILED";
       default:                         return "UNKNOWN";
    }
 }
@@ -39,6 +41,8 @@ const char *hh_event_type_to_string(hh_event_type_t type)
 {
    switch (type)
    {
+      case HH_EVENT_CONTROLS_CHANGED: return "CONTROLS_CHANGED";
+      case HH_EVENT_SHADER_CHANGED: return "SHADER_CHANGED";
       case HH_EVENT_RUNTIME_READY:    return "RUNTIME_READY";
       case HH_EVENT_CONTENT_LOADED:   return "CONTENT_LOADED";
       case HH_EVENT_CONTENT_CLOSED:   return "CONTENT_CLOSED";

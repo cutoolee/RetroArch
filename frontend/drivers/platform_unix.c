@@ -45,6 +45,9 @@
 
 #ifdef ANDROID
 #include <android/log.h>
+#ifdef HAVE_GAMEGO_PRODUCT
+#include <android/asset_manager.h>
+#endif
 #include <sys/system_properties.h>
 #ifdef HAVE_SAF
 #include <vfs/vfs_implementation_saf.h>
@@ -96,7 +99,123 @@
 
 #ifdef ANDROID
 #ifdef HAVE_GAMEGO_PRODUCT
-#define ANDROID_PRODUCT_DATA_ROOT "GameGo"
+#define ANDROID_PRODUCT_DATA_ROOT "retroarch"
+
+static void android_seed_default_file(AAssetManager *manager,
+      const char *source, const char *target)
+{
+   char parent[DIR_MAX_LENGTH];
+   AAsset *asset;
+   void *buffer;
+   off_t size;
+
+   if (path_is_valid(target))
+      return;
+
+   asset = AAssetManager_open(manager, source, AASSET_MODE_BUFFER);
+   if (!asset)
+      return;
+
+   size   = AAsset_getLength(asset);
+   buffer = malloc(size);
+   if (buffer && size > 0 && AAsset_read(asset, buffer, size) == size)
+   {
+      fill_pathname_basedir(parent, target, sizeof(parent));
+      if (path_mkdir(parent)
+            && filestream_write_file_atomic(target, buffer, size))
+         __android_log_print(ANDROID_LOG_INFO, "RetroArch",
+               "[GameGo] Installed default: %s", target);
+      else
+         __android_log_print(ANDROID_LOG_ERROR, "RetroArch",
+               "[GameGo] Failed to install default: %s", target);
+   }
+
+   free(buffer);
+   AAsset_close(asset);
+}
+
+static void android_seed_shader_defaults(AAssetManager *manager,
+      const char *root)
+{
+   static const char *files[][2] =
+   {
+      {"shaders/gamego/handheld/shaders/sameboy-lcd.glsl",
+       "shaders/gamego/handheld/shaders/sameboy-lcd.glsl"},
+      {"shaders/gamego/handheld/sameboy-lcd.glslp",
+       "shaders/gamego/handheld/sameboy-lcd.glslp"},
+      {"shaders/gamego/crt/shaders/zfast_crt_nogeo.glsl",
+       "shaders/gamego/crt/shaders/zfast_crt_nogeo.glsl"},
+      {"shaders/gamego/crt/zfast_crt_nogeo.glslp",
+       "shaders/gamego/crt/zfast_crt_nogeo.glslp"},
+      {"shaders/gamego/stock/stock.glsl", "shaders/gamego/stock/stock.glsl"},
+      {"shaders/gamego/stock/stock.glslp", "shaders/gamego/stock/stock.glslp"},
+      {"shaders/gamego/stock/stock.slang", "shaders/gamego/stock/stock.slang"},
+      {"shaders/gamego/stock/stock.slangp", "shaders/gamego/stock/stock.slangp"},
+      {"shaders/gamego/handheld/lcd-soft.glslp", "shaders/gamego/handheld/lcd-soft.glslp"},
+      {"shaders/gamego/handheld/lcd-sharp.glslp", "shaders/gamego/handheld/lcd-sharp.glslp"},
+      {"shaders/gamego/crt/crt-soft.glslp", "shaders/gamego/crt/crt-soft.glslp"},
+      {"shaders/gamego/crt/crt-strong.glslp", "shaders/gamego/crt/crt-strong.glslp"},
+      {"shaders/gamego/handheld/shaders/sameboy-lcd.slang", "shaders/gamego/handheld/shaders/sameboy-lcd.slang"},
+      {"shaders/gamego/handheld/sameboy-lcd.slangp", "shaders/gamego/handheld/sameboy-lcd.slangp"},
+      {"shaders/gamego/handheld/lcd-soft.slangp", "shaders/gamego/handheld/lcd-soft.slangp"},
+      {"shaders/gamego/handheld/lcd-sharp.slangp", "shaders/gamego/handheld/lcd-sharp.slangp"},
+      {"shaders/gamego/crt/shaders/zfast_crt_nogeo.slang", "shaders/gamego/crt/shaders/zfast_crt_nogeo.slang"},
+      {"shaders/gamego/crt/zfast_crt_nogeo.slangp", "shaders/gamego/crt/zfast_crt_nogeo.slangp"},
+      {"shaders/gamego/crt/crt-soft.slangp", "shaders/gamego/crt/crt-soft.slangp"},
+      {"shaders/gamego/crt/crt-strong.slangp", "shaders/gamego/crt/crt-strong.slangp"},
+      {"presets/global.glslp", "config/global.glslp"},
+      {"presets/mGBA/mGBA.glslp", "config/mGBA/mGBA.glslp"},
+      {"presets/FCEUmm/FCEUmm.glslp", "config/FCEUmm/FCEUmm.glslp"}
+   };
+   char source[DIR_MAX_LENGTH];
+   char target[DIR_MAX_LENGTH];
+   char marker[DIR_MAX_LENGTH];
+   size_t i;
+   bool seed_presets;
+   bool presets_ready = true;
+
+   /* Removed overrides must stay removed. */
+   fill_pathname_join(marker, root, "config/.gamego-shader-defaults", sizeof(marker));
+   seed_presets = !path_is_valid(marker);
+   for (i = 0; i < ARRAY_SIZE(files); i++)
+   {
+      bool preset = strncmp(files[i][0], "presets/", 8) == 0;
+      if (preset && !seed_presets)
+         continue;
+      fill_pathname_join(source, "gamego-defaults", files[i][0],
+            sizeof(source));
+      fill_pathname_join(target, root, files[i][1], sizeof(target));
+      android_seed_default_file(manager, source, target);
+      if (preset && !path_is_valid(target))
+         presets_ready = false;
+   }
+   if (seed_presets && presets_ready)
+      android_seed_default_file(manager, "gamego-defaults/presets/installed.txt", marker);
+}
+static void android_seed_quick_menu_icons(AAssetManager *manager,
+      const char *assets)
+{
+   static const char *files[] = {
+      "play.png", "save.png", "folder-open.png", "rotate-ccw.png",
+      "sliders-horizontal.png", "log-out.png", "chevron-right.png",
+      "gamepad-2.png", "menu-play.png", "menu-save.png", "menu-folder.png",
+      "menu-reset.png", "menu-settings.png", "menu-exit.png",
+      "menu-confirm.png", "menu-back.png", "menu-select.png", "LICENSE"
+   };
+   char source[DIR_MAX_LENGTH];
+   char target[DIR_MAX_LENGTH];
+   char directory[DIR_MAX_LENGTH];
+   size_t i;
+
+   fill_pathname_join(directory, assets, "gamego/icons", sizeof(directory));
+   for (i = 0; i < ARRAY_SIZE(files); i++)
+   {
+      fill_pathname_join(source, "gamego-defaults/icons", files[i], sizeof(source));
+      fill_pathname_join(target, directory, files[i], sizeof(target));
+      android_seed_default_file(manager, source, target);
+   }
+}
+
 #else
 #define ANDROID_PRODUCT_DATA_ROOT "RetroArch"
 #endif
@@ -2893,6 +3012,15 @@ static void frontend_unix_get_env(int *argc,
                   parent_path, "temp",
                   sizeof(g_defaults.dirs[DEFAULT_DIR_CACHE]));
 
+#ifdef HAVE_GAMEGO_PRODUCT
+            fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_SHADER],
+                  parent_path, "shaders", sizeof(g_defaults.dirs[DEFAULT_DIR_SHADER]));
+            android_seed_shader_defaults(android_app->activity->assetManager,
+                  parent_path);
+            android_seed_quick_menu_icons(android_app->activity->assetManager,
+                  g_defaults.dirs[DEFAULT_DIR_ASSETS]);
+#endif
+
             __android_log_print(ANDROID_LOG_INFO,
                "RetroArch", "[ENV] Default savefile folder: \"%s\".",
                g_defaults.dirs[DEFAULT_DIR_SRAM]);
@@ -3420,7 +3548,11 @@ static void frontend_unix_init(void *data)
    GET_METHOD_ID(env, android_app->getIntent, class,
          "getIntent", "()Landroid/content/Intent;");
    GET_METHOD_ID(env, android_app->onRetroArchExit, class,
+#ifdef HAVE_GAMEGO_PRODUCT
+         "onGameGoExit", "()V");
+#else
          "onRetroArchExit", "()V");
+#endif
    GET_METHOD_ID(env, android_app->isAndroidTV, class,
          "isAndroidTV", "()Z");
    GET_METHOD_ID(env, android_app->getRefreshRate, class,
@@ -3477,6 +3609,12 @@ static void frontend_unix_init(void *data)
          "showKeyboard", "(Ljava/lang/String;Ljava/lang/String;)V");
    GET_METHOD_ID(env, android_app->hideKeyboard, class,
          "hideKeyboard", "()V");
+#if defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   GET_METHOD_ID(env, android_app->setGameGoRecentVideo, class,
+         "setGameGoRecentVideo", "(Ljava/lang/String;IIIIII)Z");
+   GET_METHOD_ID(env, android_app->getGameGoRecentVideoThumbnail, class,
+         "getGameGoRecentVideoThumbnail", "(Ljava/lang/String;)Ljava/lang/String;");
+#endif
 
    CALL_BOOLEAN_METHOD(env, android_app->is_play_store_build,
          android_app->activity->clazz, android_app->isPlayStoreBuild);
@@ -3970,6 +4108,67 @@ static void frontend_unix_destroy_signal_handler_state(void)
 
 /* To free change_data, call the function again with a NULL 
  * string_list while providing change_data again */
+#ifdef ANDROID
+bool android_gamego_recent_video_thumbnail(const char *path,
+      char *out, size_t size)
+{
+   JNIEnv *env = jni_thread_getenv();
+   jstring video, result;
+   const char *value;
+   bool accepted = false;
+   if (!out || !size)
+      return false;
+   *out = '\0';
+   if (!env || !g_android || !g_android->getGameGoRecentVideoThumbnail)
+      return false;
+   video = (*env)->NewStringUTF(env, path ? path : "");
+   if (!video)
+      return false;
+   result = (jstring)(*env)->CallObjectMethod(env, g_android->activity->clazz,
+         g_android->getGameGoRecentVideoThumbnail, video);
+   (*env)->DeleteLocalRef(env, video);
+   if ((*env)->ExceptionCheck(env))
+      (*env)->ExceptionClear(env);
+   else if (result)
+   {
+      value = (*env)->GetStringUTFChars(env, result, NULL);
+      if (value)
+      {
+         accepted = strlcpy(out, value, size) < size;
+         (*env)->ReleaseStringUTFChars(env, result, value);
+      }
+   }
+   if ((*env)->ExceptionCheck(env))
+      (*env)->ExceptionClear(env);
+   if (result)
+      (*env)->DeleteLocalRef(env, result);
+   return accepted;
+}
+
+bool android_gamego_recent_video(const char *path, int x, int y,
+      int width, int height, int frame_width, int frame_height)
+{
+   JNIEnv *env = jni_thread_getenv();
+   jstring video;
+   jboolean shown;
+   if (!env || !g_android || !g_android->setGameGoRecentVideo)
+      return false;
+   video = (*env)->NewStringUTF(env, path ? path : "");
+   if (!video)
+      return false;
+   shown = (*env)->CallBooleanMethod(env, g_android->activity->clazz,
+         g_android->setGameGoRecentVideo, video, x, y, width, height,
+         frame_width, frame_height);
+   (*env)->DeleteLocalRef(env, video);
+   if ((*env)->ExceptionCheck(env))
+   {
+      (*env)->ExceptionClear(env);
+      return false;
+   }
+   return shown;
+}
+#endif
+
 void android_app_set_window_settings(bool notch_write_over,
       bool auto_mouse_grab)
 {

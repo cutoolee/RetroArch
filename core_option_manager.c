@@ -644,6 +644,22 @@ static const char *core_option_manager_parse_value_label(
    return label;
 }
 
+#ifdef HAVE_GAMEGO_PRODUCT
+static void core_option_manager_apply_product_default(struct core_option *option)
+{
+   size_t i;
+   if (!string_is_equal(option->key, "fceumm_turbo_enable"))
+      return;
+   for (i = 0; i < option->vals->size; i++)
+      if (string_is_equal(option->vals->elems[i].data, "Both"))
+      {
+         option->default_index = i;
+         option->index         = i;
+         break;
+      }
+}
+#endif
+
 /* Parses a single legacy core options interface
  * variable, extracting all present core_option
  * information */
@@ -740,6 +756,10 @@ static bool core_option_manager_parse_variable(
     * defined value as the default */
    option->default_index = 0;
    option->index         = 0;
+
+#ifdef HAVE_GAMEGO_PRODUCT
+   core_option_manager_apply_product_default(option);
+#endif
 
    if (config_src)
       entry              = config_get_entry(config_src, option->key);
@@ -1030,6 +1050,10 @@ static bool core_option_manager_parse_option(
          }
       }
    }
+
+#ifdef HAVE_GAMEGO_PRODUCT
+   core_option_manager_apply_product_default(option);
+#endif
 
    if (config_src)
       entry              = config_get_entry(config_src, option->key);

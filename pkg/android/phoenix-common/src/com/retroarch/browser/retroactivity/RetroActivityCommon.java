@@ -20,6 +20,7 @@ import com.retroarch.playcore.PlayCoreManager;
 
 import android.annotation.TargetApi;
 import android.app.NativeActivity;
+import android.app.ActivityManager;
 import android.app.PendingIntent;
 import android.content.res.Configuration;
 import android.content.BroadcastReceiver;
@@ -175,6 +176,25 @@ public class RetroActivityCommon extends NativeActivity
    * after a module install, so two passes never delete and recreate
    * the same links at once. */
   private final Object mSymlinkLock = new Object();
+  private volatile GameGoRecentVideo mGameGoRecentVideo;
+  private volatile boolean mGameGoDestroyed;
+
+  public synchronized boolean setGameGoRecentVideo(String path, int x, int y,
+      int width, int height, int frameWidth, int frameHeight) {
+    if (mGameGoDestroyed || (mGameGoRecentVideo == null && path.isEmpty()))
+      return false;
+    if (mGameGoRecentVideo == null)
+      mGameGoRecentVideo = new GameGoRecentVideo(this);
+    return mGameGoRecentVideo.set(path, x, y, width, height, frameWidth, frameHeight);
+  }
+
+  public synchronized String getGameGoRecentVideoThumbnail(String path) {
+    if (mGameGoDestroyed || path == null || path.isEmpty())
+      return null;
+    if (mGameGoRecentVideo == null)
+      mGameGoRecentVideo = new GameGoRecentVideo(this);
+    return mGameGoRecentVideo.thumbnail(path);
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -224,6 +244,9 @@ public class RetroActivityCommon extends NativeActivity
 
   @Override
   protected void onDestroy() {
+    mGameGoDestroyed = true;
+    if (mGameGoRecentVideo != null)
+      mGameGoRecentVideo.destroy();
     ((InputManager) getSystemService(Context.INPUT_SERVICE))
             .unregisterInputDeviceListener(this);
     unregisterReceiver(mUsbPermissionReceiver);
@@ -902,9 +925,18 @@ public class RetroActivityCommon extends NativeActivity
   protected void onResume()
   {
     super.onResume();
+    if (mGameGoRecentVideo != null)
+      mGameGoRecentVideo.resume();
     /* Covers controllers connected at startup or while the activity was
      * backgrounded — cases where onInputDeviceAdded() never fires. */
     requestPermissionForConnectedSonyControllers();
+  }
+
+  @Override
+  protected void onPause() {
+    if (mGameGoRecentVideo != null)
+      mGameGoRecentVideo.pause();
+    super.onPause();
   }
 
   @Override
@@ -991,6 +1023,17 @@ public class RetroActivityCommon extends NativeActivity
   public void onRetroArchExit()
   {
       finish();
+  }
+
+  public void onGameGoExit()
+  {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+      for (ActivityManager.AppTask task : manager.getAppTasks())
+        task.finishAndRemoveTask();
+    } else {
+      finishAffinity();
+    }
   }
 
   public int getVolumeCount()

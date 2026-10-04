@@ -55,6 +55,11 @@
 #if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
 #include "../handheld/bridge/hh_bridge.h"
 #include "../handheld/ui/hh_quick_menu_render.h"
+#include "../retroarch.h"
+#include <gfx/scaler/scaler.h>
+#ifdef ANDROID
+#include "../frontend/drivers/platform_unix.h"
+#endif
 #endif
 
 #define BASE_FONT_SIZE      32.0f
@@ -1959,6 +1964,8 @@ typedef struct hh_widget_paint_context
    dispgfx_widget_t *widgets;
 } hh_widget_paint_context_t;
 
+static uintptr_t hh_quick_menu_icon_textures[HH_QUICK_MENU_ICON_COUNT];
+
 static void hh_widget_color(unsigned long value, float *out)
 {
    unsigned i;
@@ -1971,21 +1978,151 @@ static void hh_widget_color(unsigned long value, float *out)
       out[i] = channels[i & 3];
 }
 
+static void hh_widget_round_fill(hh_widget_paint_context_t *ctx,
+      hh_ui_rect_t bounds, float *color, float radius)
+{
+   int rows;
+   int row;
+   float radius_sq;
+
+   if (radius <= 0.0f)
+   {
+      gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+            ctx->video_info->width, ctx->video_info->height,
+            (int)bounds.x, (int)bounds.y, (unsigned)bounds.width,
+            (unsigned)bounds.height, ctx->video_info->width,
+            ctx->video_info->height, color, NULL);
+      return;
+   }
+
+   rows = (int)radius + 1;
+   if (rows * 2 > (int)bounds.height)
+      rows = (int)bounds.height / 2;
+   radius_sq = radius * radius;
+
+   for (row = 0; row < rows; row++)
+   {
+      hh_ui_rect_t band = bounds;
+      float distance = radius - ((float)row + 0.5f);
+      float inset = radius - (float)sqrt((double)(radius_sq - distance * distance));
+      band.x += inset;
+      band.width -= inset * 2.0f;
+      band.y += (float)row;
+      band.height = 1.0f;
+      if (band.width > 0.0f)
+         gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+               ctx->video_info->width, ctx->video_info->height,
+               (int)band.x, (int)band.y, (unsigned)band.width,
+               (unsigned)band.height, ctx->video_info->width,
+               ctx->video_info->height, color, NULL);
+      band.y = bounds.y + bounds.height - (float)row - 1.0f;
+      gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+            ctx->video_info->width, ctx->video_info->height,
+            (int)band.x, (int)band.y, (unsigned)band.width,
+            (unsigned)band.height, ctx->video_info->width,
+            ctx->video_info->height, color, NULL);
+   }
+
+   if (bounds.height > (float)(rows * 2))
+      gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+            ctx->video_info->width, ctx->video_info->height,
+            (int)bounds.x, (int)bounds.y + rows, (unsigned)bounds.width,
+            (unsigned)bounds.height - (unsigned)(rows * 2),
+            ctx->video_info->width, ctx->video_info->height, color, NULL);
+}
+
 static void hh_widget_rect(void *userdata, hh_ui_rect_t bounds,
       unsigned long fill, unsigned long border, float radius,
       float border_width)
 {
    hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
    float color[16];
-   (void)border;
-   (void)radius;
-   (void)border_width;
+   float inset_radius;
+   float inner_radius;
+
+   if (radius <= 0.0f)
+   {
+      hh_widget_color(fill, color);
+      gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+            ctx->video_info->width, ctx->video_info->height,
+            (int)bounds.x, (int)bounds.y, (unsigned)bounds.width,
+            (unsigned)bounds.height, ctx->video_info->width,
+            ctx->video_info->height, color, NULL);
+      return;
+   }
+
+   inset_radius = radius;
+   if (inset_radius > bounds.width * 0.5f)
+      inset_radius = bounds.width * 0.5f;
+   if (inset_radius > bounds.height * 0.5f)
+      inset_radius = bounds.height * 0.5f;
+
+   if (border && border_width > 0.0f)
+   {
+      hh_widget_color(border, color);
+      hh_widget_round_fill(ctx, bounds, color, inset_radius);
+   }
+
+   bounds.x += border_width;
+   bounds.y += border_width;
+   bounds.width -= 2.0f * border_width;
+   bounds.height -= 2.0f * border_width;
+   if (bounds.width <= 0.0f || bounds.height <= 0.0f)
+      return;
+   inner_radius = inset_radius - border_width;
+   if (inner_radius < 0.0f)
+      inner_radius = 0.0f;
    hh_widget_color(fill, color);
-   gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
-         ctx->video_info->width, ctx->video_info->height,
-         (int)bounds.x, (int)bounds.y, (unsigned)bounds.width,
-         (unsigned)bounds.height, ctx->video_info->width,
-         ctx->video_info->height, color, NULL);
+   hh_widget_round_fill(ctx, bounds, color, inner_radius);
+}
+
+static void hh_widget_quad(void *userdata, const float *points,
+      unsigned long top, unsigned long bottom)
+{
+   hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
+   gfx_display_ctx_driver_t *driver = ctx->display->dispctx;
+   gfx_display_ctx_draw_t draw;
+   struct video_coords coords;
+   float vertices[8], tex_coords[8] = {0, 0, 1, 0, 0, 1, 1, 1};
+   float color[16], lower[16];
+   unsigned i;
+   if (!driver || !driver->draw)
+      return;
+   hh_widget_color(top, color);
+   hh_widget_color(bottom, lower);
+   memcpy(color + 8, lower, 8 * sizeof(float));
+   for (i = 0; i < 4; i++)
+   {
+      vertices[i * 2] = points[i * 2] / ctx->video_info->width;
+      vertices[i * 2 + 1] = 1.0f - points[i * 2 + 1] / ctx->video_info->height;
+   }
+   memset(&draw, 0, sizeof(draw));
+   draw.width = ctx->video_info->width;
+   draw.height = ctx->video_info->height;
+   draw.vertex = vertices;
+   draw.tex_coord = tex_coords;
+   draw.vertex_count = 4;
+   draw.color = color;
+   gfx_display_draw_bg(ctx->display, &draw, &coords,
+         ctx->video_info->userdata, false, 1.0f);
+   if (driver->blend_begin)
+      driver->blend_begin(ctx->video_info->userdata);
+   driver->draw(&draw, ctx->video_info->userdata,
+         ctx->video_info->width, ctx->video_info->height);
+   if (driver->blend_end)
+      driver->blend_end(ctx->video_info->userdata);
+}
+
+static const char *hh_widget_quick_menu_icon_name(hh_quick_menu_icon_t icon)
+{
+   static const char *names[] = {
+      "play.png", "save.png", "folder-open.png", "rotate-ccw.png",
+      "sliders-horizontal.png", "log-out.png", "chevron-right.png", "gamepad-2.png",
+      "menu-confirm.png", "menu-back.png", "menu-select.png"
+   };
+   if (icon < 0 || icon >= (hh_quick_menu_icon_t)ARRAY_SIZE(names))
+      return NULL;
+   return names[icon];
 }
 
 static void hh_widget_icon_rect(hh_widget_paint_context_t *ctx,
@@ -2004,13 +2141,32 @@ static void hh_widget_icon(void *userdata, hh_ui_rect_t bounds,
       hh_quick_menu_icon_t icon, unsigned long color)
 {
    hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
-   hh_ui_rect_t part = bounds;
-   float unit = bounds.width / 8.0f;
+   const char *name = hh_widget_quick_menu_icon_name(icon);
+   uintptr_t texture;
+   hh_ui_rect_t part;
+   float side = bounds.width < bounds.height ? bounds.width : bounds.height;
+   float unit = side / 8.0f;
    float line = unit * 0.5f;
+   bounds.x += (bounds.width - side) * 0.5f;
+   bounds.y += (bounds.height - side) * 0.5f;
+   bounds.width = bounds.height = side;
+   part = bounds;
    if (unit < 1.0f)
       unit = 1.0f;
    if (line < 1.0f)
       line = 1.0f;
+   texture = name ? hh_quick_menu_icon_textures[icon] : 0;
+   if (texture)
+   {
+      float tint[16];
+      hh_widget_color(color, tint);
+      gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+            ctx->video_info->width, ctx->video_info->height,
+            (int)bounds.x, (int)bounds.y, (unsigned)bounds.width,
+            (unsigned)bounds.height, ctx->video_info->width,
+            ctx->video_info->height, tint, &texture);
+      return;
+   }
    switch (icon)
    {
       case HH_QUICK_MENU_ICON_CHEVRON:
@@ -2129,6 +2285,35 @@ static void hh_widget_icon(void *userdata, hh_ui_rect_t bounds,
          part.height = line;
          hh_widget_icon_rect(ctx, part, color);
          break;
+      case HH_QUICK_MENU_ICON_GAMEPAD:
+         part.x = bounds.x + unit * 1.0f;
+         part.y = bounds.y + unit * 2.0f;
+         part.width = unit * 6.0f;
+         part.height = unit * 4.0f;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x = bounds.x + unit * 2.0f;
+         part.y = bounds.y + unit * 1.0f;
+         part.width = unit * 4.0f;
+         part.height = unit;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x = bounds.x + unit * 2.0f;
+         part.y = bounds.y + unit * 3.0f;
+         part.width = unit * 2.0f;
+         part.height = line;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x += unit * 0.75f;
+         part.y -= unit * 0.75f;
+         part.width = line;
+         part.height = unit * 2.0f;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x = bounds.x + unit * 5.0f;
+         part.y = bounds.y + unit * 3.0f;
+         part.width = line;
+         part.height = line;
+         hh_widget_icon_rect(ctx, part, color);
+         part.x += unit;
+         hh_widget_icon_rect(ctx, part, color);
+         break;
       default:
          break;
    }
@@ -2197,45 +2382,83 @@ static void hh_widget_fit_text(const gfx_widget_font_data_t *font,
       strlcpy(out + out_length, ellipsis, out_size - out_length);
 }
 
-static void hh_widget_text(void *userdata, hh_ui_rect_t bounds,
-      const char *text, unsigned long color, float size, bool emphasized)
+static void hh_widget_text_aligned(void *userdata, hh_ui_rect_t bounds,
+      const char *text, unsigned long color, float size, bool emphasized,
+      bool centered)
 {
    hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
    gfx_widget_font_data_t *font = emphasized
       ? &ctx->widgets->gfx_widget_fonts.bold
       : &ctx->widgets->gfx_widget_fonts.regular;
    char fitted[HH_QUICK_MENU_TEXT_MAX * 4];
-   float scale = size / BASE_FONT_SIZE;
-   float y;
+   float font_size = BASE_FONT_SIZE * ctx->widgets->last_scale_factor;
+   float scale;
+   float x, y;
+   if (font_size < 9.0f)
+      font_size = 9.0f;
+   scale = size / font_size;
+   gfx_widgets_font_sync(font);
    if (scale <= 0.0f)
       scale = 1.0f;
    hh_widget_fit_text(font, text, bounds.width, scale,
          fitted, sizeof(fitted));
+   x = bounds.x + (centered ? bounds.width * 0.5f : 0);
    y = bounds.y + bounds.height * 0.5f
       + font->line_centre_offset * scale;
-   gfx_display_draw_text(font->font, fitted, bounds.x, y,
+   /* The language font has no separate bold face. */
+   if (emphasized && font_driver_language_font_file())
+   {
+      float weight = size * 0.025f;
+      gfx_display_draw_text(font->font, fitted, x + weight, y,
+            (int)ctx->video_info->width, (int)ctx->video_info->height,
+            (uint32_t)color, centered ? TEXT_ALIGN_CENTER : TEXT_ALIGN_LEFT,
+            scale, false, 0.0f, false);
+      gfx_display_draw_text(font->font, fitted, x, y + weight * 0.5f,
+            (int)ctx->video_info->width, (int)ctx->video_info->height,
+            (uint32_t)color, centered ? TEXT_ALIGN_CENTER : TEXT_ALIGN_LEFT,
+            scale, false, 0.0f, false);
+   }
+   gfx_display_draw_text(font->font, fitted, x, y,
          (int)ctx->video_info->width, (int)ctx->video_info->height,
          (uint32_t)color,
-         TEXT_ALIGN_LEFT, scale, false, 0.0f, false);
+         centered ? TEXT_ALIGN_CENTER : TEXT_ALIGN_LEFT, scale, false, 0.0f, false);
    font->usage_count++;
+}
+
+static void hh_widget_text(void *userdata, hh_ui_rect_t bounds,
+      const char *text, unsigned long color, float size, bool emphasized)
+{
+   hh_widget_text_aligned(userdata, bounds, text, color, size, emphasized, false);
+}
+
+static void hh_widget_text_centered(void *userdata, hh_ui_rect_t bounds,
+      const char *text, unsigned long color, float size, bool emphasized)
+{
+   hh_widget_text_aligned(userdata, bounds, text, color, size, emphasized, true);
 }
 
 static bool hh_widget_preview(void *userdata, hh_ui_rect_t bounds, int slot)
 {
    hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
    char state_path[PATH_MAX_LENGTH];
+   char savestate_base[PATH_MAX_LENGTH];
    char thumbnail_path[PATH_MAX_LENGTH];
    struct stat thumbnail_stat;
    float color[16];
    uintptr_t *texture;
+   unsigned width, height;
+   float fit;
 
    if (!ctx || !ctx->widgets || slot < 0
          || slot >= HH_WIDGET_PREVIEW_SLOT_COUNT)
       return false;
    if (!runloop_get_savestate_path(state_path, sizeof(state_path), slot))
       return false;
+   if (!runloop_get_savestate_path(savestate_base,
+            sizeof(savestate_base), 0))
+      return false;
    gfx_savestate_thumbnail_get_path(thumbnail_path,
-         sizeof(thumbnail_path), state_path, slot);
+         sizeof(thumbnail_path), savestate_base, slot);
    if (stat(thumbnail_path, &thumbnail_stat) != 0)
       return false;
 
@@ -2249,7 +2472,9 @@ static bool hh_widget_preview(void *userdata, hh_ui_rect_t bounds, int slot)
       video_driver_texture_unload(texture);
       *texture = 0;
       if (!gfx_display_reset_icon_texture(thumbnail_path, texture,
-               gfx_display_texture_filter(), NULL, NULL))
+               gfx_display_texture_filter(),
+               &ctx->widgets->hh_quick_menu_preview_widths[slot],
+               &ctx->widgets->hh_quick_menu_preview_heights[slot]))
       {
          ctx->widgets->hh_quick_menu_preview_paths[slot][0] = '\0';
          return false;
@@ -2261,8 +2486,17 @@ static bool hh_widget_preview(void *userdata, hh_ui_rect_t bounds, int slot)
       ctx->widgets->hh_quick_menu_preview_sizes[slot] =
          (unsigned long)thumbnail_stat.st_size;
    }
-   if (!*texture)
+   width = ctx->widgets->hh_quick_menu_preview_widths[slot];
+   height = ctx->widgets->hh_quick_menu_preview_heights[slot];
+   if (!*texture || !width || !height)
       return false;
+   fit = bounds.width / width;
+   if (bounds.height / height < fit)
+      fit = bounds.height / height;
+   bounds.x += (bounds.width - width * fit) * 0.5f;
+   bounds.y += (bounds.height - height * fit) * 0.5f;
+   bounds.width = width * fit;
+   bounds.height = height * fit;
    hh_widget_color(0xffffffffUL, color);
    gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
          ctx->video_info->width, ctx->video_info->height,
@@ -2272,23 +2506,300 @@ static bool hh_widget_preview(void *userdata, hh_ui_rect_t bounds, int slot)
    return true;
 }
 
+static bool hh_widget_recent_thumbnail(void *userdata,
+      hh_ui_rect_t bounds, const char *path)
+{
+   hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
+   dispgfx_widget_t *widgets = ctx->widgets;
+   struct stat thumbnail_stat;
+   float color[16];
+   float fit;
+   unsigned width, height, i, slot = 0;
+
+   if (string_is_empty(path) || stat(path, &thumbnail_stat) != 0)
+      return false;
+   for (i = 0; i < HH_WIDGET_RECENT_TEXTURE_COUNT; i++)
+   {
+      if (string_is_equal(widgets->hh_quick_menu_recent_paths[i], path))
+      {
+         slot = i;
+         break;
+      }
+      if (widgets->hh_quick_menu_recent_used[i]
+            < widgets->hh_quick_menu_recent_used[slot])
+         slot = i;
+   }
+   if (!widgets->hh_quick_menu_recent_textures[slot]
+         || !string_is_equal(widgets->hh_quick_menu_recent_paths[slot], path)
+         || widgets->hh_quick_menu_recent_mtimes[slot] != (unsigned long)thumbnail_stat.st_mtime
+         || widgets->hh_quick_menu_recent_sizes[slot] != (unsigned long)thumbnail_stat.st_size)
+   {
+      video_driver_texture_unload(&widgets->hh_quick_menu_recent_textures[slot]);
+      widgets->hh_quick_menu_recent_textures[slot] = 0;
+      strlcpy(widgets->hh_quick_menu_recent_paths[slot], path,
+            sizeof(widgets->hh_quick_menu_recent_paths[slot]));
+      if (!gfx_display_reset_icon_texture(path,
+               &widgets->hh_quick_menu_recent_textures[slot],
+               gfx_display_texture_filter(),
+               &widgets->hh_quick_menu_recent_widths[slot],
+               &widgets->hh_quick_menu_recent_heights[slot]))
+         return false;
+      widgets->hh_quick_menu_recent_mtimes[slot] = (unsigned long)thumbnail_stat.st_mtime;
+      widgets->hh_quick_menu_recent_sizes[slot] = (unsigned long)thumbnail_stat.st_size;
+   }
+   widgets->hh_quick_menu_recent_used[slot] = ++widgets->hh_quick_menu_recent_clock;
+   width = widgets->hh_quick_menu_recent_widths[slot];
+   height = widgets->hh_quick_menu_recent_heights[slot];
+   if (!widgets->hh_quick_menu_recent_textures[slot] || !width || !height)
+      return false;
+   fit = bounds.width / width;
+   if (bounds.height / height < fit)
+      fit = bounds.height / height;
+   bounds.x += (bounds.width - width * fit) * 0.5f;
+   bounds.y += (bounds.height - height * fit) * 0.5f;
+   bounds.width = width * fit;
+   bounds.height = height * fit;
+   hh_widget_color(0xffffffffUL, color);
+   gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+         ctx->video_info->width, ctx->video_info->height,
+         (int)bounds.x, (int)bounds.y, (unsigned)bounds.width,
+         (unsigned)bounds.height, ctx->video_info->width,
+         ctx->video_info->height, color, &widgets->hh_quick_menu_recent_textures[slot]);
+   return true;
+}
+
+static bool hh_widget_recent_video(void *userdata,
+      hh_ui_rect_t bounds, const char *path)
+{
+#ifdef ANDROID
+   hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
+   return android_gamego_recent_video(path, (int)bounds.x, (int)bounds.y,
+         (int)bounds.width, (int)bounds.height,
+         ctx->video_info->width, ctx->video_info->height);
+#else
+   (void)userdata;
+   (void)bounds;
+   (void)path;
+   return false;
+#endif
+}
+
+static bool hh_widget_recent_video_frame(void *userdata,
+      hh_ui_rect_t bounds, const char *path)
+{
+#ifdef ANDROID
+   char thumbnail[PATH_MAX_LENGTH];
+   if (!android_gamego_recent_video_thumbnail(path, thumbnail, sizeof(thumbnail)))
+      return false;
+   if (!thumbnail[0])
+      return true;
+   return hh_widget_recent_thumbnail(userdata, bounds, thumbnail);
+#else
+   (void)userdata;
+   (void)bounds;
+   (void)path;
+   return false;
+#endif
+}
+
+static void hh_widget_background_read(void *userdata, const void *data,
+      unsigned width, unsigned height, size_t pitch)
+{
+   struct texture_image *image = (struct texture_image*)userdata;
+   struct scaler_ctx scaler;
+   enum retro_pixel_format format = video_state_get_ptr()->pix_fmt;
+   unsigned longest = width > height ? width : height;
+   if (!data || !width || !height || width > 16384 || height > 16384
+         || pitch > 0x7fffffff || !pitch)
+      return;
+   memset(&scaler, 0, sizeof(scaler));
+   switch (format)
+   {
+      case RETRO_PIXEL_FORMAT_XRGB8888:
+         scaler.in_fmt = SCALER_FMT_ARGB8888;
+         break;
+      case RETRO_PIXEL_FORMAT_RGB565:
+         scaler.in_fmt = SCALER_FMT_RGB565;
+         break;
+      case RETRO_PIXEL_FORMAT_0RGB1555:
+         scaler.in_fmt = SCALER_FMT_0RGB1555;
+         break;
+      default:
+         return;
+   }
+   image->width  = width * 160 / longest;
+   image->height = height * 160 / longest;
+   if (!image->width || !image->height)
+      return;
+   image->pixels = (uint32_t*)malloc(image->width * image->height * sizeof(uint32_t));
+   if (!image->pixels)
+      return;
+   scaler.in_width = width;
+   scaler.in_height = height;
+   scaler.in_stride = pitch;
+   scaler.out_width = image->width;
+   scaler.out_height = image->height;
+   scaler.out_stride = image->width * sizeof(uint32_t);
+   scaler.out_fmt = image->supports_rgba ? SCALER_FMT_ABGR8888 : SCALER_FMT_ARGB8888;
+   scaler.scaler_type = SCALER_TYPE_BILINEAR;
+   if (scaler_ctx_gen_filter(&scaler))
+      scaler_ctx_scale(&scaler, image->pixels, data);
+   else
+   {
+      free(image->pixels);
+      image->pixels = NULL;
+   }
+   scaler_ctx_gen_reset(&scaler);
+}
+
+static void hh_widget_background_blur(struct texture_image *image)
+{
+   uint32_t *scratch;
+   uint32_t *source, *target;
+   unsigned x, y, pass, r, g, b, rotation;
+   int offset, sx, sy;
+   uint32_t pixel;
+   scratch = (uint32_t*)malloc(image->width * image->height * sizeof(uint32_t));
+   if (!scratch)
+   {
+      free(image->pixels);
+      image->pixels = NULL;
+      return;
+   }
+   for (pass = 0; pass < 2; pass++)
+   {
+      source = pass ? scratch : image->pixels;
+      target = pass ? image->pixels : scratch;
+      for (y = 0; y < image->height; y++)
+         for (x = 0; x < image->width; x++)
+         {
+            r = g = b = 0;
+            for (offset = -3; offset <= 3; offset++)
+            {
+               sx = (int)x + (pass ? 0 : offset);
+               sy = (int)y + (pass ? offset : 0);
+               sx = sx < 0 ? 0 : sx >= (int)image->width ? (int)image->width - 1 : sx;
+               sy = sy < 0 ? 0 : sy >= (int)image->height ? (int)image->height - 1 : sy;
+               pixel = source[sy * image->width + sx];
+               r += (pixel >> 16) & 255;
+               g += (pixel >> 8) & 255;
+               b += pixel & 255;
+            }
+            target[y * image->width + x] = 0xff000000U
+               | ((r / 7) << 16) | ((g / 7) << 8) | (b / 7);
+         }
+   }
+   rotation = retroarch_get_rotation() % 4;
+   if (rotation)
+   {
+      for (y = 0; y < image->height; y++)
+         for (x = 0; x < image->width; x++)
+         {
+            unsigned index = rotation == 1 ? (image->width - 1 - x) * image->height + y :
+               rotation == 2 ? (image->height - 1 - y) * image->width + image->width - 1 - x :
+               x * image->height + image->height - 1 - y;
+            scratch[index] = image->pixels[y * image->width + x];
+         }
+      memcpy(image->pixels, scratch, image->width * image->height * sizeof(uint32_t));
+      if (rotation & 1)
+      {
+         unsigned width = image->width;
+         image->width = image->height;
+         image->height = width;
+      }
+   }
+   free(scratch);
+}
+
+static void hh_widget_background(hh_widget_paint_context_t *ctx,
+      const hh_quick_menu_t *menu, const struct video_viewport *viewport)
+{
+   dispgfx_widget_t *widgets = ctx->widgets;
+   struct texture_image image;
+   float color[16];
+   if (widgets->hh_quick_menu_background_generation != menu->open_generation)
+   {
+      video_driver_texture_unload(&widgets->hh_quick_menu_background);
+      widgets->hh_quick_menu_background = 0;
+      widgets->hh_quick_menu_background_attempted = false;
+      widgets->hh_quick_menu_background_generation = menu->open_generation;
+   }
+   if (!widgets->hh_quick_menu_background_attempted && !menu->view.busy)
+   {
+      widgets->hh_quick_menu_background_attempted = true;
+      memset(&image, 0, sizeof(image));
+      image.supports_rgba = (video_driver_get_disp_flags() & VIDEO_FLAG_USE_RGBA) != 0;
+      video_driver_cached_frame_read(&image, hh_widget_background_read);
+      if (image.pixels)
+         hh_widget_background_blur(&image);
+      if (image.pixels)
+      {
+         video_driver_texture_load(&image, TEXTURE_FILTER_LINEAR,
+               &widgets->hh_quick_menu_background);
+         free(image.pixels);
+      }
+   }
+   if (!widgets->hh_quick_menu_background
+         || !viewport->width || !viewport->height)
+      return;
+   hh_widget_color(0x000000ffUL, color);
+   gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+         ctx->video_info->width, ctx->video_info->height, 0, 0,
+         ctx->video_info->width, ctx->video_info->height,
+         ctx->video_info->width, ctx->video_info->height, color, NULL);
+   hh_widget_color(0xffffffffUL, color);
+   gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+         ctx->video_info->width, ctx->video_info->height,
+         viewport->x, viewport->y, viewport->width, viewport->height,
+         ctx->video_info->width, ctx->video_info->height, color,
+         &widgets->hh_quick_menu_background);
+}
+
+static void hh_widget_flush(void *userdata)
+{
+   hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
+   gfx_widgets_flush_text(ctx->video_info->width, ctx->video_info->height,
+         &ctx->widgets->gfx_widget_fonts.regular);
+   gfx_widgets_flush_text(ctx->video_info->width, ctx->video_info->height,
+         &ctx->widgets->gfx_widget_fonts.bold);
+}
+
 static void hh_widget_render_quick_menu(video_frame_info_t *video_info,
-      gfx_display_t *display, dispgfx_widget_t *widgets)
+      gfx_display_t *display, dispgfx_widget_t *widgets,
+      const struct video_viewport *viewport)
 {
    hh_bridge_t *bridge = hh_bridge_active();
    hh_widget_paint_context_t context;
    hh_quick_menu_painter_t painter;
+#ifdef ANDROID
+   if (!bridge || !hh_bridge_is_open(bridge)
+         || bridge->menu.view.page != HH_QUICK_MENU_PAGE_RECENT
+         || bridge->menu.state != HH_QUICK_MENU_OPEN
+         || !bridge->menu.view.recent_video[0])
+      android_gamego_recent_video("", 0, 0, 0, 0, 0, 0);
+#endif
    if (!bridge || !hh_bridge_is_open(bridge))
       return;
    context.video_info = video_info;
    context.display = display;
    context.widgets = widgets;
+   if (!bridge->pause_request_id
+         && !hh_quick_menu_is_shader_page(hh_bridge_menu(bridge)))
+      hh_widget_background(&context, hh_bridge_menu(bridge), viewport);
    memset(&painter, 0, sizeof(painter));
    painter.userdata = &context;
    painter.rect = hh_widget_rect;
    painter.text = hh_widget_text;
+   painter.text_centered = hh_widget_text_centered;
    painter.icon = hh_widget_icon;
    painter.preview = hh_widget_preview;
+   painter.quad = hh_widget_quad;
+   painter.thumbnail = hh_widget_recent_thumbnail;
+   painter.video = hh_widget_recent_video;
+   painter.video_frame = hh_widget_recent_video_frame;
+   painter.flush = hh_widget_flush;
+   hh_quick_menu_update_animation(&bridge->menu,
+         (unsigned long)(cpu_features_get_time_usec() / 1000));
    hh_quick_menu_render(hh_bridge_menu(bridge), video_info->width,
          video_info->height, NULL, &painter);
 }
@@ -2296,6 +2807,9 @@ static void hh_widget_render_quick_menu(video_frame_info_t *video_info,
 
 static void gfx_widgets_frame_state(void *data)
 {
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   struct video_viewport hh_content_viewport;
+#endif
    size_t i;
    video_frame_info_t *video_info   = (video_frame_info_t*)data;
    gfx_display_t            *p_disp = (gfx_display_t*)video_info->disp_userdata;
@@ -2354,6 +2868,12 @@ static void gfx_widgets_frame_state(void *data)
    /* If notifications are hidden, draw nothing */
    if (notifications_hidden)
       return;
+
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   memset(&hh_content_viewport, 0, sizeof(hh_content_viewport));
+   if (hh_bridge_is_open(hh_bridge_active()))
+      video_driver_get_viewport_info(&hh_content_viewport);
+#endif
 
    if (video_st->current_video && video_st->current_video->set_viewport)
       video_st->current_video->set_viewport(
@@ -2548,6 +3068,11 @@ static void gfx_widgets_frame_state(void *data)
             true);
    }
 
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   if (hh_bridge_is_open(hh_bridge_active()))
+      widgets_is_paused = false;
+#endif
+
    /* Indicators */
    if (widgets_is_paused)
       top_right_x_advance -= gfx_widgets_draw_indicator(
@@ -2617,7 +3142,7 @@ static void gfx_widgets_frame_state(void *data)
    }
 
 #if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
-   hh_widget_render_quick_menu(video_info, p_disp, p_dispwidget);
+   hh_widget_render_quick_menu(video_info, p_disp, p_dispwidget, &hh_content_viewport);
 #endif
 
    /* Draw all messages */
@@ -2805,6 +3330,24 @@ static void gfx_widgets_context_reset(
             widget_icon_load_gen, &widget_icon_load_gen);
    }
 
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   {
+      char icon_dir[PATH_MAX_LENGTH];
+      fill_pathname_join_special(icon_dir, dir_assets, "gamego/icons",
+            sizeof(icon_dir));
+      for (i = 0; i < ARRAY_SIZE(hh_quick_menu_icon_textures); i++)
+      {
+         char texpath[PATH_MAX_LENGTH];
+         fill_pathname_join_special(texpath, icon_dir,
+               hh_widget_quick_menu_icon_name((hh_quick_menu_icon_t)i),
+               sizeof(texpath));
+         gfx_display_load_icon(texpath, supports_rgba,
+               &hh_quick_menu_icon_textures[i],
+               widget_icon_load_gen, &widget_icon_load_gen);
+      }
+   }
+#endif
+
    for (i = 0; i < ARRAY_SIZE(widgets); i++)
    {
       const gfx_widget_t* widget = widgets[i];
@@ -2988,12 +3531,30 @@ static void gfx_widgets_context_destroy(dispgfx_widget_t *p_dispwidget)
    for (i = 0; i < MENU_WIDGETS_ICON_LAST; i++)
       video_driver_texture_unload(&p_dispwidget->gfx_widgets_icons_textures[i]);
 #if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   video_driver_texture_unload(&p_dispwidget->hh_quick_menu_background);
+   p_dispwidget->hh_quick_menu_background = 0;
+   p_dispwidget->hh_quick_menu_background_attempted = false;
+   for (i = 0; i < HH_WIDGET_RECENT_TEXTURE_COUNT; i++)
+   {
+      video_driver_texture_unload(&p_dispwidget->hh_quick_menu_recent_textures[i]);
+      p_dispwidget->hh_quick_menu_recent_textures[i] = 0;
+      p_dispwidget->hh_quick_menu_recent_paths[i][0] = '\0';
+      p_dispwidget->hh_quick_menu_recent_used[i] = 0;
+   }
+   p_dispwidget->hh_quick_menu_recent_clock = 0;
+#ifdef ANDROID
+   android_gamego_recent_video("", 0, 0, 0, 0, 0, 0);
+#endif
+   for (i = 0; i < ARRAY_SIZE(hh_quick_menu_icon_textures); i++)
+      video_driver_texture_unload(&hh_quick_menu_icon_textures[i]);
    for (i = 0; i < HH_WIDGET_PREVIEW_SLOT_COUNT; i++)
    {
       video_driver_texture_unload(&p_dispwidget->hh_quick_menu_preview_textures[i]);
       p_dispwidget->hh_quick_menu_preview_paths[i][0] = '\0';
       p_dispwidget->hh_quick_menu_preview_mtimes[i] = 0;
       p_dispwidget->hh_quick_menu_preview_sizes[i] = 0;
+      p_dispwidget->hh_quick_menu_preview_widths[i] = 0;
+      p_dispwidget->hh_quick_menu_preview_heights[i] = 0;
    }
 #endif
 

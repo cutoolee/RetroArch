@@ -87,7 +87,7 @@ public final class RetroActivityFuture extends RetroActivityCamera {
       Intent restartIntent = new Intent(intent);
       restartIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
       startActivity(restartIntent);
-      System.exit(0);
+      finish();
     } else {
       // Same content, just update intent
       setIntent(intent);

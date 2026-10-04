@@ -1,5 +1,45 @@
 #include "hh_runtime_internal.h"
 
+#include "defaults.h"
+#include "tasks/task_content.h"
+
+static hh_result_t hh_runtime_load_recent(int index)
+{
+#ifdef HAVE_MENU
+   const struct playlist_entry *entry = NULL;
+   content_ctx_info_t content_info;
+   char content_path[PATH_MAX_LENGTH];
+   char core_path[PATH_MAX_LENGTH];
+   char label[NAME_MAX_LENGTH];
+   hh_result_t result;
+   size_t entry_index;
+
+   if (!g_defaults.content_history || index < 0
+         || (size_t)index >= playlist_size(g_defaults.content_history))
+      return HH_ERR_INVALID_ARGUMENT;
+   entry_index = hh_runtime_recent_entry_index((size_t)index);
+   if (entry_index == (size_t)-1)
+      return HH_ERR_INVALID_ARGUMENT;
+   playlist_get_index(g_defaults.content_history, entry_index, &entry);
+   result = hh_runtime_recent_paths(entry, content_path, sizeof(content_path),
+         core_path, sizeof(core_path));
+   if (result != HH_OK)
+      return result;
+   strlcpy(label, entry->label ? entry->label : "", sizeof(label));
+   memset(&content_info, 0, sizeof(content_info));
+   hh_runtime_shader_discard();
+   hh_runtime_state_task_cancel(HH_ERR_NO_CONTENT);
+   if (!task_push_load_content_from_playlist_from_menu(core_path, content_path,
+            *label ? label : NULL, &content_info, NULL, NULL))
+      return HH_ERR_LOAD_FAILED;
+   command_event(CMD_EVENT_UNPAUSE, NULL);
+   return HH_OK;
+#else
+   (void)index;
+   return HH_ERR_UNSUPPORTED;
+#endif
+}
+
 static hh_result_t hh_runtime_command_result(
       hh_command_type_t type, bool command_ok)
 {
@@ -40,11 +80,23 @@ hh_result_t hh_runtime_execute_command(
 
    if (type != HH_CMD_SET_STATE_SLOT
          && type != HH_CMD_OPEN_RA_MENU
+         && type != HH_CMD_QUIT
+         && type != HH_CMD_LOAD_RECENT
          && !snapshot.content_loaded)
       return HH_ERR_NO_CONTENT;
 
    switch (type)
    {
+      case HH_CMD_CONTROLS_SET:
+      case HH_CMD_CONTROLS_SAVE:
+      case HH_CMD_CONTROLS_DEVICE:
+         return hh_runtime_controls_command(type, int_arg);
+      case HH_CMD_SHADER_BEGIN:
+      case HH_CMD_SHADER_PREVIEW:
+      case HH_CMD_SHADER_APPLY:
+      case HH_CMD_SHADER_REMOVE:
+      case HH_CMD_SHADER_CANCEL:
+         return hh_runtime_shader_command(type, int_arg);
       case HH_CMD_PAUSE:
          if (snapshot.paused)
             return HH_ERR_INVALID_STATE;
@@ -52,16 +104,26 @@ hh_result_t hh_runtime_execute_command(
          break;
       case HH_CMD_RESUME:
          if (!snapshot.paused)
-            return HH_ERR_INVALID_STATE;
+            return HH_OK;
          command_ok = command_event(CMD_EVENT_UNPAUSE, NULL);
          break;
       case HH_CMD_RESET:
          command_ok = command_event(CMD_EVENT_RESET, NULL);
          break;
       case HH_CMD_CLOSE_CONTENT:
+         hh_runtime_shader_discard();
          hh_runtime_state_task_cancel(HH_ERR_NO_CONTENT);
          command_ok = command_event(CMD_EVENT_CLOSE_CONTENT, NULL);
          break;
+      case HH_CMD_QUIT:
+         hh_runtime_shader_discard();
+         hh_runtime_state_task_cancel(HH_ERR_NO_CONTENT);
+         command_ok = command_event(CMD_EVENT_QUIT, NULL);
+         break;
+      case HH_CMD_LOAD_RECENT:
+         result = hh_runtime_load_recent(int_arg);
+         hh_runtime_refresh_snapshot();
+         return result;
       case HH_CMD_SET_STATE_SLOT:
          if (int_arg < -1 || int_arg > 999)
             return HH_ERR_INVALID_ARGUMENT;

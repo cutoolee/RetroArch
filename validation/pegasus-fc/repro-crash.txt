@@ -1,0 +1,2 @@
+--------- beginning of crash
+10-04 23:31:52.765   640   640 F libc    : crash_dump helper failed to exec

@@ -156,6 +156,8 @@ typedef struct settings
 
       unsigned input_remap_ports[MAX_USERS];
       unsigned input_remap_ids[MAX_USERS][RARCH_CUSTOM_BIND_LIST_END];
+      unsigned input_action_mask[MAX_USERS][16];
+      unsigned input_action_period[MAX_USERS][16];
       unsigned input_keymapper_ids[MAX_USERS][RARCH_CUSTOM_BIND_LIST_END];
       unsigned input_remap_port_map[MAX_USERS][MAX_USERS + 1];
 

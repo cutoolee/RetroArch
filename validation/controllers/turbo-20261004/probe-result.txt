@@ -1,0 +1,6 @@
+normal_A mode=None on=60 off=0 other=0
+normal_B mode=None on=60 off=0 other=0
+turbo_A_disabled mode=None on=0 off=60 other=0
+turbo_B_disabled mode=None on=0 off=60 other=0
+turbo_A_enabled mode=Player 1 on=15 off=45 other=0
+turbo_B_enabled mode=Player 1 on=15 off=45 other=0

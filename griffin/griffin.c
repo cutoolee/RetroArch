@@ -1928,7 +1928,11 @@ SMB CLIENT
  * existing Android amalgamation so the adapter shares RA's internal symbols
  * without creating a second runtime/library target. */
 #include "../handheld/runtime/hh_runtime_error.c"
+#include "../handheld/runtime/hh_runtime_metadata.c"
+#include "../handheld/runtime/hh_runtime_recent.c"
 #include "../handheld/runtime/hh_runtime_query.c"
+#include "../handheld/runtime/hh_runtime_shader.c"
+#include "../handheld/runtime/hh_runtime_controls.c"
 #include "../handheld/runtime/hh_runtime_command.c"
 #include "../handheld/runtime/hh_runtime_save.c"
 #include "../handheld/runtime/hh_runtime_menu.c"
@@ -1941,6 +1945,7 @@ SMB CLIENT
 #include "../handheld/ui/hh_quick_menu_layout.c"
 #include "../handheld/ui/hh_quick_menu_render.c"
 #include "../handheld/ui/hh_quick_menu_state.c"
+#include "../handheld/ui/hh_quick_menu_controls.c"
 #include "../handheld/bridge/hh_bridge.c"
 #endif
 #endif

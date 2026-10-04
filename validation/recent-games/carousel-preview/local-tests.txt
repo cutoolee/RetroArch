@@ -1,0 +1,52 @@
+PASS: GR0006 BUTTON_MODE profile maps Android keycode 110 to menu toggle
+PASS: UI header allowlist and runtime/control/filesystem boundary
+PASS: controller player/device selection, turbo, ABC combination, apply/cancel and save
+PASS: main menu keeps button width and focused items visible; touch follows overflow across 5 resolutions
+PASS: held directions repeat after 350ms, then every 120ms; release/busy reset and confirm/back remain single press
+PASS: only focused recent video plays; neighbors use first frames; absent/failed videos use images without cover flash
+PASS: recent carousel scrolls across 200 games, keeps focus visible and bounds the page indicators
+PASS: navigation, actions, dialogs, slots, feedback, duplicate protection, layout/render (3 resolutions)
+PASS: bridge accepted/completed mapping and success feedback
+PASS: resume accepts running content and preserves command errors
+PASS: turbo cadence, simultaneous outputs, independent players and release reset
+PASS: runtime ABC/turbo per-player isolation, target validation and controller assignment swap
+PASS: bundled preset references and Android seeding
+PASS: Pegasus titles, file/files, CRLF/BOM, archive paths, parent metadata, artwork and fallback
+PASS: recent entries keep newest path across cores, resolve paths and preserve distinct directories
+PASS: capture at 10 seconds once per launch, including same-game reload and pause deferral
+PASS package contract: applicationId "com.retroarch.aarch64"
+PASS package contract: namespace "com.retroarch"
+PASS package contract: ANDROID_PRODUCT_DATA_ROOT "GameGo"
+PASS package contract: ${applicationId}.documents
+PASS package contract: BuildConfig.APPLICATION_ID + ".QUERY_INSTALLED_CORES"
+PASS package contract: BuildConfig.APPLICATION_ID + ".USB_PERMISSION"
+PASS package contract: P1B2 product guard
+PACKAGE_ID_GATE=PASS
+DATA_ROOT_GATE=PASS
+AUTHORITY_GATE=PASS
+PASS file: validation/p2-1/test-plan.md
+PASS file: validation/p2-1/results.yaml
+PASS file: validation/p2-1/build-evidence.md
+PASS file: validation/p2-1/device-evidence.md
+PASS file: validation/p2-1/runtime-evidence.md
+PASS file: validation/p2-1/request-evidence.md
+PASS file: validation/p2-1/crash-evidence.md
+PASS contract: SAVE_COMPLETION_EVENT=HH_EVENT_STATE_SAVE_COMPLETED
+PASS contract: LOAD_COMPLETION_EVENT=HH_EVENT_STATE_LOAD_COMPLETED
+PASS contract: MENU
+PASS contract: blocking
+PASS contract: Continue
+PASS contract: Save
+PASS contract: Load
+PASS contract: Reset
+PASS contract: Advanced
+PASS contract: Exit
+PASS contract: pause
+PASS contract: pending
+PASS contract: busy
+PASS contract: request_id
+PASS contract: crash
+PASS contract: ANR
+PASS contract: P1
+PASS contract: HH_EVENT_STATE_SAVE_COMPLETED
+PASS contract: HH_EVENT_STATE_LOAD_COMPLETED

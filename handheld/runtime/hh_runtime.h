@@ -12,6 +12,16 @@ hh_result_t hh_runtime_init(void);
 void hh_runtime_deinit(void);
 
 hh_result_t hh_runtime_get_snapshot(hh_runtime_snapshot_t *out);
+/* Recent playlist queries run on the RA owner thread. */
+hh_result_t hh_runtime_get_recent_count(size_t *count);
+hh_result_t hh_runtime_get_recent_game(size_t index,
+      bool thumbnail, hh_runtime_recent_game_t *out);
+
+/* Shader catalog queries run on the RA owner thread. */
+hh_result_t hh_runtime_get_shader_list(bool recommended,
+      hh_runtime_shader_list_t *out);
+
+hh_result_t hh_runtime_get_controls(unsigned player, hh_runtime_controls_t *out);
 
 hh_result_t hh_runtime_pause(void);
 hh_result_t hh_runtime_resume(void);

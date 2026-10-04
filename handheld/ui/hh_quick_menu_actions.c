@@ -7,12 +7,15 @@ static hh_ui_action_t hh_quick_menu_selected_action(
 {
    switch (menu->view.items[menu->view.selected_index].id)
    {
+      case HH_QUICK_MENU_ITEM_CONTROLS: return HH_UI_ACTION_CONTROLS_BEGIN;
       case HH_QUICK_MENU_ITEM_CONTINUE:       return HH_UI_ACTION_CONTINUE;
       case HH_QUICK_MENU_ITEM_SAVE:           return HH_UI_ACTION_SAVE;
       case HH_QUICK_MENU_ITEM_LOAD:           return HH_UI_ACTION_LOAD;
       case HH_QUICK_MENU_ITEM_RESET:          return HH_UI_ACTION_RESET;
       case HH_QUICK_MENU_ITEM_ADVANCED_MENU:  return HH_UI_ACTION_ADVANCED_MENU;
       case HH_QUICK_MENU_ITEM_EXIT:           return HH_UI_ACTION_EXIT;
+      case HH_QUICK_MENU_ITEM_SHADER: return HH_UI_ACTION_SHADER_BEGIN;
+      case HH_QUICK_MENU_ITEM_RECENT:         return HH_UI_ACTION_RECENT;
       default:                                return HH_UI_ACTION_NONE;
    }
 }
@@ -67,6 +70,40 @@ hh_ui_action_t hh_quick_menu_confirm(hh_quick_menu_t *menu)
    if (hh_quick_menu_item_state(menu, menu->view.selected_index)
          == HH_QUICK_MENU_ITEM_DISABLED)
       return HH_UI_ACTION_NONE;
+   if (hh_quick_menu_is_controls_page(menu))
+      return hh_quick_menu_controls_input(menu, HH_QUICK_MENU_INPUT_CONFIRM);
+   if (hh_quick_menu_is_shader_page(menu))
+   {
+      if (menu->view.shader_fullscreen)
+      {
+         menu->view.shader_fullscreen = false;
+         return HH_UI_ACTION_NONE;
+      }
+      if (!menu->view.shader_valid || menu->view.shader_selected >= menu->view.shader_count)
+         return HH_UI_ACTION_NONE;
+      if (menu->view.page == HH_QUICK_MENU_PAGE_SHADER_SCOPE)
+      {
+         if (menu->view.shader_scope >= 4
+               && !menu->view.shader_removable[menu->view.shader_scope - 4])
+            return HH_UI_ACTION_NONE;
+         return hh_quick_menu_begin_action(menu, HH_UI_ACTION_SHADER_APPLY);
+      }
+      if (menu->view.shaders[menu->view.shader_selected].id != menu->view.shader_active_id)
+         return HH_UI_ACTION_NONE;
+      menu->view.page = HH_QUICK_MENU_PAGE_SHADER_SCOPE;
+      menu->view.shader_scope = 0;
+      hh_quick_menu_clear_feedback(menu);
+      return HH_UI_ACTION_NONE;
+   }
+   if (menu->view.page == HH_QUICK_MENU_PAGE_RECENT)
+   {
+      size_t row = menu->view.recent_selected - menu->view.recent_first;
+      if (menu->view.recent_selected >= menu->view.recent_count
+            || row >= HH_QUICK_MENU_RECENT_ROWS
+            || menu->view.recent[row].disabled)
+         return HH_UI_ACTION_NONE;
+      return hh_quick_menu_begin_action(menu, HH_UI_ACTION_RECENT);
+   }
    if (menu->view.page != HH_QUICK_MENU_PAGE_MAIN)
    {
       if (hh_quick_menu_slot_disabled(menu, menu->view.state_slot))
@@ -76,10 +113,28 @@ hh_ui_action_t hh_quick_menu_confirm(hh_quick_menu_t *menu)
             ? HH_UI_ACTION_SAVE : HH_UI_ACTION_LOAD);
    }
    action = hh_quick_menu_selected_action(menu);
+   if (action == HH_UI_ACTION_SHADER_BEGIN || action == HH_UI_ACTION_CONTROLS_BEGIN)
+      return hh_quick_menu_begin_action(menu, action);
+   if (action == HH_UI_ACTION_RECENT)
+   {
+      menu->view.page = HH_QUICK_MENU_PAGE_RECENT;
+      menu->view.recent_selected = 0;
+      menu->view.recent_first = 0;
+      menu->slot_scroll = menu->slot_scroll_origin = menu->slot_scroll_target = 0;
+      menu->slot_scroll_elapsed = 0;
+      menu->animation_time_ms = 0;
+      hh_quick_menu_clear_feedback(menu);
+      return HH_UI_ACTION_NONE;
+   }
    if (action == HH_UI_ACTION_SAVE || action == HH_UI_ACTION_LOAD)
    {
       menu->view.page = action == HH_UI_ACTION_SAVE
          ? HH_QUICK_MENU_PAGE_SAVE : HH_QUICK_MENU_PAGE_LOAD;
+      menu->slot_scroll = hh_quick_menu_slot_scroll(menu->view.state_slot);
+      menu->slot_scroll_origin = menu->slot_scroll;
+      menu->slot_scroll_target = menu->slot_scroll;
+      menu->slot_scroll_elapsed = 0;
+      menu->animation_time_ms = 0;
       hh_quick_menu_clear_feedback(menu);
       return HH_UI_ACTION_NONE;
    }
@@ -175,6 +230,14 @@ void hh_quick_menu_back(hh_quick_menu_t *menu)
    }
    if (menu->state == HH_QUICK_MENU_OPEN)
    {
+      if (hh_quick_menu_is_shader_page(menu))
+      {
+         if (menu->view.shader_fullscreen)
+            menu->view.shader_fullscreen = false;
+         else if (menu->view.page == HH_QUICK_MENU_PAGE_SHADER_SCOPE)
+            menu->view.page = HH_QUICK_MENU_PAGE_SHADER;
+         return;
+      }
       if (menu->view.page != HH_QUICK_MENU_PAGE_MAIN)
       {
          menu->view.page = HH_QUICK_MENU_PAGE_MAIN;

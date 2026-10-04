@@ -33,8 +33,21 @@ static void svg_rect(void *data, hh_ui_rect_t r, unsigned long fill,
          (border & 255) / 255.0, stroke);
 }
 
-static void svg_text(void *data, hh_ui_rect_t r, const char *text,
-      unsigned long color, float size, bool bold)
+static void svg_quad(void *data, const float *v,
+      unsigned long top, unsigned long bottom)
+{
+   svg_painter_t *svg = (svg_painter_t *)data;
+   int id = svg->clip++;
+   fprintf(svg->file, "<defs><linearGradient id='g%d' x1='0' y1='0' x2='0' y2='1'>"
+         "<stop stop-color='#%06lx' stop-opacity='%g'/><stop offset='1' "
+         "stop-color='#%06lx' stop-opacity='%g'/></linearGradient></defs>"
+         "<path d='M%g %gL%g %gL%g %gL%g %gZ' fill='url(#g%d)'/>\n",
+         id, top >> 8, (top & 255) / 255.0, bottom >> 8, (bottom & 255) / 255.0,
+         v[0], v[1], v[2], v[3], v[6], v[7], v[4], v[5], id);
+}
+
+static void svg_text_aligned(void *data, hh_ui_rect_t r, const char *text,
+      unsigned long color, float size, bool bold, bool centered)
 {
    svg_painter_t *svg = (svg_painter_t *)data;
    int clip = svg->clip++;
@@ -42,10 +55,54 @@ static void svg_text(void *data, hh_ui_rect_t r, const char *text,
          "width='%g' height='%g'/></clipPath></defs>\n", clip, r.x, r.y, r.width, r.height);
    fprintf(svg->file, "<text x='%g' y='%g' fill='#%06lx' font-size='%g' "
          "font-weight='%s' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' "
-         "clip-path='url(#c%d)'>", r.x, r.y + (r.height + size * 0.72) / 2,
-         color >> 8, size, bold ? "600" : "400", clip);
+         "text-anchor='%s' clip-path='url(#c%d)'>",
+         r.x + (centered ? r.width / 2 : 0), r.y + (r.height + size * 0.72) / 2,
+         color >> 8, size, bold ? "600" : "400", centered ? "middle" : "start", clip);
    escape(svg->file, text);
    fputs("</text>\n", svg->file);
+}
+
+static void svg_text(void *data, hh_ui_rect_t r, const char *text,
+      unsigned long color, float size, bool bold)
+{
+   svg_text_aligned(data, r, text, color, size, bold, false);
+}
+
+static void svg_text_centered(void *data, hh_ui_rect_t r, const char *text,
+      unsigned long color, float size, bool bold)
+{
+   svg_text_aligned(data, r, text, color, size, bold, true);
+}
+
+static void svg_icon(void *data, hh_ui_rect_t r,
+      hh_quick_menu_icon_t icon, unsigned long color)
+{
+   static const char *names[] = {"play", "save", "folder-open", "rotate-ccw",
+      "sliders-horizontal", "log-out", "chevron-right", "gamepad-2",
+      "menu-confirm", "menu-back", "menu-select"};
+   svg_painter_t *svg = (svg_painter_t *)data;
+   char path[256];
+   char source[4096];
+   char *body, *end;
+   size_t length;
+   FILE *file;
+   strcpy(path, "handheld/ui/icons/");
+   strcat(path, names[icon]);
+   strcat(path, ".svg");
+   file = fopen(path, "r");
+   if (!file) return;
+   length = fread(source, 1, sizeof(source) - 1, file);
+   fclose(file);
+   source[length] = '\0';
+   body = strstr(source, "<svg");
+   if (!body || !(body = strchr(body, '>'))) return;
+   end = strstr(body, "</svg>");
+   if (!end) return;
+   *end = '\0';
+   fprintf(svg->file, "<g transform='translate(%g %g) scale(%g %g)' "
+         "fill='none' color='#%06lx' stroke='currentColor' stroke-width='2' "
+         "stroke-linecap='round' stroke-linejoin='round'>%s</g>\n",
+         r.x, r.y, r.width / 24, r.height / 24, color >> 8, body + 1);
 }
 
 static bool svg_preview(void *data, hh_ui_rect_t r, int slot)
@@ -63,6 +120,12 @@ static bool svg_preview(void *data, hh_ui_rect_t r, int slot)
    return true;
 }
 
+static bool svg_thumbnail(void *data, hh_ui_rect_t r, const char *path)
+{
+   (void)path;
+   return svg_preview(data, r, 0);
+}
+
 static hh_ui_action_t input(hh_quick_menu_t *menu, hh_quick_menu_input_t key)
 {
    hh_ui_action_t action = hh_quick_menu_input(menu, key);
@@ -75,6 +138,26 @@ static void scenario(hh_quick_menu_t *menu, int state)
 {
    int i;
    mock_quick_menu(menu);
+   if (state == 11 || state == 12)
+   {
+      menu->view.selected_index = HH_QUICK_MENU_ITEM_RECENT;
+      input(menu, HH_QUICK_MENU_INPUT_CONFIRM);
+      if (state == 11)
+      {
+         static const char *titles[] = {"拳皇97", "恐龙快打", "合金弹头",
+            "魂斗罗", "黄金太阳", "超级马里奥", "塞尔达传说", "口袋妖怪"};
+         menu->view.recent_count = 8;
+         for (i = 0; i < HH_QUICK_MENU_RECENT_ROWS; i++)
+         {
+            strcpy(menu->view.recent[i].title, titles[i]);
+            strcpy(menu->view.recent[i].thumbnail, "mock.png");
+            if (i < 3)
+               strcpy(menu->view.recent[i].video, "mock.mp4");
+         }
+         strcpy(menu->view.recent_thumbnail, "mock.png");
+      }
+      return;
+   }
    if (state == 0) return;
    if (state == 1)
    {
@@ -111,7 +194,8 @@ int main(int argc, char **argv)
    static const int sizes[][2] = {{640,480}, {1280,720}, {1920,1080}};
    static const char *dimensions[] = {"640x480", "1280x720", "1920x1080"};
    static const char *names[] = {"main", "disabled", "save-preview", "load-empty",
-      "pending", "save-success", "error", "restart", "exit", "load-success", "no-preview"};
+      "pending", "save-success", "error", "restart", "exit", "load-success", "no-preview",
+      "recent", "recent-empty"};
    hh_quick_menu_t menu;
    hh_quick_menu_painter_t painter;
    svg_painter_t svg;
@@ -129,14 +213,20 @@ int main(int argc, char **argv)
          "a{color:#a3efb4}section{margin:40px 0}img{max-width:100%;display:block;margin:12px 0}"
          "summary{cursor:pointer;padding:12px}nav a{margin-right:16px}</style>"
          "<h1>GameGo / Quick Menu</h1><p>离线 Mock · 由正式 C renderer 输出 · 未连接 Runtime</p>"
-         "<p>6 个主菜单循环导航；Slot 0–9 边界停止；确认弹窗默认取消。</p><nav>", html);
-   for (j = 0; j < 11; j++) fprintf(html, "<a href='#%s'>%s</a>", names[j], names[j]);
+         "<p>7 个主菜单循环导航；Slot 0–9 边界停止；确认弹窗默认取消。</p><nav>", html);
+   for (j = 0; j < 13; j++) fprintf(html, "<a href='#%s'>%s</a>", names[j], names[j]);
    fputs("</nav>", html);
    painter.userdata = &svg;
    painter.rect = svg_rect;
    painter.text = svg_text;
+   painter.text_centered = svg_text_centered;
    painter.preview = svg_preview;
-   for (j = 0; j < 11; j++)
+   painter.icon = svg_icon;
+   painter.quad = svg_quad;
+   painter.thumbnail = svg_thumbnail;
+   painter.video = svg_thumbnail;
+   painter.video_frame = svg_thumbnail;
+   for (j = 0; j < 13; j++)
    {
       fprintf(html, "<section id='%s'><h2>%s</h2>", names[j], names[j]);
       scenario(&menu, j);
@@ -164,6 +254,6 @@ int main(int argc, char **argv)
       fputs("</section>", html);
    }
    fclose(html);
-   puts("PASS: 33 SVG previews generated by the C renderer");
+   puts("PASS: 39 SVG previews generated by the C renderer");
    return 0;
 }

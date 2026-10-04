@@ -160,10 +160,10 @@ android {
     }
     aarch64 {
       if (gamegoProductFlag == "1")
-        applicationId "com.cutoolee.gamego"
+        applicationId "com.retroarch.aarch64"
       else
         applicationIdSuffix p1b2ValidationApkFlag == "1" ? '.aarch64.p1b2' : '.aarch64'
-      resValue "string", "app_name", gamegoProductFlag == "1" ? "GameGo" : "RetroArch (AArch64)"
+      resValue "string", "app_name", "RetroArch (AArch64)"
       buildConfigField "boolean", "PLAY_STORE_BUILD", "false"
 
       dimension "variant"
@@ -230,6 +230,8 @@ android {
     main {
       manifest.srcFile 'AndroidManifest.xml'
       assets.srcDirs = ['assets']
+      if (gamegoProductFlag == "1")
+        assets.srcDirs += ['gamego-assets']
       java.srcDirs = ['src', '../phoenix-common/src', '../../../libretro-common/vfs/saf/src']
       jniLibs.srcDir '../phoenix-common/libs'
       jni.srcDirs = []

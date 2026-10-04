@@ -1,0 +1,100 @@
+{
+  "version": "1.5",
+  "default_core_path": "",
+  "default_core_name": "",
+  "label_display_mode": 0,
+  "right_thumbnail_mode": 0,
+  "left_thumbnail_mode": 0,
+  "thumbnail_match_mode": 0,
+  "sort_mode": 2,
+  "items": [
+    {
+      "path": "/storage/emulated/0/Roms/Arcade/FBNEO ACT HOT/dino.zip",
+      "label": "",
+      "core_path": "/data/data/com.retroarch.aarch64/cores/fbneo_libretro_android.so",
+      "core_name": "Arcade (FinalBurn Neo)",
+      "crc32": "",
+      "db_name": "FBNeo - Arcade Games"
+    },
+    {
+      "path": "/storage/emulated/0/Roms/GBA/龙珠大冒险.zip",
+      "label": "",
+      "core_path": "/data/data/com.retroarch.aarch64/cores/mgba_libretro_android.so",
+      "core_name": "Nintendo - Game Boy Advance (mGBA)",
+      "crc32": "",
+      "db_name": "Nintendo - Game Boy|Nintendo - Game Boy Color|Nintendo - Game Boy Advance"
+    },
+    {
+      "path": "/storage/emulated/0/Roms/Arcade/FBNEO MSLUG/mslug.zip",
+      "label": "",
+      "core_path": "/data/data/com.retroarch.aarch64/cores/fbneo_libretro_android.so",
+      "core_name": "Arcade (FinalBurn Neo)",
+      "crc32": "",
+      "db_name": ""
+    },
+    {
+      "path": "/storage/emulated/0/Roms/FC/魂斗罗1.zip",
+      "label": "",
+      "core_path": "/data/data/com.retroarch.aarch64/cores/fceumm_libretro_android.so",
+      "core_name": "Nintendo - NES / Famicom (FCEUmm)",
+      "crc32": "",
+      "db_name": ""
+    },
+    {
+      "path": "/storage/emulated/0/Roms/Arcade/FBNEO ACT HOT/dino.zip",
+      "label": "",
+      "core_path": "/data/data/com.cutoolee.gamego/cores/fbneo_libretro_android.so",
+      "core_name": "Arcade (FinalBurn Neo)",
+      "crc32": "",
+      "db_name": "FBNeo - Arcade Games"
+    },
+    {
+      "path": "/storage/emulated/0/Roms/FC/三目童子.zip",
+      "label": "",
+      "core_path": "/data/data/com.cutoolee.gamego/cores/fceumm_libretro_android.so",
+      "core_name": "Nintendo - NES / Famicom (FCEUmm)",
+      "crc32": "",
+      "db_name": "Nintendo - Nintendo Entertainment System|Nintendo - Family Computer Disk System"
+    },
+    {
+      "path": "/storage/emulated/0/Roms/FC/超级马里奥1.zip",
+      "label": "",
+      "core_path": "/data/data/com.cutoolee.gamego/cores/fceumm_libretro_android.so",
+      "core_name": "Nintendo - NES / Famicom (FCEUmm)",
+      "crc32": "",
+      "db_name": "Nintendo - Nintendo Entertainment System|Nintendo - Family Computer Disk System"
+    },
+    {
+      "path": "/storage/emulated/0/Roms/GBA/龙珠大冒险.zip",
+      "label": "",
+      "core_path": "/data/data/com.cutoolee.gamego/cores/mgba_libretro_android.so",
+      "core_name": "Nintendo - Game Boy Advance (mGBA)",
+      "crc32": "",
+      "db_name": "Nintendo - Game Boy|Nintendo - Game Boy Color|Nintendo - Game Boy Advance"
+    },
+    {
+      "path": "/storage/emulated/0/Download/HelloWorld.sfc",
+      "label": "",
+      "core_path": "/data/data/com.cutoolee.gamego/cores/snes9x_libretro_android.so",
+      "core_name": "Nintendo - SNES / SFC (Snes9x)",
+      "crc32": "",
+      "db_name": ""
+    },
+    {
+      "path": "/storage/emulated/0/Roms/FC/1943.zip",
+      "label": "",
+      "core_path": "/data/data/com.cutoolee.gamego/cores/fceumm_libretro_android.so",
+      "core_name": "Nintendo - NES / Famicom (FCEUmm)",
+      "crc32": "",
+      "db_name": "Nintendo - Nintendo Entertainment System|Nintendo - Family Computer Disk System"
+    },
+    {
+      "path": "/storage/emulated/0/Download/B2_mgba_gba-keypad.gba",
+      "label": "",
+      "core_path": "/data/data/com.cutoolee.gamego/cores/mgba_libretro_android.so",
+      "core_name": "Nintendo - Game Boy Advance (mGBA)",
+      "crc32": "",
+      "db_name": ""
+    }
+  ]
+}

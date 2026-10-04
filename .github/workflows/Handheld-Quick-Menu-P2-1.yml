@@ -80,19 +80,19 @@ jobs:
           "$build_tools/aapt2" dump packagename \
             handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \
             | tee handheld-dist/p2-1/APPLICATION_ID.txt
-          test "$(cat handheld-dist/p2-1/APPLICATION_ID.txt)" = "com.cutoolee.gamego"
-          ! grep -Eq 'com\.retroarch\.aarch64|\.p1b2|\.validation|\.p2' \
+          test "$(cat handheld-dist/p2-1/APPLICATION_ID.txt)" = "com.retroarch.aarch64"
+          ! grep -Eq '\.p1b2|\.validation|\.p2' \
             handheld-dist/p2-1/APPLICATION_ID.txt
           "$build_tools/aapt2" dump badging \
             handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \
-            | grep -F "application-label:'GameGo'" \
+            | grep -F "application-label:'RetroArch (AArch64)'" \
             | tee handheld-dist/p2-1/APP_NAME.txt
           unzip -l handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \
             | grep -F 'lib/arm64-v8a/' >/dev/null
           "$build_tools/aapt2" dump xmltree \
             handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \
             --file AndroidManifest.xml \
-            | grep -F 'com.cutoolee.gamego.documents' >/dev/null
+            | grep -F 'com.retroarch.aarch64.documents' >/dev/null
           if [ -x "$build_tools/apksigner" ]; then
             "$build_tools/apksigner" verify --print-certs \
               handheld-dist/p2-1/RetroArch-p2.1-aarch64.apk \

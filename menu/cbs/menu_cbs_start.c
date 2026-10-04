@@ -236,6 +236,12 @@ static int action_start_input_desc(
             || (btn_idx     >= RARCH_CUSTOM_BIND_LIST_END))
          return 0;
 
+      if (btn_idx < 16)
+      {
+         settings->uints.input_action_mask[user_idx][btn_idx] = 0;
+         settings->uints.input_action_period[user_idx][btn_idx] = 0;
+      }
+
       /* Check whether core has defined this input */
       if (sys_info->input_desc_btn[mapped_port][btn_idx] && *sys_info->input_desc_btn[mapped_port][btn_idx])
       {

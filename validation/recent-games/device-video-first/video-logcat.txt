@@ -1,0 +1,5 @@
+--------- beginning of main
+--------- beginning of system
+10-04 16:01:42.746 19051 19051 I GAMEGO_RECENT: VIDEO_PLAYING /storage/emulated/0/Roms/GBA/media/龙珠大冒险/video.mp4
+10-04 16:02:03.840 19051 19051 I GAMEGO_RECENT: VIDEO_PLAYING /storage/emulated/0/Roms/FC/media/魂斗罗1/video.mp4
+10-04 16:02:04.952 19051 19051 I GAMEGO_RECENT: VIDEO_PLAYING /storage/emulated/0/Roms/Arcade/FBNEO ACT HOT/media/dino/video.mp4

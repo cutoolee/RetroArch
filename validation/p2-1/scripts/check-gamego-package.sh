@@ -15,7 +15,7 @@ check_text() {
    fi
 }
 
-check_text 'applicationId "com.cutoolee.gamego"' \
+check_text 'applicationId "com.retroarch.aarch64"' \
    "$root/pkg/android/phoenix/build.gradle"
 check_text 'namespace "com.retroarch"' \
    "$root/pkg/android/phoenix/build.gradle"

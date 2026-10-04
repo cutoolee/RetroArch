@@ -15,6 +15,10 @@ typedef struct hh_bridge
    int pending_slot;
    bool advanced_wait_resume;
    bool pause_cancel_requested;
+   bool shader_session_active;
+   bool shader_close_after_cancel;
+   int shader_observed_id;
+   unsigned long shader_preview_time_ms;
 } hh_bridge_t;
 
 void hh_bridge_init(hh_bridge_t *bridge);
@@ -23,6 +27,8 @@ bool hh_bridge_open(hh_bridge_t *bridge);
 void hh_bridge_close(hh_bridge_t *bridge);
 bool hh_bridge_is_open(const hh_bridge_t *bridge);
 bool hh_bridge_input(hh_bridge_t *bridge, hh_quick_menu_input_t input);
+bool hh_bridge_touch(hh_bridge_t *bridge, float x, float y, bool pressed,
+      float width, float height);
 bool hh_bridge_test_input(hh_bridge_t *bridge, hh_quick_menu_input_t input);
 bool hh_bridge_test_toggle(hh_bridge_t *bridge);
 void hh_bridge_tick(hh_bridge_t *bridge);

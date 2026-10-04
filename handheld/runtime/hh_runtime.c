@@ -72,6 +72,8 @@ void hh_runtime_deinit(void)
    if (!hh_runtime_state.lock)
       return;
 
+   if (hh_runtime_state.owner_thread_id == sthread_get_current_thread_id())
+      hh_runtime_shader_discard();
    hh_runtime_state_task_cancel(HH_ERR_NOT_INITIALIZED);
    slock_lock(hh_runtime_state.lock);
    hh_runtime_state.shutting_down = true;

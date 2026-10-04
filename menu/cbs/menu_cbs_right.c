@@ -143,6 +143,12 @@ static int action_right_input_desc(unsigned type, const char *label,
       unsigned mapped_port = settings->uints.input_remap_ports[user_idx];
       unsigned remap_idx   = settings->uints.input_remap_ids[user_idx][btn_idx];
 
+      if (btn_idx < 16)
+      {
+         settings->uints.input_action_mask[user_idx][btn_idx] = 0;
+         settings->uints.input_action_period[user_idx][btn_idx] = 0;
+      }
+
       for (bind_idx = 0; bind_idx < RARCH_ANALOG_BIND_LIST_END; bind_idx++)
       {
          if (input_config_bind_order[bind_idx] == remap_idx)

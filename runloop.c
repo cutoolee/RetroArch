@@ -132,7 +132,6 @@ bool android_get_vfs_authorized_locations(
 #include "handheld/bridge/hh_bridge.h"
 static hh_bridge_t hh_bridge_global;
 static bool hh_bridge_global_ready;
-static unsigned hh_bridge_buttons_previous;
 #endif
 #endif
 
@@ -6296,39 +6295,46 @@ static enum runloop_state_enum runloop_check_state(
    if (hh_bridge_global_ready && hh_bridge_is_open(&hh_bridge_global))
    {
       unsigned buttons = 0;
+      unsigned triggers;
       bool menu_pressed = BIT256_GET(current_bits, RARCH_MENU_TOGGLE);
-      if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
+      if (BIT256_GET(current_bits, RETRO_DEVICE_ID_JOYPAD_UP)
+            || input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
                RETRO_DEVICE_ID_JOYPAD_UP)) buttons |= 1U << 0;
-      if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
+      if (BIT256_GET(current_bits, RETRO_DEVICE_ID_JOYPAD_DOWN)
+            || input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
                RETRO_DEVICE_ID_JOYPAD_DOWN)) buttons |= 1U << 1;
-      if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
+      if (BIT256_GET(current_bits, RETRO_DEVICE_ID_JOYPAD_LEFT)
+            || input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
                RETRO_DEVICE_ID_JOYPAD_LEFT)) buttons |= 1U << 2;
-      if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
+      if (BIT256_GET(current_bits, RETRO_DEVICE_ID_JOYPAD_RIGHT)
+            || input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
                RETRO_DEVICE_ID_JOYPAD_RIGHT)) buttons |= 1U << 3;
       if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
                RETRO_DEVICE_ID_JOYPAD_A)) buttons |= 1U << 4;
       if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
                RETRO_DEVICE_ID_JOYPAD_B)) buttons |= 1U << 5;
-      if ((buttons & (1U << 0)) && !(hh_bridge_buttons_previous & (1U << 0)))
+      triggers = hh_quick_menu_poll_buttons(&hh_bridge_global.menu,
+            buttons, (unsigned long)(current_time / 1000));
+      if (triggers & (1U << 0))
          hh_bridge_input(&hh_bridge_global, HH_QUICK_MENU_INPUT_UP);
-      if ((buttons & (1U << 1)) && !(hh_bridge_buttons_previous & (1U << 1)))
+      if (triggers & (1U << 1))
          hh_bridge_input(&hh_bridge_global, HH_QUICK_MENU_INPUT_DOWN);
-      if ((buttons & (1U << 2)) && !(hh_bridge_buttons_previous & (1U << 2)))
+      if (triggers & (1U << 2))
          hh_bridge_input(&hh_bridge_global, HH_QUICK_MENU_INPUT_LEFT);
-      if ((buttons & (1U << 3)) && !(hh_bridge_buttons_previous & (1U << 3)))
+      if (triggers & (1U << 3))
          hh_bridge_input(&hh_bridge_global, HH_QUICK_MENU_INPUT_RIGHT);
-      if ((buttons & (1U << 4)) && !(hh_bridge_buttons_previous & (1U << 4)))
+      if (triggers & (1U << 4))
          hh_bridge_input(&hh_bridge_global, HH_QUICK_MENU_INPUT_CONFIRM);
-      if ((buttons & (1U << 5)) && !(hh_bridge_buttons_previous & (1U << 5)))
+      if (triggers & (1U << 5))
          hh_bridge_input(&hh_bridge_global, HH_QUICK_MENU_INPUT_BACK);
-      hh_bridge_buttons_previous = buttons;
       BIT256_CLEAR_ALL(current_bits);
       if (menu_pressed)
          BIT256_SET(current_bits, RARCH_MENU_TOGGLE);
       input_st->flags |= INP_FLAG_BLOCK_LIBRETRO_INPUT;
    }
    else
-      hh_bridge_buttons_previous = 0;
+      hh_quick_menu_poll_buttons(&hh_bridge_global.menu, 0,
+            (unsigned long)(current_time / 1000));
 #endif
 
 #ifdef HAVE_MENU
@@ -6728,7 +6734,8 @@ static enum runloop_state_enum runloop_check_state(
          bool core_is_running    = runloop_st->flags & RUNLOOP_FLAG_CORE_RUNNING;
 
 #if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
-         if (core_is_running && !core_type_is_dummy)
+         if (core_is_running && !core_type_is_dummy
+               && !(menu_st->flags & MENU_ST_FLAG_ALIVE))
          {
             if (hh_bridge_is_open(&hh_bridge_global))
                hh_bridge_close(&hh_bridge_global);
@@ -6756,6 +6763,47 @@ static enum runloop_state_enum runloop_check_state(
 
 #if defined(HAVE_MENU) || defined(HAVE_GFX_WIDGETS)
    video_driver_get_output_size(&output_width, &output_height);
+
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   if (hh_bridge_global_ready && hh_bridge_is_open(&hh_bridge_global))
+   {
+      static float touch_x;
+      static float touch_y;
+      rarch_joypad_info_t joypad_info;
+      int16_t raw_x = 0;
+      int16_t raw_y = 0;
+      bool touch_pressed = false;
+      const input_driver_t *current_input = input_st->current_driver;
+      joypad_info.joy_idx = 0;
+      joypad_info.auto_binds = NULL;
+      joypad_info.axis_threshold = 0.0f;
+      if (current_input && current_input->input_state)
+      {
+         raw_x = current_input->input_state(input_st->current_data,
+               input_st->primary_joypad, input_st->secondary_joypad,
+               &joypad_info, *input_st->libretro_input_binds,
+               !!(input_st->flags & INP_FLAG_KB_MAPPING_BLOCKED),
+               0, RARCH_DEVICE_POINTER_SCREEN, 0, RETRO_DEVICE_ID_POINTER_X);
+         raw_y = current_input->input_state(input_st->current_data,
+               input_st->primary_joypad, input_st->secondary_joypad,
+               &joypad_info, *input_st->libretro_input_binds,
+               !!(input_st->flags & INP_FLAG_KB_MAPPING_BLOCKED),
+               0, RARCH_DEVICE_POINTER_SCREEN, 0, RETRO_DEVICE_ID_POINTER_Y);
+         touch_pressed = current_input->input_state(input_st->current_data,
+               input_st->primary_joypad, input_st->secondary_joypad,
+               &joypad_info, *input_st->libretro_input_binds,
+               !!(input_st->flags & INP_FLAG_KB_MAPPING_BLOCKED),
+               0, RARCH_DEVICE_POINTER_SCREEN, 0, RETRO_DEVICE_ID_POINTER_PRESSED) != 0;
+      }
+      if (touch_pressed || touch_x == 0.0f || touch_y == 0.0f)
+      {
+         touch_x = ((float)raw_x + 32767.0f) * (float)output_width / 65535.0f;
+         touch_y = ((float)raw_y + 32767.0f) * (float)output_height / 65535.0f;
+      }
+      hh_bridge_touch(&hh_bridge_global, touch_x, touch_y, touch_pressed,
+            (float)output_width, (float)output_height);
+   }
+#endif
 
    gfx_animation_update(
          current_time,
@@ -8192,6 +8240,8 @@ int runloop_iterate(void)
  #if defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
    if (!hh_bridge_global_ready)
    {
+      configuration_set_bool(settings,
+            settings->bools.savestate_thumbnail_enable, true);
       hh_bridge_init(&hh_bridge_global);
       hh_bridge_global_ready = true;
    }
@@ -8202,6 +8252,18 @@ int runloop_iterate(void)
       hh_bridge_global_ready = false;
    }
    hh_bridge_tick(&hh_bridge_global);
+#ifdef HAVE_OVERLAY
+   {
+      static bool overlay_hidden = false;
+      bool hide = settings->bools.input_overlay_hide_in_menu
+         && hh_bridge_is_open(&hh_bridge_global);
+      if (hide != overlay_hidden)
+      {
+         command_event(hide ? CMD_EVENT_OVERLAY_UNLOAD : CMD_EVENT_OVERLAY_INIT, NULL);
+         overlay_hidden = hide;
+      }
+   }
+#endif
  #endif
    /* Runtime commands submitted by non-owner callers are consumed only on
     * the ra-main/runloop owner thread. */

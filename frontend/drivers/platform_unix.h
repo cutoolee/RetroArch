@@ -246,6 +246,8 @@ struct android_app
 
    jmethodID showKeyboard;
    jmethodID hideKeyboard;
+   jmethodID setGameGoRecentVideo;
+   jmethodID getGameGoRecentVideoThumbnail;
 
    /* Written by the Android UI thread in onContentRectChanged(), read by
     * the video thread in the context drivers, with no lock on either
@@ -501,6 +503,10 @@ enum
    } while (0)
 
 extern JNIEnv *jni_thread_getenv(void);
+bool android_gamego_recent_video(const char *path, int x, int y,
+      int width, int height, int frame_width, int frame_height);
+bool android_gamego_recent_video_thumbnail(const char *path,
+      char *out, size_t size);
 
 /* Re-assert a chosen display mode and window frame rate after a new
  * ANativeWindow appears.  Both are window state and are lost when the

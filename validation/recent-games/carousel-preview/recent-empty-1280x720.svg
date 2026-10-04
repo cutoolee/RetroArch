@@ -1,0 +1,23 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1280' height='720' viewBox='0 0 1280 720'><rect width='100%' height='100%' fill='#456657'/>
+<rect x='0' y='0' width='1280' height='720' rx='0' fill='#020d19' fill-opacity='0.533333' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><linearGradient id='g0' x1='0' y1='0' x2='0' y2='1'><stop stop-color='#000713' stop-opacity='0.376471'/><stop offset='1' stop-color='#000713' stop-opacity='0'/></linearGradient></defs><path d='M0 0L1280 0L1280 324L0 324Z' fill='url(#g0)'/>
+<defs><linearGradient id='g1' x1='0' y1='0' x2='0' y2='1'><stop stop-color='#000713' stop-opacity='0'/><stop offset='1' stop-color='#000713' stop-opacity='0.878431'/></linearGradient></defs><path d='M0 432L1280 432L1280 720L0 720Z' fill='url(#g1)'/>
+<rect x='1181.33' y='48' width='12' height='60' rx='6' fill='#aab3c2' fill-opacity='0.54902' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<rect x='1213.33' y='48' width='12' height='60' rx='6' fill='#aab3c2' fill-opacity='0.54902' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<defs><clipPath id='c2'><rect x='160' y='188' width='946.667' height='42.6667'/></clipPath></defs>
+<text x='160' y='220.853' fill='#eff3f8' font-size='32' font-weight='600' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' text-anchor='start' clip-path='url(#c2)'>最近游戏</text>
+<defs><clipPath id='c3'><rect x='160' y='234.667' width='946.667' height='29.3333'/></clipPath></defs>
+<text x='160' y='256.533' fill='#a5b6c8' font-size='20' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' text-anchor='start' clip-path='url(#c3)'>暂无最近游戏</text>
+<rect x='452' y='638.667' width='109.333' height='45.3333' rx='22.6667' fill='#111d2a' fill-opacity='0.6' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<g transform='translate(458.667 645.333) scale(1.33333 1.33333)' fill='none' color='#6f8093' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx="12" cy="12" r="10.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M7 17L12 6L17 17M9 13H15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></g>
+<defs><clipPath id='c4'><rect x='506.667' y='644' width='42.6667' height='34.6667'/></clipPath></defs>
+<text x='506.667' y='668.053' fill='#aebbd0' font-size='18.6667' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' text-anchor='start' clip-path='url(#c4)'>确认</text>
+<rect x='577.333' y='638.667' width='109.333' height='45.3333' rx='22.6667' fill='#111d2a' fill-opacity='0.6' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<g transform='translate(584 645.333) scale(1.33333 1.33333)' fill='none' color='#ff4555' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx="12" cy="12" r="10.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8.5 6.5H12.7C17.2 6.5 17.2 11.6 12.7 11.6H8.5M12.7 11.6C18 11.6 18 17.5 12.7 17.5H8.5V6.5" fill="none" stroke="currentColor" stroke-width="1.7"/></g>
+<defs><clipPath id='c5'><rect x='632' y='644' width='42.6667' height='34.6667'/></clipPath></defs>
+<text x='632' y='668.053' fill='#aebbd0' font-size='18.6667' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' text-anchor='start' clip-path='url(#c5)'>返回</text>
+<rect x='705.333' y='638.667' width='138.667' height='45.3333' rx='22.6667' fill='#111d2a' fill-opacity='0.6' stroke='#000000' stroke-opacity='0' stroke-width='0'/>
+<g transform='translate(712 634.667) scale(2.22222 2.22222)' fill='none' color='#a5b6c8' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d="M7 7L3 12L7 17M17 7L21 12L17 17" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></g>
+<defs><clipPath id='c6'><rect x='786.667' y='644' width='42.6667' height='34.6667'/></clipPath></defs>
+<text x='786.667' y='668.053' fill='#aebbd0' font-size='18.6667' font-weight='400' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' text-anchor='start' clip-path='url(#c6)'>选择</text>
+</svg>

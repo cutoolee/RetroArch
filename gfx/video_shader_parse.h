@@ -303,6 +303,8 @@ bool video_shader_apply_shader(
       enum rarch_shader_type type,
       const char *preset_path, bool message);
 
+bool video_shader_get_auto_preset_path(char *path, size_t size);
+
 const char *video_shader_get_preset_extension(enum rarch_shader_type type);
 
 void video_shader_toggle(settings_t *settings, bool write);

@@ -3509,6 +3509,17 @@ bool video_shader_apply_shader(
    return false;
 }
 
+bool video_shader_get_auto_preset_path(char *path, size_t size)
+{
+   settings_t *settings = config_get_ptr();
+   const char *core = runloop_state_get_ptr()->system.info.library_name;
+   if (!path || !size || !settings || !core || !*core)
+      return false;
+   return video_shader_load_auto_shader_preset(
+         settings->paths.directory_video_shader,
+         settings->paths.directory_menu_config, core, path, size) != 0;
+}
+
 /* get the name of the current shader preset */
 const char *video_shader_get_current_shader_preset(void)
 {

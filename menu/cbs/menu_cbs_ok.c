@@ -8255,6 +8255,12 @@ static int action_ok_push_dropdown_item_input_description(const char *path,
    if ((user_idx >= MAX_USERS) || (btn_idx >= RARCH_CUSTOM_BIND_LIST_END))
       return -1;
 
+   if (btn_idx < 16)
+   {
+      settings->uints.input_action_mask[user_idx][btn_idx] = 0;
+      settings->uints.input_action_period[user_idx][btn_idx] = 0;
+   }
+
    /* Assign new mapping */
    settings->uints.input_remap_ids[user_idx][btn_idx] = remap_idx;
 
