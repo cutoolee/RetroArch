@@ -33,6 +33,7 @@ hh_result_t hh_runtime_controls_command(hh_command_type_t type, int argument)
 hh_result_t hh_runtime_shader_command(hh_command_type_t type, int argument)
 { (void)type; (void)argument; return HH_ERR_UNSUPPORTED; }
 void hh_runtime_shader_discard(void) {}
+void hh_runtime_controls_discard(void) {}
 void hh_runtime_state_task_cancel(hh_result_t result) { (void)result; }
 
 int main(void)

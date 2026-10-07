@@ -242,6 +242,8 @@ static void within(hh_ui_rect_t inner, hh_ui_rect_t outer)
 
 typedef struct recorder
 {
+   int controllers;
+   bool controller_result;
    int videos, thumbnails, video_frames;
    bool video_result, frame_result;
    hh_ui_rect_t viewport;
@@ -304,9 +306,18 @@ static void record_text_centered(void *data, hh_ui_rect_t r, const char *text,
 {
    recorder_t *rec = (recorder_t *)data;
    float s = rec->viewport.width / 1920;
-   assert(r.width >= 192 * s - 0.01f && r.width <= 192 * s + 0.01f);
+   if (rec->carousel)
+      assert(r.width >= 192 * s - 0.01f && r.width <= 192 * s + 0.01f);
    record_text(data, r, text, color, size, bold);
    rec->centered_texts++;
+}
+
+static bool record_controller(void *data, hh_ui_rect_t r)
+{
+   recorder_t *rec = (recorder_t *)data;
+   within_paint(r, rec);
+   rec->controllers++;
+   return rec->controller_result;
 }
 
 static void record_quad(void *data, const float *v,
@@ -626,6 +637,14 @@ static void test_layout_render(void)
       assert(l.control_rows[0].y < l.main_header.y + 150 * l.scale);
       hh_quick_menu_render(&m, sizes[i][0], sizes[i][1], NULL, &painter);
       assert(rec.texts >= 12);
+      painter.controller = record_controller;
+      rec.controller_result = true;
+      hh_quick_menu_render(&m, sizes[i][0], sizes[i][1], NULL, &painter);
+      assert(rec.controllers == 1);
+      rec.controller_result = false;
+      hh_quick_menu_render(&m, sizes[i][0], sizes[i][1], NULL, &painter);
+      assert(rec.controllers == 2);
+      painter.controller = NULL;
    }
    assert(!hh_quick_menu_compute_layout(0, 480, &l));
    assert(!hh_quick_menu_compute_layout(640, -1, &l));
@@ -1065,39 +1084,46 @@ static void test_controls(void)
    assert(m.view.control_player == 1);
    INPUT(&m, LEFT);
    assert(m.view.control_player == 0);
-   INPUT(&m, DOWN);
+   INPUT(&m, UP);
    assert(INPUT(&m, RIGHT) == HH_UI_ACTION_CONTROLS_DEVICE);
    assert(m.view.control_device == 3);
    hh_quick_menu_action_complete(&m);
-   INPUT(&m, DOWN);
+   m.view.control_selected = 2;
    INPUT(&m, CONFIRM);
    assert(m.view.page == HH_QUICK_MENU_PAGE_CONTROL_EDIT);
-   INPUT(&m, RIGHT);
-   INPUT(&m, RIGHT);
+   assert(INPUT(&m, UP) == HH_UI_ACTION_NONE);
+   assert(m.view.control_selected == hh_quick_menu_control_count(&m) - 1);
+   assert(m.view.control_first == 0);
+   INPUT(&m, DOWN);
+   assert(m.view.control_selected == 0);
+   assert(INPUT(&m, RIGHT) == HH_UI_ACTION_CONTROLS_SET);
+   assert(INPUT(&m, RIGHT) == HH_UI_ACTION_NONE);
+   hh_quick_menu_action_complete(&m);
+   assert(INPUT(&m, RIGHT) == HH_UI_ACTION_CONTROLS_SET);
+   hh_quick_menu_action_complete(&m);
    assert(m.view.control_mode == 2 && m.view.control_mask == 1);
    INPUT(&m, DOWN);
-   INPUT(&m, RIGHT);
+   assert(INPUT(&m, RIGHT) == HH_UI_ACTION_CONTROLS_SET);
+   hh_quick_menu_action_complete(&m);
    assert(m.view.control_period == 4);
    INPUT(&m, UP);
-   INPUT(&m, RIGHT);
+   assert(INPUT(&m, RIGHT) == HH_UI_ACTION_CONTROLS_SET);
+   hh_quick_menu_action_complete(&m);
    assert(m.view.control_mode == 3);
    INPUT(&m, DOWN);
+   assert(INPUT(&m, RIGHT) == HH_UI_ACTION_NONE);
    INPUT(&m, DOWN);
    INPUT(&m, DOWN);
-   INPUT(&m, CONFIRM);
+   assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_CONTROLS_SET);
+   hh_quick_menu_action_complete(&m);
    INPUT(&m, DOWN);
-   INPUT(&m, CONFIRM);
+   assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_CONTROLS_SET);
+   hh_quick_menu_action_complete(&m);
    assert(m.view.control_mask == 7);
    INPUT(&m, DOWN);
-   assert(INPUT(&m, RIGHT) == HH_UI_ACTION_NONE);
-   assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_CONTROLS_SET);
-   assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_NONE);
-   hh_quick_menu_action_complete(&m);
+   assert(m.view.control_selected == 0);
    INPUT(&m, BACK);
    assert(m.view.page == HH_QUICK_MENU_PAGE_CONTROLS);
-   INPUT(&m, CONFIRM);
-   INPUT(&m, BACK);
-   assert(m.view.controls.masks[0] == 0);
    m.view.control_selected = 18;
    assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_CONTROLS_SAVE);
    assert(m.view.control_save_scope == 0);
@@ -1106,7 +1132,198 @@ static void test_controls(void)
    m.view.control_selected = 2;
    assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_NONE);
    assert(m.view.page == HH_QUICK_MENU_PAGE_CONTROLS);
-   puts("PASS: controller player/device selection, turbo, ABC combination, apply/cancel and save");
+   puts("PASS: controller player/device selection, turbo, immediate ABC updates, editor wrap and save");
+}
+
+static void test_control_target_order(void)
+{
+   static const char *names[16] = {"Button A", "Button C", "Coin", "Start",
+      "Up", "Down", "Left", "Right", "Button B", "Button D", "Buttons CD",
+      "Buttons AB", "Buttons BCD", "Buttons ABC", "Select", ""};
+   static const char *ordered[] = {"Button A", "Button B", "Button C", "Button D",
+      "Buttons AB", "Buttons CD", "Buttons ABC", "Buttons BCD", "Buttons ABCD"};
+   static const unsigned masks[] = {1, 256, 2, 512, 2048, 1024, 8192, 4096, 771};
+   hh_quick_menu_t m;
+   char label[128];
+   unsigned i;
+   select_item(&m, HH_QUICK_MENU_ITEM_CONTROLS);
+   m.view.page = HH_QUICK_MENU_PAGE_CONTROL_EDIT;
+   m.view.controls_valid = true;
+   for (i = 0; i < 16; i++)
+   {
+      strcpy(m.view.controls.targets[i], names[i]);
+      m.view.controls.available[i] = *names[i] != '\0';
+   }
+   assert(hh_quick_menu_control_count(&m) == 18);
+   for (i = 0; i < 9; i++)
+   {
+      m.view.control_mode = 1;
+      m.view.control_selected = i + 2;
+      hh_quick_menu_control_label(&m, i + 2, label, sizeof(label));
+      assert(strstr(label, ordered[i]));
+      assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_CONTROLS_SET);
+      hh_quick_menu_action_complete(&m);
+      assert(m.view.control_mask == masks[i]);
+   }
+   assert(m.view.control_mode == 3);
+   hh_quick_menu_control_label(&m, 10, label, sizeof(label));
+   assert(strstr(label, "[已选] Buttons ABCD"));
+   assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_NONE);
+   assert(m.view.control_mask == 771);
+   assert(m.view.feedback == HH_QUICK_MENU_ACTION_ERROR);
+   m.view.control_selected = 0;
+   INPUT(&m, UP);
+   assert(m.view.control_selected == hh_quick_menu_control_count(&m) - 1);
+   assert(m.view.control_first == m.view.control_selected - HH_QUICK_MENU_CONTROL_ROWS + 1);
+   INPUT(&m, DOWN);
+   assert(m.view.control_selected == 0 && m.view.control_first == 0);
+   m.view.controls.available[9] = false;
+   assert(hh_quick_menu_control_count(&m) == 16);
+   strcpy(m.view.controls.targets[0], "A");
+   strcpy(m.view.controls.targets[8], "B");
+   strcpy(m.view.controls.targets[1], "C");
+   strcpy(m.view.controls.targets[9], "D");
+   m.view.controls.available[9] = m.view.controls.available[15] = true;
+   strcpy(m.view.controls.targets[15], "A+B+C+D");
+   assert(hh_quick_menu_control_count(&m) == 18);
+   m.view.control_mode = 1;
+   m.view.control_selected = 10;
+   assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_CONTROLS_SET);
+   hh_quick_menu_action_complete(&m);
+   assert(m.view.control_mask == 32768);
+   strcpy(m.view.controls.targets[15], "Extra");
+   assert(hh_quick_menu_control_count(&m) == 19);
+   assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_CONTROLS_SET);
+   hh_quick_menu_action_complete(&m);
+   assert(m.view.control_mask == 771);
+   puts("PASS: A/B/C/D and AB/CD/ABC/BCD/ABCD ordering, native target masks and four-button updates");
+}
+
+static void test_console_control_targets(void)
+{
+   static const char *names[16] = {"B", "Turbo B", "Select", "Start",
+      "Up", "Down", "Left", "Right", "A", "Turbo A", "L", "R",
+      "Turbo L", "Turbo R", "Light Sensor +", "Light Sensor -"};
+   static const unsigned ordered[2][16] = {
+      {8, 0, 9, 1, 14, 15, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13},
+      {8, 0, 10, 11, 9, 1, 12, 13, 2, 3, 4, 5, 6, 7, 14, 15}
+   };
+   hh_quick_menu_t m;
+   unsigned pass, i, source, row;
+   char label[128], expected[128];
+   for (pass = 0; pass < 2; pass++)
+   {
+      select_item(&m, HH_QUICK_MENU_ITEM_CONTROLS);
+      m.view.page = HH_QUICK_MENU_PAGE_CONTROL_EDIT;
+      m.view.controls_valid = true;
+      for (i = 0; i < 16; i++)
+      {
+         strcpy(m.view.controls.targets[i], names[i]);
+         m.view.controls.available[i] = pass == 1 || i < 10 || i >= 14;
+      }
+      if (!pass)
+      {
+         strcpy(m.view.controls.targets[14], "A+B");
+         strcpy(m.view.controls.targets[15], "Turbo A+B");
+      }
+      assert(hh_quick_menu_control_count(&m) == (pass ? 18 : 14));
+      row = 2;
+      for (i = 0; i < 16; i++)
+      {
+         source = ordered[pass][i];
+         if (!m.view.controls.available[source])
+            continue;
+         m.view.control_mode = 1;
+         m.view.control_selected = row;
+         hh_quick_menu_control_label(&m, row++, label, sizeof(label));
+         assert(!strcmp(strchr(label, ' ') + 1, m.view.controls.targets[source]));
+         assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_CONTROLS_SET);
+         hh_quick_menu_action_complete(&m);
+         assert(m.view.control_mask == (1U << source));
+         assert(m.view.control_mode == 1);
+      }
+   }
+   select_item(&m, HH_QUICK_MENU_ITEM_CONTROLS);
+   m.view.page = HH_QUICK_MENU_PAGE_CONTROL_EDIT;
+   for (i = 0; i < 4; i++)
+   {
+      snprintf(m.view.controls.targets[i], sizeof(m.view.controls.targets[i]),
+            "Button %u", 4 - i);
+      m.view.controls.available[i] = true;
+   }
+   for (i = 0; i < 4; i++)
+   {
+      hh_quick_menu_control_label(&m, i + 2, label, sizeof(label));
+      snprintf(expected, sizeof(expected), "[未选] Button %u", i + 1);
+      assert(!strcmp(label, expected));
+   }
+   puts("PASS: NES/GBA main and turbo targets grouped, original target bits retained, numbered buttons sorted");
+}
+
+static void test_controller_selection(void)
+{
+   static const int sizes[][2] = {{640,480}, {1280,720}, {1920,1080}};
+   hh_quick_menu_t m;
+   hh_quick_menu_layout_t l;
+   hh_quick_menu_input_t input;
+   hh_ui_rect_t rect;
+   unsigned i, row, pass, direction, reachable = 1, previous;
+   float x, y;
+   for (i = 0; i < 3; i++)
+      for (row = 0; row < 20; row++)
+      {
+         select_item(&m, HH_QUICK_MENU_ITEM_CONTROLS);
+         m.view.page = HH_QUICK_MENU_PAGE_CONTROLS;
+         m.view.controls_valid = true;
+         m.view.controls.player_count = 4;
+         hh_quick_menu_compute_layout(sizes[i][0], sizes[i][1], &l);
+         assert(hh_quick_menu_control_bounds(&l, row, &rect));
+         within(rect, l.viewport);
+         x = rect.x + rect.width / 2;
+         y = rect.y + rect.height / 2;
+         hh_quick_menu_touch(&m, x, y, true, sizes[i][0], sizes[i][1], &input);
+         assert(m.view.control_selected == row);
+         hh_quick_menu_touch(&m, x, y, false, sizes[i][0], sizes[i][1], &input);
+         assert(input == HH_QUICK_MENU_INPUT_CONFIRM);
+         hh_quick_menu_input(&m, input);
+         if (row >= 2 && row < 18)
+         {
+            assert(m.view.page == HH_QUICK_MENU_PAGE_CONTROL_EDIT);
+            assert(m.view.control_source == row - 2);
+            INPUT(&m, BACK);
+            assert(m.view.control_selected == row && m.view.control_first == 0);
+         }
+      }
+   select_item(&m, HH_QUICK_MENU_ITEM_CONTROLS);
+   m.view.page = HH_QUICK_MENU_PAGE_CONTROLS;
+   m.view.controls_valid = true;
+   m.view.controls.player_count = 4;
+   for (pass = 0; pass < 20; pass++)
+   {
+      previous = reachable;
+      for (row = 0; row < 20; row++)
+         if (reachable & (1U << row))
+            for (direction = 0; direction < 4; direction++)
+            {
+               m.view.control_selected = row;
+               assert(hh_quick_menu_controls_input(&m,
+                        (hh_quick_menu_input_t)direction) == HH_UI_ACTION_NONE);
+               reachable |= 1U << m.view.control_selected;
+            }
+      if (previous == reachable)
+         break;
+   }
+   assert(reachable == 0xfffff);
+   m.view.control_selected = 16;
+   INPUT(&m, DOWN);
+   assert(m.view.control_selected == 6);
+   m.view.control_selected = 11;
+   INPUT(&m, DOWN);
+   assert(m.view.control_selected == 2);
+   INPUT(&m, DOWN);
+   assert(m.view.control_selected == 17);
+   assert(!hh_quick_menu_control_bounds(&l, 20, &rect));
+   puts("PASS: all controller buttons reachable, spatial stick/D-pad navigation and touch edit/return (3 resolutions)");
 }
 
 static void test_touch_scroll(void)
@@ -1156,11 +1373,10 @@ static void test_touch_scroll(void)
          hh_quick_menu_update_animation(&m, 2000);
          assert(m.slot_scroll == 2.5f);
       }
-      for (page = 0; page < 3; page++)
+      for (page = 0; page < 2; page++)
       {
          select_item(&m, 0);
-         m.view.page = page == 0 ? HH_QUICK_MENU_PAGE_SHADER :
-            page == 1 ? HH_QUICK_MENU_PAGE_CONTROLS : HH_QUICK_MENU_PAGE_CONTROL_EDIT;
+         m.view.page = page == 0 ? HH_QUICK_MENU_PAGE_SHADER : HH_QUICK_MENU_PAGE_CONTROL_EDIT;
          m.view.shader_count = HH_QUICK_MENU_SHADER_COUNT;
          memset(m.view.controls.available, 1, sizeof(m.view.controls.available));
          rect = page == 0 ? l.shader_rows[0] : l.control_rows[0];
@@ -1202,6 +1418,9 @@ int main(void)
 {
    test_touch_scroll();
    test_controls();
+   test_control_target_order();
+   test_console_control_targets();
+   test_controller_selection();
    test_main();
    test_dialogs();
    test_slots();

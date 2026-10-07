@@ -1,0 +1,11 @@
+Ordinary dev APK installed, initialized 10 seconds, exact backup bytes restored: PASS
+Device: Logitech GR0006 / Android 11 / USB 2419TNW44608 / 1920x1080
+Latest ordinary dev APK SHA256: 1b294e7a77d9e051cfeba157503031a3f10a9244df684bba2c5a8f4d23546436
+Covering installation, 10-second MainMenu initialization and fresh ROM launch: PASS
+Final integrated PNG automatically seeded under new filename; exact file-byte match: PASS
+Four shoulder keys enter the correct editor and return to the same focus: PASS (E2E and ordinary APK touch/keyboard)
+Default/focus use the same mirrored shoulder contour; screenshots show keys inside shell, no fill seams: PASS
+Latest UI sanitizer suite and git diff --check: PASS
+User saved retroarch.cfg and mslug.rmp restored and pulled bytes compared: PASS
+No mappings edited in final shoulder verification; application left on L1 focus.
+Visual alignment superseded by inset-shoulders verification after user reported shoulder contour overlap.

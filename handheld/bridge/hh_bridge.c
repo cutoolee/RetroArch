@@ -1,5 +1,6 @@
 #include "hh_bridge.h"
 #include "../ui/hh_quick_menu_render.h"
+#include "../../configuration.h"
 
 #include <string.h>
 #include <sys/stat.h>
@@ -116,7 +117,7 @@ static bool hh_bridge_refresh_controls(hh_bridge_t *bridge)
 {
    hh_runtime_controls_t controls;
    hh_quick_menu_controls_t *out = &bridge->menu.view.controls;
-   if (hh_runtime_get_controls(bridge->menu.view.control_player, &controls) != HH_OK)
+   if (hh_runtime_get_controls_draft(bridge->menu.view.control_player, &controls) != HH_OK)
    {
       bridge->menu.view.controls_valid = false;
       return false;
@@ -133,6 +134,14 @@ static bool hh_bridge_refresh_controls(hh_bridge_t *bridge)
    out->device_index = controls.device_index;
    out->player_count = controls.player_count;
    bridge->menu.view.controls_valid = true;
+#ifdef HAVE_GAMEGO_E2E_HARNESS
+   if (hh_runtime_get_controls(bridge->menu.view.control_player, &controls) == HH_OK)
+   {
+      memcpy(bridge->control_active_masks, controls.masks, sizeof(controls.masks));
+      memcpy(bridge->control_active_periods, controls.periods, sizeof(controls.periods));
+      memcpy(bridge->control_active_custom, controls.custom, sizeof(controls.custom));
+   }
+#endif
    return true;
 }
 
@@ -340,13 +349,7 @@ static void hh_bridge_event(const hh_runtime_event_t *event, void *userdata)
       if (event->result == HH_OK)
       {
          if (action == HH_UI_ACTION_CONTROLS_SET)
-         {
-            bridge->menu.view.page = HH_QUICK_MENU_PAGE_CONTROLS;
-            bridge->menu.view.control_selected = bridge->menu.view.control_source + 2;
-            bridge->menu.view.control_first = bridge->menu.view.control_selected >= HH_QUICK_MENU_CONTROL_ROWS
-               ? bridge->menu.view.control_selected - HH_QUICK_MENU_CONTROL_ROWS + 1 : 0;
             bridge->menu.view.controls_dirty = true;
-         }
          else if (action == HH_UI_ACTION_CONTROLS_SAVE)
             bridge->menu.view.controls_dirty = false;
          else
@@ -355,9 +358,10 @@ static void hh_bridge_event(const hh_runtime_event_t *event, void *userdata)
       }
       hh_quick_menu_action_result(&bridge->menu,
             event->result == HH_OK ? HH_QUICK_MENU_ACTION_SUCCESS : HH_QUICK_MENU_ACTION_ERROR,
-            event->result != HH_OK ? "按键配置操作失败" :
-            action == HH_UI_ACTION_CONTROLS_SAVE ? "已保存；手柄分配沿用全局设置" :
-            action == HH_UI_ACTION_CONTROLS_DEVICE ? "手柄已分配；原玩家交换设备" : "按键已应用，可保存到游戏");
+            event->result != HH_OK ? (action == HH_UI_ACTION_CONTROLS_SAVE
+               ? "保存失败，请重试" : "按键配置操作失败") :
+            action == HH_UI_ACTION_CONTROLS_SAVE ? "已保存并生效" :
+            action == HH_UI_ACTION_CONTROLS_SET ? "草稿已修改，保存后生效" : "手柄已分配");
       return;
    }
    if (bridge->pending_action == HH_UI_ACTION_SHADER_BEGIN
@@ -513,13 +517,38 @@ void hh_bridge_deinit(hh_bridge_t *bridge)
 bool hh_bridge_open(hh_bridge_t *bridge)
 {
    hh_runtime_snapshot_t snapshot;
+   settings_t *settings = config_get_ptr();
    uint64_t request_id = 0;
+   float scroll;
    if (!bridge || !bridge->initialized
          || hh_runtime_get_snapshot(&snapshot) != HH_OK
          || !snapshot.content_loaded)
       return false;
    hh_bridge_apply_snapshot(bridge, &snapshot);
+   bridge->menu.view.items[0].visible = settings->bools.gamego_menu_show_continue;
+   bridge->menu.view.items[1].visible = settings->bools.gamego_menu_show_save;
+   bridge->menu.view.items[2].visible = settings->bools.gamego_menu_show_load;
+   bridge->menu.view.items[3].visible = settings->bools.gamego_menu_show_shader;
+   bridge->menu.view.items[4].visible = settings->bools.gamego_menu_show_controls;
+   bridge->menu.view.items[5].visible = settings->bools.gamego_menu_show_reset;
+   bridge->menu.view.items[6].visible = settings->bools.gamego_menu_show_advanced;
+   bridge->menu.view.items[7].visible = settings->bools.gamego_menu_show_recent;
+   bridge->menu.view.items[8].visible = settings->bools.gamego_menu_show_exit;
    hh_quick_menu_open(&bridge->menu);
+   if (!bridge->menu.view.items[bridge->menu.view.selected_index].visible)
+   {
+      size_t i;
+      for (i = 0; i < bridge->menu.view.item_count; i++)
+         if (bridge->menu.view.items[i].visible)
+         {
+            bridge->menu.view.selected_index = i;
+            break;
+         }
+   }
+   scroll = hh_quick_menu_main_scroll(bridge->menu.view.selected_index);
+   bridge->menu.main_scroll = scroll;
+   bridge->menu.main_scroll_origin = scroll;
+   bridge->menu.main_scroll_target = scroll;
    hh_quick_menu_finish_open(&bridge->menu);
    bridge->quick_menu_owns_pause = false;
    bridge->pause_request_id = 0;
@@ -625,7 +654,8 @@ bool hh_bridge_input(hh_bridge_t *bridge, hh_quick_menu_input_t input)
       if (hh_bridge_refresh_controls(bridge))
       {
          bridge->menu.view.page = HH_QUICK_MENU_PAGE_CONTROLS;
-         bridge->menu.view.control_selected = bridge->menu.view.control_first = 0;
+         bridge->menu.view.control_selected = 2;
+         bridge->menu.view.control_first = 0;
          hh_quick_menu_action_result(&bridge->menu, HH_QUICK_MENU_ACTION_SUCCESS, NULL);
          hh_quick_menu_clear_feedback(&bridge->menu);
       }

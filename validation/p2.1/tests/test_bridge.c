@@ -13,7 +13,7 @@ static int last_argument;
 static hh_result_t submit_result = HH_OK;
 static int shader_active_id;
 
-hh_result_t hh_runtime_get_controls(unsigned player, hh_runtime_controls_t *out)
+hh_result_t hh_runtime_get_controls_draft(unsigned player, hh_runtime_controls_t *out)
 {
    unsigned i;
    memset(out, 0, sizeof(*out));
@@ -279,27 +279,44 @@ int main(void)
    bridge.menu.view.selected_index = HH_QUICK_MENU_ITEM_CONTROLS;
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_CONFIRM);
    assert(bridge.menu.view.page == HH_QUICK_MENU_PAGE_CONTROLS);
+   assert(bridge.menu.view.control_selected == 2);
+   bridge.menu.view.control_selected = 0;
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_RIGHT);
    assert(bridge.menu.view.control_player == 1);
    assert(bridge.menu.view.controls.device_index == 1);
    bridge.menu.view.control_selected = 2;
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_CONFIRM);
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_RIGHT);
+   assert(last_command == HH_CMD_CONTROLS_SET);
+   assert((unsigned)last_argument == ((1U << 20) | 1));
+   emit(bridge.pending_request_id, HH_EVENT_CONTROLS_CHANGED, HH_OK);
+   assert(last_command == HH_CMD_CONTROLS_SET);
+   assert(bridge.pending_request_id == 0);
+   assert(bridge.menu.view.page == HH_QUICK_MENU_PAGE_CONTROL_EDIT);
+   assert(bridge.menu.view.control_selected == 0 && !bridge.menu.view.busy);
+   assert(bridge.menu.view.controls_dirty);
+   assert(strstr(bridge.menu.view.message, "草稿"));
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_RIGHT);
-   bridge.menu.view.control_selected = hh_quick_menu_control_count(&bridge.menu) - 1;
-   hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_CONFIRM);
    assert(last_command == HH_CMD_CONTROLS_SET);
    assert((unsigned)last_argument == ((6U << 24) | (1U << 20) | 1));
    assert(bridge.menu.view.busy);
    emit(bridge.pending_request_id, HH_EVENT_CONTROLS_CHANGED, HH_OK);
-   assert(bridge.menu.view.page == HH_QUICK_MENU_PAGE_CONTROLS);
-   assert(bridge.menu.view.controls_dirty && !bridge.menu.view.busy);
+   assert(last_command == HH_CMD_CONTROLS_SET);
+   assert(bridge.pending_request_id == 0 && !bridge.menu.view.busy);
+   assert(bridge.menu.view.controls_dirty);
+   assert(bridge.menu.view.page == HH_QUICK_MENU_PAGE_CONTROL_EDIT);
+   hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_BACK);
    bridge.menu.view.control_selected = 18;
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_CONFIRM);
    assert(last_command == HH_CMD_CONTROLS_SAVE && last_argument == 0);
    emit(bridge.pending_request_id, HH_EVENT_ERROR, HH_ERR_SAVE_FAILED);
    assert(bridge.menu.view.controls_dirty);
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_CONFIRM);
+   emit(bridge.pending_request_id, HH_EVENT_CONTROLS_CHANGED, HH_OK);
+   assert(!bridge.menu.view.controls_dirty);
+   bridge.menu.view.control_selected = 19;
+   hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_CONFIRM);
+   assert(last_command == HH_CMD_CONTROLS_SAVE && last_argument == 1);
    emit(bridge.pending_request_id, HH_EVENT_CONTROLS_CHANGED, HH_OK);
    assert(!bridge.menu.view.controls_dirty);
    bridge.menu.view.controls_dirty = true;

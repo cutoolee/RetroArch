@@ -196,6 +196,7 @@ GENERIC_DEFERRED_PUSH(deferred_push_overlay_mouse_settings_list,    DISPLAYLIST_
 GENERIC_DEFERRED_PUSH(deferred_push_menu_file_browser_settings_list,DISPLAYLIST_MENU_FILE_BROWSER_SETTINGS_LIST)
 GENERIC_DEFERRED_PUSH(deferred_push_menu_views_settings_list,       DISPLAYLIST_MENU_VIEWS_SETTINGS_LIST)
 GENERIC_DEFERRED_PUSH(deferred_push_quick_menu_views_settings_list, DISPLAYLIST_QUICK_MENU_VIEWS_SETTINGS_LIST)
+GENERIC_DEFERRED_PUSH(deferred_push_gamego_menu_config_list, DISPLAYLIST_GAMEGO_MENU_CONFIG_LIST)
 GENERIC_DEFERRED_PUSH(deferred_push_settings_views_settings_list, DISPLAYLIST_SETTINGS_VIEWS_SETTINGS_LIST)
 GENERIC_DEFERRED_PUSH(deferred_push_menu_settings_list,             DISPLAYLIST_MENU_SETTINGS_LIST)
 #ifdef _3DS
@@ -658,6 +659,7 @@ static int menu_cbs_init_bind_deferred_push_compare_label(
       {MENU_ENUM_LABEL_DEFERRED_MENU_VIEWS_SETTINGS_LIST, deferred_push_menu_views_settings_list},
       {MENU_ENUM_LABEL_DEFERRED_SETTINGS_VIEWS_SETTINGS_LIST, deferred_push_settings_views_settings_list},
       {MENU_ENUM_LABEL_DEFERRED_QUICK_MENU_VIEWS_SETTINGS_LIST, deferred_push_quick_menu_views_settings_list},
+      {MENU_ENUM_LABEL_DEFERRED_GAMEGO_MENU_CONFIG_LIST, deferred_push_gamego_menu_config_list},
       {MENU_ENUM_LABEL_DEFERRED_MENU_SETTINGS_LIST, deferred_push_menu_settings_list},
 #ifdef _3DS
       {MENU_ENUM_LABEL_DEFERRED_MENU_BOTTOM_SETTINGS_LIST, deferred_push_menu_bottom_settings_list},

@@ -8261,6 +8261,7 @@ void input_driver_collect_system_input(input_driver_state_t *input_st,
 #endif
 #if defined(HAVE_MENU) && defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
    handheld_menu_is_alive = hh_bridge_is_open(hh_bridge_active());
+   menu_input_active = menu_input_active || handheld_menu_is_alive;
 #endif
    joypad_info.axis_threshold          = settings->floats.input_axis_threshold;
 
@@ -8382,7 +8383,7 @@ void input_driver_collect_system_input(input_driver_state_t *input_st,
             port,
             hotkey_port,
 #ifdef HAVE_MENU
-            menu_is_alive,
+            menu_is_alive || handheld_menu_is_alive,
 #else
             false,
 #endif
@@ -8397,9 +8398,9 @@ void input_driver_collect_system_input(input_driver_state_t *input_st,
             settings->bools.input_hotkey_device_merge);
 
 #ifdef HAVE_MENU
-      if (menu_is_alive)
+      if (menu_is_alive || handheld_menu_is_alive)
       {
-         if (!all_users_control_menu)
+         if (handheld_menu_is_alive || !all_users_control_menu)
             break;
       }
 #endif /* HAVE_MENU */
@@ -8449,7 +8450,8 @@ void input_driver_collect_system_input(input_driver_state_t *input_st,
          ids[19][0] = RETROK_ESCAPE;
 
          /* Escape cancels dialogs */
-         if (menu_st && menu_st->driver_data && *menu_st->driver_data->menu_state_msg)
+         if (handheld_menu_is_alive || (menu_st && menu_st->driver_data
+                  && *menu_st->driver_data->menu_state_msg))
             ids[19][1] = (swap_ok_cancel_buttons)
                   ? RETRO_DEVICE_ID_JOYPAD_A : RETRO_DEVICE_ID_JOYPAD_B;
 

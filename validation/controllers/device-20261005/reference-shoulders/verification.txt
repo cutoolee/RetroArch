@@ -1,0 +1,13 @@
+Shoulder outlines follow supplied reference: wide curved trapezoids with sloped edges, mirrored on right.
+Default/focus share exact geometry.
+Source asset center translucent holes repaired with built-in imagegen. Alpha minimum in center crop improved from 76 to 252.
+New filename seeds repaired artwork on existing installs.
+UI sanitizer suite across three resolutions: PASS
+git diff --check: PASS
+Ordinary dev APK installed, initialized 10 seconds, exact backup bytes restored: PASS
+APK SHA256: 4c7b41ada5b48e3a9bcfaaba384bedca87ef94a8c0c87b1b6d9501abce44871c
+Covering installation, 10-second MainMenu warmup and fresh ROM process: PASS
+L1/L2/R1/R2 enter the correct editor and return to focused key: PASS (ordinary APK, touch and keyboard)
+Repaired artwork automatically seeded and byte-for-byte matches bundled resource: PASS
+Final screenshots inspected: shoulder contours inside shell; center no longer shows translucent dark patches: PASS
+Config and game remap restored from current pre-test backup and pulled bytes compared: PASS

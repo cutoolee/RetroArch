@@ -22,6 +22,7 @@ hh_result_t hh_runtime_get_shader_list(bool recommended,
       hh_runtime_shader_list_t *out);
 
 hh_result_t hh_runtime_get_controls(unsigned player, hh_runtime_controls_t *out);
+hh_result_t hh_runtime_get_controls_draft(unsigned player, hh_runtime_controls_t *out);
 
 hh_result_t hh_runtime_pause(void);
 hh_result_t hh_runtime_resume(void);

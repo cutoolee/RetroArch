@@ -12,6 +12,12 @@ link_flags=(-Wl,--gc-sections)
 if [[ "$(uname -s)" == Darwin ]]; then
   link_flags=(-Wl,-dead_strip)
 fi
+cc -std=c89 -Wno-c99-extensions -ffunction-sections \
+  -DHAVE_MENU -DHAVE_HANDHELD_RUNTIME=1 -DHAVE_HANDHELD_QUICK_MENU=1 \
+  -fsanitize=address,undefined -I. -Ilibretro-common/include \
+  validation/controllers/tests/test_menu_input.c input/input_driver.c \
+  "${link_flags[@]}" -o "$build/test_menu_input"
+"$build/test_menu_input"
 cc -std=c89 -Wno-c99-extensions -DHAVE_CONFIGFILE -ffunction-sections \
   -fsanitize=address,undefined -I. -Ilibretro-common/include \
   validation/controllers/tests/test_controls_runtime.c handheld/runtime/hh_runtime_controls.c \

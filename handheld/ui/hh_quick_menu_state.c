@@ -58,10 +58,17 @@ static void hh_quick_menu_move(hh_quick_menu_t *menu, int direction)
    if (!count)
       return;
    index = menu->view.selected_index;
-   if (direction < 0)
-      index = index ? index - 1 : count - 1;
-   else
-      index = (index + 1) % count;
+   do
+   {
+      if (direction < 0)
+         index = index ? index - 1 : count - 1;
+      else
+         index = (index + 1) % count;
+      if (menu->view.items[index].visible)
+         break;
+   } while (index != menu->view.selected_index);
+   if (!menu->view.items[index].visible)
+      return;
    menu->view.selected_index = index;
 }
 
@@ -98,6 +105,8 @@ hh_quick_menu_item_state_t hh_quick_menu_item_state(
    const hh_quick_menu_capabilities_t *caps;
    if (!menu || index >= menu->view.item_count
          || index >= HH_QUICK_MENU_ITEM_COUNT)
+      return HH_QUICK_MENU_ITEM_DISABLED;
+   if (!menu->view.items[index].visible)
       return HH_QUICK_MENU_ITEM_DISABLED;
    caps = &menu->view.capabilities;
    switch (menu->view.items[index].id)
@@ -240,7 +249,8 @@ static bool hh_quick_menu_touch_item(const hh_quick_menu_t *menu,
          || !hh_quick_menu_rect_contains(layout->viewport, x, y))
       return false;
    for (i = 0; i < menu->view.item_count && i < HH_QUICK_MENU_ITEM_COUNT; i++)
-      if (hh_quick_menu_main_item_bounds(layout, menu->main_scroll, i, &rect)
+      if (menu->view.items[i].visible
+            && hh_quick_menu_main_item_bounds(layout, menu->main_scroll, i, &rect)
             && hh_quick_menu_card_contains(rect, x, y,
                24 * layout->scale, 16 * layout->scale))
       {
@@ -280,6 +290,8 @@ static hh_quick_menu_input_t hh_quick_menu_touch_focus(hh_quick_menu_t *menu,
    size_t index, row;
    int slot;
    hh_ui_rect_t rect;
+   hh_ui_rect_t footer = menu->view.page == HH_QUICK_MENU_PAGE_CONTROLS
+      ? layout->control_footer : layout->footer;
    float offset;
    if (menu->state == HH_QUICK_MENU_CONFIRM_DIALOG)
    {
@@ -293,9 +305,9 @@ static hh_quick_menu_input_t hh_quick_menu_touch_focus(hh_quick_menu_t *menu,
    }
    if (hh_quick_menu_is_shader_page(menu) && menu->view.shader_fullscreen)
       return HH_QUICK_MENU_INPUT_RIGHT;
-   if (hh_quick_menu_rect_contains(layout->footer, x, y))
+   if (hh_quick_menu_rect_contains(footer, x, y))
    {
-      offset = (x - layout->footer.x) / layout->scale;
+      offset = (x - footer.x) / layout->scale;
       if (offset < 144)
          return HH_QUICK_MENU_INPUT_CONFIRM;
       if (offset >= 188 && offset < 332)
@@ -314,6 +326,17 @@ static hh_quick_menu_input_t hh_quick_menu_touch_focus(hh_quick_menu_t *menu,
    }
    if (hh_quick_menu_is_controls_page(menu))
    {
+      if (menu->view.page == HH_QUICK_MENU_PAGE_CONTROLS)
+      {
+         for (row = 0; row < 20; row++)
+            if (hh_quick_menu_control_bounds(layout, (unsigned)row, &rect)
+                  && hh_quick_menu_rect_contains(rect, x, y))
+            {
+               menu->view.control_selected = (unsigned)row;
+               return HH_QUICK_MENU_INPUT_CONFIRM;
+            }
+         return HH_QUICK_MENU_INPUT_NONE;
+      }
       for (row = 0; row <= HH_QUICK_MENU_CONTROL_ROWS; row++)
          if (menu->view.control_first + row < hh_quick_menu_control_count(menu)
                && hh_quick_menu_list_row_bounds(menu, layout, row, &rect)
@@ -371,7 +394,8 @@ static void hh_quick_menu_touch_scroll(hh_quick_menu_t *menu,
    float scroll, maximum;
    size_t count, rows;
    if (menu->state == HH_QUICK_MENU_CONFIRM_DIALOG
-         || menu->view.shader_fullscreen)
+         || menu->view.shader_fullscreen
+         || menu->view.page == HH_QUICK_MENU_PAGE_CONTROLS)
       return;
    if (hh_quick_menu_is_controls_page(menu)
          || menu->view.page == HH_QUICK_MENU_PAGE_SHADER)

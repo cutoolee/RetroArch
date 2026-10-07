@@ -130,6 +130,7 @@ typedef struct hh_quick_menu_item
    hh_quick_menu_item_id_t id;
    char label[HH_QUICK_MENU_LABEL_MAX];
    bool disabled;
+   bool visible;
 } hh_quick_menu_item_t;
 
 typedef struct hh_quick_menu_dialog

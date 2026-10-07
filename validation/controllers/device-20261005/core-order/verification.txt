@@ -1,0 +1,15 @@
+fceumm: A, B, Turbo A, Turbo B, Select, Start, D-Pad Up, D-Pad Down, D-Pad Left, D-Pad Right, (FDS) Disk Side Change, (FDS) Insert/Eject Disk, Switch Palette (+ Left/Right), (VSSystem) Insert Coin, A+B, Turbo A+B
+fceumm: Turbo A/B selected by native target bits; active mapping unchanged until explicit save: PASS
+mgba: A, B, L, R, Turbo A, Turbo B, Turbo L, Turbo R, Select, Start, Up, Down, Left, Right, Darken Solar Sensor, Brighten Solar Sensor
+mgba: Turbo A/B selected by native target bits; active mapping unchanged until explicit save: PASS
+
+Final ordinary APK verification (2026-10-05):
+APK: /Users/yujian/Documents/RetroArch-GameGo/dist/local/GameGo-controller-dev-aarch64.apk
+SHA256: f78f63f46cd84ecb33a8912eefc46599742c68142bc2ee18b4480cd7f6c7e8ee
+Installed with matching Android Debug certificate; no uninstall or data clear.
+Started RetroArch, completed base extraction, waited 10 seconds before game launch. Repeated RetroArch 10-second warmup for mGBA.
+FCEUmm: A, B, Turbo A, Turbo B, A+B, Turbo A+B grouped before utility targets: PASS
+mGBA: A, B, L, R, Turbo A, Turbo B shown in order; Turbo A/B draft selection: PASS
+FCEUmm/mGBA final ordinary screenshots: 05-final-ordered-list.png, 06-final-turbo-a.png, 07-final-turbo-b.png.
+No game/core mapping saved during final verification; force-stop discarded drafts.
+Final retroarch.cfg byte-identical to post-install initialization baseline; menu_swap_ok_cancel_buttons remains true.

@@ -1,0 +1,16 @@
+--------- beginning of main
+--------- beginning of system
+10-05 18:59:17.696 22411 22411 I RetroArch: [ENV] Storage permission resolved (granted: 1).
+10-05 18:59:17.762 22411 22440 I RetroArch: [ENV] Android version (major : 11, minor : 0, rel : 0)
+10-05 18:59:17.762 22411 22440 I RetroArch: [ENV] Checking arguments passed from intent ...
+10-05 18:59:17.763 22411 22440 I RetroArch: [ENV] Libretro path: "/data/data/com.retroarch.aarch64/cores/fceumm_libretro_android.so".
+10-05 18:59:17.763 22411 22440 I RetroArch: [ENV] Auto-start game "/storage/emulated/0/Roms/FC/魂斗罗1.zip".
+10-05 18:59:17.807 22411 22440 I RetroArch: [ENV] Derived config file: "/storage/emulated/0/Android/data/com.retroarch.aarch64/files/retroarch.cfg".
+10-05 18:59:17.807 22411 22440 I RetroArch: Testing permissions for /storage/emulated/0
+10-05 18:59:18.107 22411 22440 I RetroArch: Create /storage/emulated/0/.retroarch in /storage/emulated/0 true
+10-05 18:59:18.113 22411 22440 I RetroArch: [ENV] Application location: "/data/user/0/com.retroarch.aarch64".
+10-05 18:59:18.113 22411 22440 I RetroArch: [ENV] Default savefile folder: "/storage/emulated/0/retroarch/saves".
+10-05 18:59:18.113 22411 22440 I RetroArch: [ENV] Default savestate folder: "/storage/emulated/0/retroarch/states".
+10-05 18:59:18.113 22411 22440 I RetroArch: [ENV] Default system folder: "/storage/emulated/0/retroarch/system".
+10-05 18:59:18.113 22411 22440 I RetroArch: [ENV] Default screenshot folder: "/storage/emulated/0/retroarch/screenshots".
+10-05 18:59:18.114 22411 22440 I RetroArch: [ENV] App version code: 1791197681.

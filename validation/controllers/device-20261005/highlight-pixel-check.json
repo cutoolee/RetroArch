@@ -1,0 +1,71 @@
+{
+  "beforeR1": [
+    322
+  ],
+  "after": [
+    {
+      "button": 0,
+      "stripeRows": []
+    },
+    {
+      "button": 1,
+      "stripeRows": []
+    },
+    {
+      "button": 2,
+      "stripeRows": []
+    },
+    {
+      "button": 3,
+      "stripeRows": []
+    },
+    {
+      "button": 4,
+      "stripeRows": []
+    },
+    {
+      "button": 5,
+      "stripeRows": []
+    },
+    {
+      "button": 6,
+      "stripeRows": []
+    },
+    {
+      "button": 7,
+      "stripeRows": []
+    },
+    {
+      "button": 8,
+      "stripeRows": []
+    },
+    {
+      "button": 9,
+      "stripeRows": []
+    },
+    {
+      "button": 10,
+      "stripeRows": []
+    },
+    {
+      "button": 11,
+      "stripeRows": []
+    },
+    {
+      "button": 12,
+      "stripeRows": []
+    },
+    {
+      "button": 13,
+      "stripeRows": []
+    },
+    {
+      "button": 14,
+      "stripeRows": []
+    },
+    {
+      "button": 15,
+      "stripeRows": []
+    }
+  ]
+}

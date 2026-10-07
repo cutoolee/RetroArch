@@ -45,7 +45,10 @@ void hh_runtime_refresh_snapshot(void)
          || (content_path && *content_path));
    snapshot.content_loaded = content_loaded;
    if (!content_loaded || runloop_is_content_closing())
+   {
       hh_runtime_shader_discard();
+      hh_runtime_controls_discard();
+   }
    snapshot.paused = runloop_st
       && ((runloop_st->flags & RUNLOOP_FLAG_PAUSED) != 0);
    snapshot.ra_menu_open = menu_st

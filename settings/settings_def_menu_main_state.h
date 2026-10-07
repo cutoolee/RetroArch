@@ -52,6 +52,12 @@ S_ACTION(CONTENT_SETTINGS,
       "quick_menu",
       "Quick Menu",
       "Quickly access all relevant in-game settings.")
+#if (defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU) || defined(SETTINGS_DEF_STRINGS_PASS)
+S_ACTION(GAMEGO_MENU_CONFIG,
+      "gamego_menu_config",
+      "GameGo菜单配置",
+      "配置 GameGo 快捷菜单。")
+#endif
 S_ACTION(XMB_MAIN_MENU_ENABLE_SETTINGS,
       "xmb_main_menu_enable_settings",
       "Enable Settings Tab",

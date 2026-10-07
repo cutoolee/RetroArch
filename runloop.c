@@ -6296,23 +6296,17 @@ static enum runloop_state_enum runloop_check_state(
    {
       unsigned buttons = 0;
       unsigned triggers;
+      unsigned menu_ok_btn = settings->bools.input_menu_swap_ok_cancel_buttons
+         ? RETRO_DEVICE_ID_JOYPAD_B : RETRO_DEVICE_ID_JOYPAD_A;
+      unsigned menu_cancel_btn = settings->bools.input_menu_swap_ok_cancel_buttons
+         ? RETRO_DEVICE_ID_JOYPAD_A : RETRO_DEVICE_ID_JOYPAD_B;
       bool menu_pressed = BIT256_GET(current_bits, RARCH_MENU_TOGGLE);
-      if (BIT256_GET(current_bits, RETRO_DEVICE_ID_JOYPAD_UP)
-            || input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
-               RETRO_DEVICE_ID_JOYPAD_UP)) buttons |= 1U << 0;
-      if (BIT256_GET(current_bits, RETRO_DEVICE_ID_JOYPAD_DOWN)
-            || input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
-               RETRO_DEVICE_ID_JOYPAD_DOWN)) buttons |= 1U << 1;
-      if (BIT256_GET(current_bits, RETRO_DEVICE_ID_JOYPAD_LEFT)
-            || input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
-               RETRO_DEVICE_ID_JOYPAD_LEFT)) buttons |= 1U << 2;
-      if (BIT256_GET(current_bits, RETRO_DEVICE_ID_JOYPAD_RIGHT)
-            || input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
-               RETRO_DEVICE_ID_JOYPAD_RIGHT)) buttons |= 1U << 3;
-      if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
-               RETRO_DEVICE_ID_JOYPAD_A)) buttons |= 1U << 4;
-      if (input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
-               RETRO_DEVICE_ID_JOYPAD_B)) buttons |= 1U << 5;
+      if (BIT256_GET(current_bits, RETRO_DEVICE_ID_JOYPAD_UP)) buttons |= 1U << 0;
+      if (BIT256_GET(current_bits, RETRO_DEVICE_ID_JOYPAD_DOWN)) buttons |= 1U << 1;
+      if (BIT256_GET(current_bits, RETRO_DEVICE_ID_JOYPAD_LEFT)) buttons |= 1U << 2;
+      if (BIT256_GET(current_bits, RETRO_DEVICE_ID_JOYPAD_RIGHT)) buttons |= 1U << 3;
+      if (BIT256_GET(current_bits, menu_ok_btn)) buttons |= 1U << 4;
+      if (BIT256_GET(current_bits, menu_cancel_btn)) buttons |= 1U << 5;
       triggers = hh_quick_menu_poll_buttons(&hh_bridge_global.menu,
             buttons, (unsigned long)(current_time / 1000));
       if (triggers & (1U << 0))
@@ -6724,12 +6718,28 @@ static enum runloop_state_enum runloop_check_state(
    /* Check menu hotkey */
    {
       static bool old_pressed = false;
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+      static bool gamego_hold_fired = false;
+      static bool gamego_double_waiting = false;
+      static uint64_t gamego_press_started = 0;
+      static uint64_t gamego_first_press = 0;
+#endif
       bool pressed            = BIT256_GET(current_bits, RARCH_MENU_TOGGLE)
          && memcmp(settings->arrays.menu_driver, "null", 5) != 0;
+      bool pressed_edge       = pressed && !old_pressed;
       bool core_type_is_dummy = runloop_st->current_core_type == CORE_TYPE_DUMMY;
       bool handheld_handled  = false;
 
-      if (pressed && !old_pressed)
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+      if (pressed_edge)
+         gamego_press_started = (uint64_t)current_time;
+      if (!pressed)
+         gamego_hold_fired = false;
+      if (settings->uints.gamego_menu_toggle_mode != 2)
+         gamego_double_waiting = false;
+#endif
+
+      if (pressed || pressed_edge)
       {
          bool core_is_running    = runloop_st->flags & RUNLOOP_FLAG_CORE_RUNNING;
 
@@ -6738,19 +6748,58 @@ static enum runloop_state_enum runloop_check_state(
                && !(menu_st->flags & MENU_ST_FLAG_ALIVE))
          {
             if (hh_bridge_is_open(&hh_bridge_global))
-               hh_bridge_close(&hh_bridge_global);
+            {
+               if (pressed_edge)
+                  hh_bridge_close(&hh_bridge_global);
+               handheld_handled = true;
+            }
             else
-               hh_bridge_open(&hh_bridge_global);
-            handheld_handled = true;
+            {
+               bool open_menu = false;
+               switch (settings->uints.gamego_menu_toggle_mode)
+               {
+                  case 1:
+                     if (pressed && !gamego_hold_fired
+                           && (uint64_t)current_time - gamego_press_started >= 600000)
+                     {
+                        open_menu = true;
+                        gamego_hold_fired = true;
+                     }
+                     break;
+                  case 2:
+                     if (pressed_edge)
+                     {
+                        if (gamego_double_waiting
+                              && (uint64_t)current_time - gamego_first_press <= 350000)
+                        {
+                           open_menu = true;
+                           gamego_double_waiting = false;
+                        }
+                        else
+                        {
+                           gamego_first_press = (uint64_t)current_time;
+                           gamego_double_waiting = true;
+                        }
+                     }
+                     break;
+                  default:
+                     open_menu = pressed_edge;
+                     break;
+               }
+               if (open_menu)
+                  hh_bridge_open(&hh_bridge_global);
+               handheld_handled = true;
+            }
          }
 #endif
 
-         if (!handheld_handled && (menu_st->flags & MENU_ST_FLAG_ALIVE))
+         if (!handheld_handled && pressed_edge
+               && (menu_st->flags & MENU_ST_FLAG_ALIVE))
          {
             if (rarch_is_initialized && !core_type_is_dummy && core_is_running)
                retroarch_menu_running_finished(false);
          }
-         else if (!handheld_handled)
+         else if (!handheld_handled && pressed_edge)
             retroarch_menu_running();
       }
       /* Initial menu toggle on startup */
@@ -8251,7 +8300,12 @@ int runloop_iterate(void)
       hh_bridge_deinit(&hh_bridge_global);
       hh_bridge_global_ready = false;
    }
-   hh_bridge_tick(&hh_bridge_global);
+   {
+      bool quick_menu_was_open = hh_bridge_is_open(&hh_bridge_global);
+      hh_bridge_tick(&hh_bridge_global);
+      if (quick_menu_was_open && !hh_bridge_is_open(&hh_bridge_global))
+         menu_state_get_ptr()->input_driver_flushing_input = 2;
+   }
 #ifdef HAVE_OVERLAY
    {
       static bool overlay_hidden = false;

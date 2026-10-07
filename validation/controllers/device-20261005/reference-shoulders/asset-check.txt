@@ -1,0 +1,5 @@
+L1: minimum shell clearance 27.2 image px (16.8 design px)
+R1: minimum shell clearance 27.5 image px (17.0 design px)
+L2: minimum shell clearance 17.0 image px (10.5 design px)
+R2: minimum shell clearance 17.0 image px (10.5 design px)
+Center alpha: (252, 254)

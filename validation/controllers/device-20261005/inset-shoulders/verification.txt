@@ -1,0 +1,12 @@
+Device: Logitech GR0006 / Android 11 / USB 2419TNW44608
+Latest APK SHA256: 48e233008022bd5cae05d1c45a740f3bb58d90179e8fd6e751d8ba130f263161
+Shared default/focused contour; upper shoulder silhouette follows the shell hump.
+Sampled shoulder perimeter alpha clearance: L1=33.0, R1=32.4, L2=26.9, R2=27.6 artwork pixels. All clear the shell stroke.
+UI sanitizer suite at three resolutions: PASS
+Package, signer, ABI and covering-install gates: PASS
+Ordinary dev APK installed, initialized 10 seconds, exact backup bytes restored: PASS
+Ordinary APK touch verification: L1/L2/R1/R2 each open the correct editor and return to focused key: PASS
+All four focused screenshots inspected: shoulder borders remain separated from shell stroke: PASS
+Automatically seeded artwork matches repository asset bytes: PASS
+Current pre-install config/remap restored and compared byte-for-byte: PASS
+git diff --check: PASS

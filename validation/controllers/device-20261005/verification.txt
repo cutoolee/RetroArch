@@ -1,0 +1,21 @@
+Device: Logitech GR0006, Android 11, 1920 x 1080, serial 2419TNW44608 (USB).
+Final installed package: com.retroarch.aarch64, ordinary Development APK, versionCode 1791174679.
+Final APK: dist/local/GameGo-dev-aarch64.apk
+SHA256: 8dacb1e735bf9c798229dd6438319152f619712f5ae50126c5e407909b44d501
+
+PASS: initial screenshot reproduced the selected R1 horizontal line at y=322.
+PASS: all 16 selected button screenshots have no full-width mint stripe inside the button (highlight-pixel-check.json).
+PASS: all 16 touch targets enter editing and return to the same selected controller button.
+PASS: targets ordered Button A, Button B, Button C, Button D.
+PASS: combinations ordered Buttons AB, Buttons CD, Buttons ABC, Buttons BCD, Buttons ABCD.
+PASS: ABCD maps simultaneously to the four native targets (mask 771); apply and reopen read back mask 771 / combination mode.
+PASS: test R1 mapping restored to its original mapping; no game/core mapping save was invoked.
+PASS: GameGo Enter/Backspace on device while existing game remap is active (steps 27/28).
+PASS: ordinary Development APK keyboard Z returns and X confirms while existing game remap is active (screenshots 35/36).
+PASS: RetroArch Enter resumes content with the existing remap active (screenshots 29/30).
+Physical controller presses remain manual validation; Android injected gamepad events used a Virtual device, so they are not evidence of physical hardware input.
+Known first-launch crashes are recorded and excluded from this change as requested. Subsequent startup runs content successfully.
+
+Local checks: sanitized Quick Menu, controller input/runtime, Bridge tests and git diff --check passed.
+Android E2E and ordinary Development builds, package/signer/ABI gates and overwrite install passed.
+Application data, installed cores, saves and saved mappings were retained.

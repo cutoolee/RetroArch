@@ -7508,6 +7508,19 @@ static size_t setting_get_string_representation_turbo_mode(
    return 0;
 }
 
+static size_t setting_get_string_representation_gamego_menu_toggle_mode(
+      rarch_setting_t *setting, char *s, size_t len)
+{
+   static const char *labels[] = {"点按", "长按", "双击"};
+   unsigned mode;
+   if (!setting)
+      return 0;
+   mode = *setting->value.target.unsigned_integer;
+   if (mode >= sizeof(labels) / sizeof(labels[0]))
+      mode = 0;
+   return strlcpy(s, labels[mode], len);
+}
+
 static size_t setting_get_string_representation_turbo_duty_cycle(
       rarch_setting_t *setting, char *s, size_t len)
 {

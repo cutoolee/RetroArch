@@ -28,6 +28,7 @@ static hh_result_t hh_runtime_load_recent(int index)
    strlcpy(label, entry->label ? entry->label : "", sizeof(label));
    memset(&content_info, 0, sizeof(content_info));
    hh_runtime_shader_discard();
+   hh_runtime_controls_discard();
    hh_runtime_state_task_cancel(HH_ERR_NO_CONTENT);
    if (!task_push_load_content_from_playlist_from_menu(core_path, content_path,
             *label ? label : NULL, &content_info, NULL, NULL))
@@ -112,11 +113,13 @@ hh_result_t hh_runtime_execute_command(
          break;
       case HH_CMD_CLOSE_CONTENT:
          hh_runtime_shader_discard();
+         hh_runtime_controls_discard();
          hh_runtime_state_task_cancel(HH_ERR_NO_CONTENT);
          command_ok = command_event(CMD_EVENT_CLOSE_CONTENT, NULL);
          break;
       case HH_CMD_QUIT:
          hh_runtime_shader_discard();
+         hh_runtime_controls_discard();
          hh_runtime_state_task_cancel(HH_ERR_NO_CONTENT);
          command_ok = command_event(CMD_EVENT_QUIT, NULL);
          break;

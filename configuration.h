@@ -212,6 +212,7 @@ typedef struct settings
       unsigned input_hotkey_block_delay;
       unsigned input_quit_gamepad_combo;
       unsigned input_menu_toggle_gamepad_combo;
+      unsigned gamego_menu_toggle_mode;
       unsigned input_keyboard_gamepad_mapping_type;
       unsigned input_poll_type_behavior;
       unsigned input_rumble_gain;
@@ -888,6 +889,15 @@ typedef struct settings
       bool quick_menu_show_recording;
       bool quick_menu_show_streaming;
       bool quick_menu_show_download_thumbnails;
+      bool gamego_menu_show_continue;
+      bool gamego_menu_show_save;
+      bool gamego_menu_show_load;
+      bool gamego_menu_show_shader;
+      bool gamego_menu_show_controls;
+      bool gamego_menu_show_reset;
+      bool gamego_menu_show_advanced;
+      bool gamego_menu_show_recent;
+      bool gamego_menu_show_exit;
       bool kiosk_mode_enable;
 
       bool crt_switch_custom_refresh_enable;

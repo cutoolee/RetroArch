@@ -9,6 +9,13 @@ S_UINT_EX(input_menu_toggle_gamepad_combo, INPUT_MENU_ENUM_TOGGLE_GAMEPAD_COMBO,
       DEFAULT_MENU_TOGGLE_GAMEPAD_COMBO, SD_FLAG_NONE, SDESC_RANGE_MINMAX, 0, 0, (INPUT_COMBO_LAST-1), 1, 0, setting_action_ok_uint, setting_get_string_representation_gamepad_combo, NULL, NULL, NULL, NULL, ST_UI_TYPE_UINT_COMBOBOX,
       "Menu Toggle (Controller Combo)",
       "Controller button combination to toggle menu.")
+#if (defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU) || defined(SETTINGS_DEF_STRINGS_PASS)
+S_UINT_EX(gamego_menu_toggle_mode, GAMEGO_MENU_TOGGLE_MODE,
+      "gamego_menu_toggle_mode",
+      DEFAULT_GAMEGO_MENU_TOGGLE_MODE, SD_FLAG_NONE, SDESC_RANGE_MINMAX, 0, 0, 2, 1, 0, setting_action_ok_uint, setting_get_string_representation_gamego_menu_toggle_mode, NULL, NULL, NULL, NULL, ST_UI_TYPE_UINT_COMBOBOX,
+      "GameGo菜单唤起方式",
+      "选择点按、长按或双击唤起 GameGo 菜单。")
+#endif
 S_UINT_EX(input_quit_gamepad_combo, INPUT_QUIT_GAMEPAD_COMBO,
       "input_quit_gamepad_combo",
       DEFAULT_QUIT_GAMEPAD_COMBO, SD_FLAG_NONE, SDESC_RANGE_MINMAX, 0, 0, (INPUT_COMBO_LAST-1), 1, 0, setting_action_ok_uint, setting_get_string_representation_gamepad_combo, NULL, NULL, NULL, NULL, ST_UI_TYPE_UINT_COMBOBOX,

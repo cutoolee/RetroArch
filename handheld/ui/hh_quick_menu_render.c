@@ -357,7 +357,8 @@ static void hh_quick_menu_paint_main(const hh_quick_menu_t *menu,
    hh_quick_menu_paint_text(p, hh_quick_menu_line(l->main_header, 70, 44, s),
          menu->view.game.platform, 0x8998aeffUL, 36 * s, false);
    for (i = 0; i < menu->view.item_count && i < HH_QUICK_MENU_ITEM_COUNT; i++)
-      if (hh_quick_menu_main_item_bounds(l, menu->main_scroll, i, &rect))
+      if (menu->view.items[i].visible
+            && hh_quick_menu_main_item_bounds(l, menu->main_scroll, i, &rect))
          hh_quick_menu_paint_tile(p, t, rect, s, menu->view.items[i].label,
                hh_quick_menu_item_state(menu, i), i == menu->view.selected_index,
                icons[menu->view.items[i].id]);
@@ -371,6 +372,251 @@ static void hh_quick_menu_paint_main(const hh_quick_menu_t *menu,
    hh_quick_menu_paint_footer(menu, l, t, p);
 }
 
+static void hh_control_text(const hh_quick_menu_painter_t *p,
+      hh_ui_rect_t rect, const char *text, unsigned long color,
+      float size, bool bold)
+{
+   if (p->text_centered)
+      p->text_centered(p->userdata, rect, text, color, size, bold);
+   else
+   {
+      rect.x += rect.width * 0.20f;
+      rect.width *= 0.80f;
+      p->text(p->userdata, rect, text, color, size, bold);
+   }
+}
+
+static void hh_control_shell(const hh_quick_menu_layout_t *l,
+      const hh_quick_menu_painter_t *p)
+{
+   float s = l->controller.width / 1000;
+   float x = l->controller.x, y = l->controller.y;
+   p->rect(p->userdata, hh_quick_menu_rect(x + 16 * s, y + 240 * s,
+         270 * s, 300 * s), 0x304d6bffUL, 0x688ab0ffUL, 110 * s, 3 * s);
+   p->rect(p->userdata, hh_quick_menu_rect(x + 714 * s, y + 240 * s,
+         270 * s, 300 * s), 0x304d6bffUL, 0x688ab0ffUL, 110 * s, 3 * s);
+   p->rect(p->userdata, hh_quick_menu_rect(x + 42 * s, y + 90 * s,
+         916 * s, 430 * s), 0x22364bffUL, 0x688ab0ffUL, 120 * s, 3 * s);
+}
+
+static void hh_control_shoulder(const hh_quick_menu_painter_t *p,
+      hh_ui_rect_t rect, bool right, bool upper, unsigned long fill,
+      unsigned long border, float s)
+{
+   static const float lower_points[][2] = {
+      {0.06f, 0.27f}, {0.18f, 0.16f}, {0.40f, 0.08f},
+      {0.70f, 0.01f}, {0.90f, 0.0f}, {0.97f, 0.03f},
+      {1.0f, 0.12f}, {0.99f, 0.32f}, {0.96f, 0.53f},
+      {0.90f, 0.68f}, {0.82f, 0.75f}, {0.62f, 0.80f},
+      {0.32f, 0.89f}, {0.16f, 0.97f}, {0.10f, 1.0f},
+      {0.04f, 0.96f}, {0.0f, 0.86f}, {0.0f, 0.70f},
+      {0.01f, 0.45f}, {0.03f, 0.33f}
+   };
+   static const float upper_points[][2] = {
+      {0.04f, 0.86f}, {0.01f, 0.79f}, {0.02f, 0.60f},
+      {0.06f, 0.36f}, {0.11f, 0.23f}, {0.18f, 0.17f},
+      {0.30f, 0.10f}, {0.50f, 0.04f}, {0.72f, 0.0f},
+      {0.87f, 0.01f}, {0.94f, 0.04f}, {0.97f, 0.12f},
+      {0.99f, 0.30f}, {1.0f, 0.52f}, {1.0f, 0.66f},
+      {0.98f, 0.74f}, {0.94f, 0.78f}, {0.84f, 0.79f},
+      {0.57f, 0.84f}, {0.32f, 0.91f}, {0.10f, 1.0f},
+      {0.04f, 0.98f}
+   };
+   const float (*points)[2] = upper ? upper_points : lower_points;
+   unsigned layer, i, next;
+   unsigned count = upper ? sizeof(upper_points) / sizeof(upper_points[0])
+      : sizeof(lower_points) / sizeof(lower_points[0]);
+   float vertices[8], px, nx;
+   unsigned long color;
+   if (!p->quad)
+   {
+      p->rect(p->userdata, rect, fill, border, 12 * s, 2 * s);
+      return;
+   }
+   for (layer = 0; layer < 2; layer++)
+   {
+      color = layer ? fill : border;
+      for (i = 0; i < count; i++)
+      {
+         next = (i + 1) % count;
+         px = right ? 1.0f - points[i][0] : points[i][0];
+         nx = right ? 1.0f - points[next][0] : points[next][0];
+         vertices[0] = vertices[4] = rect.x + rect.width / 2;
+         vertices[1] = vertices[5] = rect.y + rect.height / 2;
+         vertices[2] = rect.x + px * rect.width;
+         vertices[3] = rect.y + points[i][1] * rect.height;
+         vertices[6] = rect.x + nx * rect.width;
+         vertices[7] = rect.y + points[next][1] * rect.height;
+         p->quad(p->userdata, vertices, color, color);
+      }
+      rect = hh_quick_menu_expand(rect, -2 * s);
+   }
+}
+
+static void hh_quick_menu_paint_controller(const hh_quick_menu_t *menu,
+      const hh_quick_menu_layout_t *l, const hh_quick_menu_theme_t *t,
+      const hh_quick_menu_painter_t *p)
+{
+   static const char *buttons[16] = {"B", "Y", "SELECT", "START",
+      "▲", "▼", "◀", "▶", "A", "X", "L1", "R1", "L2", "R2", "L3", "R3"};
+   const hh_quick_menu_view_t *v = &menu->view;
+   unsigned i, source, target, line;
+   unsigned long color;
+   bool artwork, focused, button = v->control_selected >= 2 && v->control_selected < 18;
+   float s = l->controller.width / 1000, x = l->controller.x, y = l->controller.y;
+   hh_ui_rect_t rect, text;
+   char label[256];
+   float us = l->scale;
+   hh_ui_rect_t header = l->header;
+   header.y -= 132 * us;
+   hh_quick_menu_paint_text(p, hh_quick_menu_line(header, 0, 64, us),
+         "按键配置", t->text_primary, 48 * us, true);
+   hh_quick_menu_paint_text(p, hh_quick_menu_line(header, 70, 44, us),
+         "选择按键编辑", t->text_secondary, 30 * us, false);
+   for (i = 0; i < 20; i++)
+   {
+      if (i >= 2 && i < 18)
+         continue;
+      focused = v->control_selected == i;
+      hh_quick_menu_control_bounds(l, i, &rect);
+      p->rect(p->userdata, rect, focused ? t->surface_focused :
+            i >= 18 ? 0x344d65ffUL : t->surface,
+            focused ? t->focus : 0x415b76ffUL, 12 * us, 2 * us);
+      if (i >= 18 && p->icon)
+      {
+         text = hh_quick_menu_rect(rect.x + 14 * us,
+               rect.y + 14 * us, 28 * us, 28 * us);
+         p->icon(p->userdata, text, HH_QUICK_MENU_ICON_SAVE,
+               focused ? t->focus : t->text_primary);
+         rect.x += 48 * us;
+         rect.width -= 56 * us;
+      }
+      else
+      {
+         rect.x += 14 * us;
+         rect.width -= 28 * us;
+      }
+      hh_quick_menu_control_label(menu, i, label, sizeof(label));
+      hh_quick_menu_paint_text(p, rect, label,
+            focused ? t->focus : t->text_primary, 24 * us, focused);
+   }
+   artwork = p->controller && p->controller(p->userdata,
+         hh_quick_menu_rect(x, y - 20 * s, 1000 * s, 600 * s));
+   if (!artwork)
+      hh_control_shell(l, p);
+   if (!artwork)
+   {
+      rect = hh_quick_menu_rect(x + 476 * s, y + 306 * s, 48 * s, 6 * s);
+      p->rect(p->userdata, rect, t->focus, 0, 3 * s, 0);
+      hh_control_text(p, hh_quick_menu_rect(x + 350 * s, y + 326 * s, 300 * s, 40 * s),
+            "GameGo", 0x688ab0ffUL, 28 * s, true);
+   }
+   for (i = 0; i < 16; i++)
+   {
+      focused = v->control_selected == i + 2;
+      hh_quick_menu_control_bounds(l, i + 2, &rect);
+      if (i >= 10 && i < 14)
+         hh_control_shoulder(p, rect, i == 11 || i == 13, i >= 12,
+               focused ? 0x214d42ffUL : 0x102237ffUL,
+               focused ? t->focus : 0x7399c5ffUL, s);
+      else if (focused)
+         p->rect(p->userdata, hh_quick_menu_expand(rect, 5 * s),
+               0x214d42ffUL, t->focus, (i < 2 || i == 8 || i == 9 || i >= 14)
+               ? rect.width / 2 + 5 * s : 15 * s, 3 * s);
+      if (!artwork && (i < 10 || i >= 14))
+         p->rect(p->userdata, rect, focused ? 0x214d42ffUL : 0x1b2a3cffUL,
+            focused ? t->focus : 0x536a80ffUL,
+            (i < 2 || i == 8 || i == 9 || i >= 14) ? rect.width / 2 : 12 * s,
+            2 * s);
+      if (!artwork && i >= 14)
+      {
+         text = hh_quick_menu_expand(rect, -14 * s);
+         p->rect(p->userdata, text, 0x304459ffUL,
+               focused ? t->focus : 0x607a92ffUL, text.width / 2, 2 * s);
+         text = hh_quick_menu_expand(rect, -27 * s);
+         p->rect(p->userdata, text, 0x1b2a3cffUL, 0, text.width / 2, 0);
+      }
+      if (i == 0 || i == 1 || i == 8 || i == 9)
+      {
+         const char *name = v->controls.sources[i];
+         if (*name && name[1] == ' ')
+         {
+            label[0] = *name;
+            label[1] = '\0';
+         }
+         else
+            strcpy(label, buttons[i]);
+      }
+      else
+         strcpy(label, buttons[i]);
+      color = focused ? t->focus : t->text_primary;
+      hh_control_text(p, rect, label, color, (i == 2 || i == 3 ? 14 :
+               i >= 10 ? 26 : 34) * s, true);
+   }
+   rect = hh_quick_menu_rect(header.x + 1060 * us,
+         header.y + 270 * us, 400 * us, 360 * us);
+   p->rect(p->userdata, rect, t->surface, 0x415b76ffUL, 20 * us, 2 * us);
+   text = hh_quick_menu_rect(rect.x + 24 * us, rect.y + 24 * us,
+         rect.width - 48 * us, 48 * us);
+   if (button && v->controls_valid)
+   {
+      const char *badge;
+      source = v->control_selected - 2;
+      badge = source == 2 ? "−" : source == 3 ? "+" : buttons[source];
+      if ((source == 0 || source == 1 || source == 8 || source == 9)
+            && v->controls.sources[source][0] && v->controls.sources[source][1] == ' ')
+      {
+         label[0] = v->controls.sources[source][0];
+         label[1] = '\0';
+         badge = label;
+      }
+      rect = hh_quick_menu_rect(text.x, text.y, 48 * us, 48 * us);
+      p->rect(p->userdata, rect, t->focus, 0, 24 * us, 0);
+      hh_control_text(p, rect, badge, 0x0b1929ffUL, 26 * us, true);
+      text.x += 64 * us;
+      text.width -= 64 * us;
+      hh_quick_menu_paint_text(p, text, v->controls.sources[source], t->focus, 32 * us, true);
+      text.x -= 64 * us;
+      text.width += 64 * us;
+      text.y += 64 * us;
+      hh_quick_menu_paint_text(p, text, !v->controls.custom[source] ? "原有映射" :
+            v->controls.periods[source] ? "连发" :
+            (v->controls.masks[source] & (v->controls.masks[source] - 1))
+            ? "组合" : "普通", t->text_secondary, 26 * us, false);
+      text.y += 48 * us;
+      hh_quick_menu_paint_text(p, text, "映射", t->text_secondary, 26 * us, false);
+      text.y += 42 * us;
+      text.height = 32 * us;
+      target = 0;
+      for (line = 0; line < 4; line++)
+      {
+         label[0] = '\0';
+         for (; target < 16; target++)
+            if (v->controls.masks[source] & (1U << target))
+            {
+               snprintf(label, sizeof(label), "%s", v->controls.targets[target++]);
+               break;
+            }
+         if (!line && !*label)
+            strcpy(label, "未映射");
+         if (line == 3 && target < 16 && (v->controls.masks[source] >> target))
+            strncat(label, " …", sizeof(label) - strlen(label) - 1);
+         hh_quick_menu_paint_text(p, text, label, t->text_primary, 28 * us, false);
+         text.y += 32 * us;
+      }
+   }
+   else
+   {
+      hh_quick_menu_paint_text(p, text, v->controls_valid ? "选择按键" :
+            "暂不可配置", t->text_primary, 30 * us, true);
+      text.y += 64 * us;
+      hh_quick_menu_paint_text(p, text, "确认进入编辑", t->text_secondary, 26 * us, false);
+   }
+   rect = hh_quick_menu_rect(header.x, header.y + 770 * us, 980 * us, 32 * us);
+   hh_quick_menu_paint_text(p, rect, "修改为草稿，保存后生效", t->text_secondary, 24 * us, false);
+
+}
+
 static void hh_quick_menu_paint_controls(const hh_quick_menu_t *menu,
       const hh_quick_menu_layout_t *l, const hh_quick_menu_theme_t *t,
       const hh_quick_menu_painter_t *p)
@@ -380,14 +626,29 @@ static void hh_quick_menu_paint_controls(const hh_quick_menu_t *menu,
    hh_ui_rect_t rect, header;
    float s = l->scale;
    bool edit = menu->view.page == HH_QUICK_MENU_PAGE_CONTROL_EDIT;
+   if (edit)
+      hh_quick_menu_paint_background(l, p);
+   else
+      p->rect(p->userdata, l->viewport, 0x0b1929ffUL, 0, 0, 0);
+   if (!edit)
+   {
+      hh_quick_menu_paint_controller(menu, l, t, p);
+      if (menu->view.busy || menu->view.feedback != HH_QUICK_MENU_FEEDBACK_NONE)
+         hh_quick_menu_paint_text(p, hh_quick_menu_rect(l->header.x + 1084 * s,
+                  l->header.y + 452 * s, 352 * s, 32 * s),
+               menu->view.busy ? "处理中…" : menu->view.message,
+               menu->view.feedback == HH_QUICK_MENU_ACTION_ERROR ? t->danger : t->success,
+               24 * s, false);
+      hh_quick_menu_paint_footer(menu, l, t, p);
+      return;
+   }
    header = l->header;
    header.y -= 132 * s;
-   hh_quick_menu_paint_background(l, p);
    hh_quick_menu_paint_text(p, hh_quick_menu_line(header, 0, 64, s),
          edit ? "编辑按键" : "按键配置", t->text_primary, 48 * s, true);
    snprintf(label, sizeof(label), "玩家 %u · %s%s", menu->view.control_player + 1,
          edit ? menu->view.controls.sources[menu->view.control_source] : menu->view.game.title,
-         menu->view.controls_dirty ? " · 尚未保存" : "");
+         menu->view.controls_dirty ? " · 草稿" : "");
    hh_quick_menu_paint_text(p, hh_quick_menu_line(header, 70, 44, s),
          label, t->text_secondary, 30 * s, false);
    for (row = 0; row <= HH_QUICK_MENU_CONTROL_ROWS; row++)
@@ -411,7 +672,7 @@ static void hh_quick_menu_paint_controls(const hh_quick_menu_t *menu,
             focused ? t->focus : t->text_primary, 30 * s, focused);
    }
    rect = hh_quick_menu_line(l->header, 594, 40, s);
-   hh_quick_menu_paint_text(p, rect, edit ? "连发：按住重复、松开停止；组合：同时按下"
+   hh_quick_menu_paint_text(p, rect, edit ? "修改为草稿，保存后生效"
          : "左右切换玩家或手柄；动作按玩家独立设置", t->text_secondary, 26 * s, false);
    if (menu->view.busy || menu->view.feedback != HH_QUICK_MENU_FEEDBACK_NONE)
       hh_quick_menu_paint_text(p, hh_quick_menu_line(l->header, 642, 32, s), menu->view.busy ? "处理中…" : menu->view.message,
@@ -738,6 +999,8 @@ void hh_quick_menu_render(const hh_quick_menu_t *menu, float width,
          || !p->rect || !p->text || !hh_quick_menu_compute_layout(width, height, &l))
       return;
    s = l.scale;
+   if (menu->view.page == HH_QUICK_MENU_PAGE_CONTROLS)
+      l.footer = l.control_footer;
    if (hh_quick_menu_is_controls_page(menu))
    {
       hh_quick_menu_paint_controls(menu, &l, t, p);

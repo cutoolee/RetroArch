@@ -19,6 +19,11 @@ typedef struct hh_bridge
    bool shader_close_after_cancel;
    int shader_observed_id;
    unsigned long shader_preview_time_ms;
+#ifdef HAVE_GAMEGO_E2E_HARNESS
+   unsigned control_active_masks[16];
+   unsigned control_active_periods[16];
+   bool control_active_custom[16];
+#endif
 } hh_bridge_t;
 
 void hh_bridge_init(hh_bridge_t *bridge);

@@ -94,3 +94,50 @@ S_BOOL(quick_menu_show_cheats, QUICK_MENU_SHOW_CHEATS,
       DEFAULT_QUICK_MENU_SHOW_CHEATS, SD_FLAG_NONE, 0, 0,
       "Show 'Cheats'",
       "Show the 'Cheats' option.")
+#if (defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU) || defined(SETTINGS_DEF_STRINGS_PASS)
+S_BOOL(gamego_menu_show_continue, GAMEGO_MENU_SHOW_CONTINUE,
+      "gamego_menu_show_continue",
+      DEFAULT_GAMEGO_MENU_SHOW_CONTINUE, SD_FLAG_NONE, 0, 0,
+      "显示“继续游戏”",
+      "在 GameGo 快捷菜单中显示或隐藏继续游戏按钮。")
+S_BOOL(gamego_menu_show_save, GAMEGO_MENU_SHOW_SAVE,
+      "gamego_menu_show_save",
+      DEFAULT_GAMEGO_MENU_SHOW_SAVE, SD_FLAG_NONE, 0, 0,
+      "显示“保存进度”",
+      "在 GameGo 快捷菜单中显示或隐藏保存进度按钮。")
+S_BOOL(gamego_menu_show_load, GAMEGO_MENU_SHOW_LOAD,
+      "gamego_menu_show_load",
+      DEFAULT_GAMEGO_MENU_SHOW_LOAD, SD_FLAG_NONE, 0, 0,
+      "显示“读取进度”",
+      "在 GameGo 快捷菜单中显示或隐藏读取进度按钮。")
+S_BOOL(gamego_menu_show_shader, GAMEGO_MENU_SHOW_SHADER,
+      "gamego_menu_show_shader",
+      DEFAULT_GAMEGO_MENU_SHOW_SHADER, SD_FLAG_NONE, 0, 0,
+      "显示“着色器”",
+      "在 GameGo 快捷菜单中显示或隐藏着色器按钮。")
+S_BOOL(gamego_menu_show_controls, GAMEGO_MENU_SHOW_CONTROLS,
+      "gamego_menu_show_controls",
+      DEFAULT_GAMEGO_MENU_SHOW_CONTROLS, SD_FLAG_NONE, 0, 0,
+      "显示“按键配置”",
+      "在 GameGo 快捷菜单中显示或隐藏按键配置按钮。")
+S_BOOL(gamego_menu_show_reset, GAMEGO_MENU_SHOW_RESET,
+      "gamego_menu_show_reset",
+      DEFAULT_GAMEGO_MENU_SHOW_RESET, SD_FLAG_NONE, 0, 0,
+      "显示“重新开始”",
+      "在 GameGo 快捷菜单中显示或隐藏重新开始按钮。")
+S_BOOL(gamego_menu_show_advanced, GAMEGO_MENU_SHOW_ADVANCED,
+      "gamego_menu_show_advanced",
+      DEFAULT_GAMEGO_MENU_SHOW_ADVANCED, SD_FLAG_NONE, 0, 0,
+      "显示“高级菜单”",
+      "在 GameGo 快捷菜单中显示或隐藏高级菜单按钮。")
+S_BOOL(gamego_menu_show_recent, GAMEGO_MENU_SHOW_RECENT,
+      "gamego_menu_show_recent",
+      DEFAULT_GAMEGO_MENU_SHOW_RECENT, SD_FLAG_NONE, 0, 0,
+      "显示“最近游戏”",
+      "在 GameGo 快捷菜单中显示或隐藏最近游戏按钮。")
+S_BOOL(gamego_menu_show_exit, GAMEGO_MENU_SHOW_EXIT,
+      "gamego_menu_show_exit",
+      DEFAULT_GAMEGO_MENU_SHOW_EXIT, SD_FLAG_NONE, 0, 0,
+      "显示“退出游戏”",
+      "在 GameGo 快捷菜单中显示或隐藏退出游戏按钮。")
+#endif

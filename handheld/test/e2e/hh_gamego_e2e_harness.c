@@ -79,7 +79,8 @@ static jstring hh_gamego_e2e_status(JNIEnv *env)
          "RECENT_COUNT=%lu RECENT_SELECTION=%lu RECENT_THUMBNAIL=%s "
          "RECENT_VIDEO=%s CONTENT_NAME=%s CORE_NAME=%s "
          "CONTROL_PLAYER=%u CONTROL_ROW=%u CONTROL_MODE=%u CONTROL_MASK=%u "
-         "CONTROL_PERIOD=%u CONTROL_VALID=%u CONTROL_DIRTY=%u",
+         "CONTROL_PERIOD=%u CONTROL_VALID=%u CONTROL_DIRTY=%u "
+         "CONTROL_ACTIVE_MASK=%u CONTROL_ACTIVE_PERIOD=%u CONTROL_ACTIVE_CUSTOM=%u",
          runtime.content_loaded ? "RUNNING" : "NO_CONTENT",
          hh_bridge_is_open(bridge) ? "YES" : "NO",
          view ? hh_gamego_e2e_page(view->page) : "MAIN",
@@ -120,7 +121,10 @@ static jstring hh_gamego_e2e_status(JNIEnv *env)
          view ? view->control_player : 0, view ? view->control_selected : 0,
          view ? view->control_mode : 0, view ? view->control_mask : 0,
          view ? view->control_period : 0, view ? view->controls_valid : 0,
-         view ? view->controls_dirty : 0);
+         view ? view->controls_dirty : 0,
+         view ? bridge->control_active_masks[view->control_source] : 0,
+         view ? bridge->control_active_periods[view->control_source] : 0,
+         view ? bridge->control_active_custom[view->control_source] : 0);
    __android_log_print(ANDROID_LOG_INFO, HH_GAMEGO_E2E_TAG, "%s", line);
    return (*env)->NewStringUTF(env, line);
 }
@@ -166,6 +170,25 @@ Java_com_retroarch_gamego_GameGoE2eHarnessReceiver_nativeCommand(
    }
    if (!strcmp(command, "menu"))
       hh_bridge_test_toggle(bridge);
+   else if (!strcmp(command, "controls"))
+   {
+      const hh_quick_menu_t *menu = hh_bridge_menu(bridge);
+      unsigned row;
+      char label[256];
+      if (menu && menu->view.controls_valid)
+      {
+         for (row = 0; row < 16; row++)
+            if (menu->view.controls.available[row])
+               __android_log_print(ANDROID_LOG_INFO, HH_GAMEGO_E2E_TAG,
+                     "CONTROL_TARGET_ID=%u NAME=%s", row, menu->view.controls.targets[row]);
+         for (row = 2; row < hh_quick_menu_control_count(menu); row++)
+         {
+            hh_quick_menu_control_label(menu, row, label, sizeof(label));
+            __android_log_print(ANDROID_LOG_INFO, HH_GAMEGO_E2E_TAG,
+                  "CONTROL_TARGET_ROW=%u LABEL=%s", row, label);
+         }
+      }
+   }
    else if (hh_gamego_e2e_input(command, &input))
       hh_bridge_test_input(bridge, input);
    else

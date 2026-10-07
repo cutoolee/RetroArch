@@ -7,6 +7,7 @@ static void hh_quick_menu_set_item(hh_quick_menu_item_t *item,
 {
    memset(item, 0, sizeof(*item));
    item->id = id;
+   item->visible = true;
    strncpy(item->label, label, HH_QUICK_MENU_LABEL_MAX - 1);
    item->label[HH_QUICK_MENU_LABEL_MAX - 1] = '\0';
 }
@@ -46,6 +47,45 @@ void hh_quick_menu_layout_init(hh_quick_menu_t *menu)
          HH_QUICK_MENU_ITEM_RECENT, "最近游戏");
    hh_quick_menu_set_item(&menu->view.items[8],
          HH_QUICK_MENU_ITEM_EXIT, "退出游戏");
+}
+
+bool hh_quick_menu_control_bounds(const hh_quick_menu_layout_t *layout,
+      unsigned row, hh_ui_rect_t *bounds)
+{
+   /* Bounds match the 1000 x 600 artwork drawn at y = -20. */
+   static const float buttons[16][4] = {
+      {735, 260, 70, 70}, {670, 200, 70, 70},
+      {367, 136, 56, 26}, {577, 136, 56, 26},
+      {220, 304, 64, 68}, {220, 406, 64, 68},
+      {166, 355, 68, 64}, {270, 355, 68, 64},
+      {798, 200, 70, 70}, {735, 140, 70, 70},
+      {147, 57, 169, 75}, {684, 57, 169, 75},
+      {181, 5, 120, 56}, {699, 5, 120, 56},
+      {152, 156, 134, 134}, {658, 336, 134, 134}
+   };
+   float x, y, w, h, s;
+   if (!layout || !bounds || row >= 20)
+      return false;
+   s = layout->controller.width / 1000;
+   if (row < 2 || row >= 18)
+   {
+      x = row == 0 ? 720 : row == 1 ? 876 : row == 18 ? 1292 : 1526;
+      w = row == 0 ? 140 : row == 1 ? 400 : 218;
+      *bounds = hh_quick_menu_rect(layout->header.x + (x - 240) * layout->scale,
+            layout->header.y - 118 * layout->scale,
+            w * layout->scale, 56 * layout->scale);
+      return true;
+   }
+   else
+   {
+      x = buttons[row - 2][0];
+      y = buttons[row - 2][1];
+      w = buttons[row - 2][2];
+      h = buttons[row - 2][3];
+   }
+   *bounds = hh_quick_menu_rect(layout->controller.x + x * s,
+         layout->controller.y + y * s, w * s, h * s);
+   return true;
 }
 
 bool hh_quick_menu_compute_layout(float width, float height,
@@ -92,6 +132,11 @@ bool hh_quick_menu_compute_layout(float width, float height,
          layout->main_header.x, layout->items[0].y + 248 * scale,
          layout->main_header.width, 40 * scale);
    layout->header = layout->main_header;
+   layout->controller = hh_quick_menu_rect(
+         (width - design_width * scale) / 2 + 240 * scale,
+         (height - design_height * scale) / 2 + 350 * scale,
+         980 * scale, 588 * scale);
+   layout->control_footer = layout->main_footer;
    for (i = 0; i < HH_QUICK_MENU_CONTROL_ROWS; i++)
       layout->control_rows[i] = hh_quick_menu_rect(
             layout->header.x, layout->header.y + (18 + i * 70) * scale,

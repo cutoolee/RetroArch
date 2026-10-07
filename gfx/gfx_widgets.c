@@ -1985,6 +1985,12 @@ static void hh_widget_round_fill(hh_widget_paint_context_t *ctx,
    int row;
    float radius_sq;
 
+   bounds.x = (float)(int)bounds.x;
+   bounds.y = (float)(int)bounds.y;
+   bounds.width = (float)(int)bounds.width;
+   bounds.height = (float)(int)bounds.height;
+   if (bounds.width <= 0.0f || bounds.height <= 0.0f)
+      return;
    if (radius <= 0.0f)
    {
       gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
@@ -2118,11 +2124,27 @@ static const char *hh_widget_quick_menu_icon_name(hh_quick_menu_icon_t icon)
    static const char *names[] = {
       "play.png", "save.png", "folder-open.png", "rotate-ccw.png",
       "sliders-horizontal.png", "log-out.png", "chevron-right.png", "gamepad-2.png",
-      "menu-confirm.png", "menu-back.png", "menu-select.png"
+      "menu-confirm.png", "menu-back.png", "menu-select.png", "controller-layout-solid.png"
    };
    if (icon < 0 || icon >= (hh_quick_menu_icon_t)ARRAY_SIZE(names))
       return NULL;
    return names[icon];
+}
+
+static bool hh_widget_controller(void *userdata, hh_ui_rect_t bounds)
+{
+   hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
+   uintptr_t texture = hh_quick_menu_icon_textures[HH_QUICK_MENU_ICON_CONTROLLER];
+   float tint[16];
+   if (!texture)
+      return false;
+   hh_widget_color(0xffffffffUL, tint);
+   gfx_display_draw_quad(ctx->display, ctx->video_info->userdata,
+         ctx->video_info->width, ctx->video_info->height,
+         (int)bounds.x, (int)bounds.y, (unsigned)bounds.width,
+         (unsigned)bounds.height, ctx->video_info->width,
+         ctx->video_info->height, tint, &texture);
+   return true;
 }
 
 static void hh_widget_icon_rect(hh_widget_paint_context_t *ctx,
@@ -2141,12 +2163,20 @@ static void hh_widget_icon(void *userdata, hh_ui_rect_t bounds,
       hh_quick_menu_icon_t icon, unsigned long color)
 {
    hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
-   const char *name = hh_widget_quick_menu_icon_name(icon);
+   const char *name;
    uintptr_t texture;
    hh_ui_rect_t part;
    float side = bounds.width < bounds.height ? bounds.width : bounds.height;
    float unit = side / 8.0f;
    float line = unit * 0.5f;
+   if (!ctx->video_info->input_menu_swap_ok_cancel_buttons)
+   {
+      if (icon == HH_QUICK_MENU_ICON_CONFIRM)
+         icon = HH_QUICK_MENU_ICON_BACK;
+      else if (icon == HH_QUICK_MENU_ICON_BACK)
+         icon = HH_QUICK_MENU_ICON_CONFIRM;
+   }
+   name = hh_widget_quick_menu_icon_name(icon);
    bounds.x += (bounds.width - side) * 0.5f;
    bounds.y += (bounds.height - side) * 0.5f;
    bounds.width = bounds.height = side;
@@ -2791,6 +2821,7 @@ static void hh_widget_render_quick_menu(video_frame_info_t *video_info,
    painter.rect = hh_widget_rect;
    painter.text = hh_widget_text;
    painter.text_centered = hh_widget_text_centered;
+   painter.controller = hh_widget_controller;
    painter.icon = hh_widget_icon;
    painter.preview = hh_widget_preview;
    painter.quad = hh_widget_quad;

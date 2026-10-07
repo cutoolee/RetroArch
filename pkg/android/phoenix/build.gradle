@@ -87,28 +87,6 @@ if (gamegoE2eHarnessFlag == "1" && gamegoProductFlag != "1") {
   throw new GradleException("HAVE_GAMEGO_E2E_HARNESS requires GAMEGO_PRODUCT=1")
 }
 
-def developmentStoreFile = project.findProperty("DEV_STORE_FILE")
-if (developmentStoreFile == null) {
-  developmentStoreFile = System.getenv("DEV_STORE_FILE")
-}
-def developmentStorePassword = project.findProperty("DEV_STORE_PASSWORD")
-if (developmentStorePassword == null) {
-  developmentStorePassword = System.getenv("DEV_STORE_PASSWORD")
-}
-def developmentKeyAlias = project.findProperty("DEV_KEY_ALIAS")
-if (developmentKeyAlias == null) {
-  developmentKeyAlias = System.getenv("DEV_KEY_ALIAS")
-}
-def developmentKeyPassword = project.findProperty("DEV_KEY_PASSWORD")
-if (developmentKeyPassword == null) {
-  developmentKeyPassword = System.getenv("DEV_KEY_PASSWORD")
-}
-def developmentSigningConfigured = developmentStoreFile && developmentStorePassword
-    && developmentKeyAlias && developmentKeyPassword
-if (developmentSigningConfigured && !file(developmentStoreFile).isFile()) {
-  throw new GradleException("DEV_STORE_FILE does not exist: ${developmentStoreFile}")
-}
-
 android {
   namespace "com.retroarch"
 
@@ -266,14 +244,6 @@ android {
   }
 
   signingConfigs {
-    if (developmentSigningConfigured) {
-      development {
-        storeFile file(developmentStoreFile)
-        storePassword developmentStorePassword
-        keyAlias developmentKeyAlias
-        keyPassword developmentKeyPassword
-      }
-    }
     if (project.hasProperty("RELEASE_STORE_FILE")) {
       release {
         storeFile file(RELEASE_STORE_FILE)
@@ -285,10 +255,6 @@ android {
   }
 
   buildTypes {
-    debug {
-      if (developmentSigningConfigured)
-        signingConfig signingConfigs.development
-    }
     if (project.hasProperty("RELEASE_STORE_FILE")) {
       release {
         signingConfig signingConfigs.release

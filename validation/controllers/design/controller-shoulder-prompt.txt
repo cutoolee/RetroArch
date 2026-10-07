@@ -1,0 +1,8 @@
+Built-in imagegen edit. Target: existing controller-layout.png. Reference: user's shoulder integration crop.
+Selected output: exec-955d5e4e-469c-478a-b18b-2e3a9e2fa96a.png.
+
+Preserve the transparent 1620x971 canvas, lower controls, grip curves, center dash and GameGo word. Extend the two upper shell humps behind the four shoulder keys, rising almost to the top of the image with around 10 pixels of transparent margin. Left integrated hump spans x230..560 and right x1060..1390. The center upper edge remains around y177, joining the humps with smooth concave transitions, as in the reference. Remove the raster shoulder keys and labels so the application can draw default and focused states with precisely the same native contour. Remove central smudges; clean flat navy/slate color blocks and pale-blue outlines, no realism, screen or new markings. Preserve genuine transparency outside the shell.
+
+Application draws the four shoulder keys using one shared mirrored outline; focus changes fill, border and label colors only. Asset geometry and focus are independent of per-game mappings.
+
+Final workspace asset: pkg/android/phoenix/gamego-assets/gamego-defaults/icons/controller-layout-integrated.png

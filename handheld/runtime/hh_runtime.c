@@ -37,6 +37,7 @@ hh_result_t hh_runtime_init(void)
          sizeof(hh_runtime_state.events));
    memset(&hh_runtime_state.snapshot, 0,
          sizeof(hh_runtime_state.snapshot));
+   hh_runtime_controls_discard();
    hh_runtime_state.initialized = true;
    hh_runtime_state.shutting_down = false;
    hh_runtime_state.operation_busy = false;
@@ -73,7 +74,10 @@ void hh_runtime_deinit(void)
       return;
 
    if (hh_runtime_state.owner_thread_id == sthread_get_current_thread_id())
+   {
       hh_runtime_shader_discard();
+      hh_runtime_controls_discard();
+   }
    hh_runtime_state_task_cancel(HH_ERR_NOT_INITIALIZED);
    slock_lock(hh_runtime_state.lock);
    hh_runtime_state.shutting_down = true;

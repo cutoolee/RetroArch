@@ -1,0 +1,13 @@
+Device: Logitech GR0006 / Android 11 / 1920x1080 / USB 2419TNW44608
+E2E covering install, signer/ABI gate and post-install initialization 10 seconds: PASS
+Editing R1: draft mask 1; live mask 2048, custom 0: PASS
+Draft leaves game remap file byte-for-byte unchanged: PASS
+Return to game: live mapping unchanged; menu reopen retains draft: PASS
+Unsaved process restart: original mask 2048 restored, file unchanged: PASS
+Explicit game save: live mask 1, custom 1, DIRTY 0, file contains action_r=1: PASS
+Saved process restart: live and editor mask 1: PASS
+Host tests: player drafts isolated; game/core save applies all drafts; config/remap save failures preserve live mapping and drafts; discard drops unsaved changes: PASS
+UI sanitizer tests, raw menu-input tests, bridge tests, resume/reset tests: PASS
+Unrelated recent-playlist suite: playlist queries passed; capture binary blocked by an existing missing dir_get_ptr test stub.
+No physical gamepad input injection used; E2E directions and touch verified the UI and active runtime mapping.
+User's exact saved config and game remap restored after latest APK initialization; pulled bytes match backup. Startup crash changes remain outside scope.

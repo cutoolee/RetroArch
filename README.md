@@ -39,25 +39,25 @@ To reach developers, either make an issue here on GitHub, make a thread on the [
 See our [Documentation Center](https://docs.libretro.com/). On Unix, man-pages are provided.
 More developer-centric stuff is found [here](https://docs.libretro.com/development/libretro-overview/).
 
-## Local GameGo Android Development
+## Local RetroArch Android Development
 
-本地快速构建、校验并安装 GameGo APK：
+本地快速构建、校验并安装 RetroArch APK：
 
 ```sh
-./tools/gamego-dev doctor
-./tools/gamego-dev install
+./tools/retroarch-android-dev doctor
+./tools/retroarch-android-dev install
 ```
 
-详见 [Local GameGo Android Development](docs/local-android-development.md)。
+详见 [RetroArch Android Development](docs/retroarch-android-development.md)。
 真机 E2E 使用固定流程，不能在安装后直接启动 ROM：
 
 ```sh
-./tools/gamego-dev e2e-start
-./tools/gamego-dev e2e-status
-./tools/gamego-dev e2e-evidence
+./tools/retroarch-android-dev e2e-start
+./tools/retroarch-android-dev e2e-status
+./tools/retroarch-android-dev e2e-evidence
 ```
 
-详见 [GameGo 本地 Android 真机 E2E 固定流程](docs/gamego-local-e2e-runbook.md)。
+详见 [RetroArch Android 真机 E2E 固定流程](docs/retroarch-android-e2e-runbook.md)。
 
 ## Related projects
 

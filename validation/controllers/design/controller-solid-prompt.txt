@@ -1,0 +1,6 @@
+Mode: built-in imagegen edit.
+Target: controller-layout-integrated.png.
+Selected output: exec-6cad975f-a32a-4ade-a677-678a5402ca5a.png.
+Final asset: pkg/android/phoenix/gamego-assets/gamego-defaults/icons/controller-layout-solid.png.
+
+Fix ONLY the opacity defect in the navy controller shell: fill translucent holes/dark smudges with smooth clean navy/slate color. Outside the silhouette remains transparent. Preserve the exact 1620x971 canvas, outer outline, shoulder humps, grips, circles, D-pad, sticks, select/start capsules, dash and GameGo text. No shoulder buttons or labels, no screen, new controls, shadows or realistic texture.

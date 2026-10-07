@@ -64,6 +64,7 @@ void hh_quick_menu_open(hh_quick_menu_t *menu)
    menu->state = HH_QUICK_MENU_OPENING;
    menu->open_generation++;
    menu->view.page = HH_QUICK_MENU_PAGE_MAIN;
+   menu->view.selected_index = 0;
    menu->main_scroll = hh_quick_menu_main_scroll(menu->view.selected_index);
    menu->main_scroll_origin = menu->main_scroll_target = menu->main_scroll;
    menu->main_scroll_elapsed = 0;

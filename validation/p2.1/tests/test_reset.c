@@ -13,7 +13,7 @@ static int last_argument;
 static hh_result_t submit_result = HH_OK;
 static int shader_active_id;
 
-hh_result_t hh_runtime_get_controls(unsigned player, hh_runtime_controls_t *out)
+hh_result_t hh_runtime_get_controls_draft(unsigned player, hh_runtime_controls_t *out)
 {
    unsigned i;
    memset(out, 0, sizeof(*out));

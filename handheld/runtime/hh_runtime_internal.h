@@ -54,6 +54,9 @@ typedef struct hh_runtime_state
    hh_runtime_event_callback_t callback;
    void *callback_userdata;
    unsigned processing_count;
+   unsigned control_draft_changed[16];
+   unsigned control_draft_masks[16][16];
+   unsigned control_draft_periods[16][16];
 #ifdef HAVE_GAMEGO_E2E_HARNESS
    hh_runtime_e2e_state_io_observation_t e2e_state_io;
 #endif
@@ -66,6 +69,7 @@ hh_result_t hh_runtime_execute_command(
 hh_result_t hh_runtime_shader_command(hh_command_type_t type, int argument);
 bool hh_runtime_shader_supported(void);
 hh_result_t hh_runtime_controls_command(hh_command_type_t type, int argument);
+void hh_runtime_controls_discard(void);
 void hh_runtime_shader_discard(void);
 void hh_runtime_refresh_snapshot(void);
 void hh_runtime_emit_event(uint64_t request_id,

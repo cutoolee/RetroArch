@@ -44,7 +44,7 @@ hh_result_t hh_runtime_get_controls(unsigned player, hh_runtime_controls_t *out)
    for (i = 0; i < 16; i++)
    {
       name = runloop_st->system.input_desc_btn[port][i];
-      out->available[i] = !descriptors || (name && *name && !strstr(name, "Turbo"));
+      out->available[i] = !descriptors || (name && *name);
       strlcpy(out->targets[i], name && *name ? name : hh_control_names[i],
             sizeof(out->targets[i]));
       strlcpy(out->sources[i], hh_control_names[i], sizeof(out->sources[i]));
@@ -78,6 +78,86 @@ hh_result_t hh_runtime_get_controls(unsigned player, hh_runtime_controls_t *out)
    return HH_OK;
 }
 
+void hh_runtime_controls_discard(void)
+{
+   memset(hh_runtime_state.control_draft_changed, 0,
+         sizeof(hh_runtime_state.control_draft_changed));
+}
+
+hh_result_t hh_runtime_get_controls_draft(unsigned player, hh_runtime_controls_t *out)
+{
+   unsigned i, remap;
+   settings_t *settings = config_get_ptr();
+   hh_result_t result = hh_runtime_get_controls(player, out);
+   if (result != HH_OK)
+      return result;
+   for (i = 0; i < 16; i++)
+      if (hh_runtime_state.control_draft_changed[player] & (1U << i))
+      {
+         out->custom[i] = hh_runtime_state.control_draft_masks[player][i] != 0;
+         remap = settings->uints.input_remap_ids[player][i];
+         out->masks[i] = out->custom[i] ? hh_runtime_state.control_draft_masks[player][i]
+            : remap < 16 ? 1U << remap : 0;
+         out->periods[i] = hh_runtime_state.control_draft_periods[player][i];
+      }
+   return HH_OK;
+}
+
+static hh_result_t hh_runtime_controls_save(const char *path)
+{
+   settings_t *settings = config_get_ptr();
+   unsigned masks[16][16], periods[16][16];
+   unsigned player, source, target;
+   hh_runtime_controls_t controls;
+   for (player = 0; player < 16; player++)
+   {
+      if (!hh_runtime_state.control_draft_changed[player])
+         continue;
+      if (hh_runtime_get_controls(player, &controls) != HH_OK)
+         return HH_ERR_UNSUPPORTED;
+      for (source = 0; source < 16; source++)
+         if (hh_runtime_state.control_draft_changed[player] & (1U << source))
+            for (target = 0; target < 16; target++)
+               if ((hh_runtime_state.control_draft_masks[player][source] & (1U << target))
+                     && !controls.available[target])
+                  return HH_ERR_INVALID_ARGUMENT;
+   }
+   if (!path_is_empty(RARCH_PATH_CONFIG) && !config_save_file(path_get(RARCH_PATH_CONFIG)))
+      return HH_ERR_SAVE_FAILED;
+   for (player = 0; player < 16 && player < MAX_USERS; player++)
+      for (source = 0; source < 16; source++)
+      {
+         masks[player][source] = settings->uints.input_action_mask[player][source];
+         periods[player][source] = settings->uints.input_action_period[player][source];
+         if (hh_runtime_state.control_draft_changed[player] & (1U << source))
+         {
+            settings->uints.input_action_mask[player][source] =
+               hh_runtime_state.control_draft_masks[player][source];
+            settings->uints.input_action_period[player][source] =
+               hh_runtime_state.control_draft_periods[player][source];
+         }
+      }
+   if (!input_remapping_save_file(path))
+   {
+      for (player = 0; player < 16 && player < MAX_USERS; player++)
+         for (source = 0; source < 16; source++)
+         {
+            settings->uints.input_action_mask[player][source] = masks[player][source];
+            settings->uints.input_action_period[player][source] = periods[player][source];
+         }
+      return HH_ERR_SAVE_FAILED;
+   }
+   for (player = 0; player < 16 && player < MAX_USERS; player++)
+      if (hh_runtime_state.control_draft_changed[player])
+      {
+         memset(input_state_get_ptr()->input_action_phase[player], 0,
+               sizeof(input_state_get_ptr()->input_action_phase[player]));
+         BIT256_CLEAR_ALL(input_state_get_ptr()->mapper.buttons[player]);
+      }
+   hh_runtime_controls_discard();
+   return HH_OK;
+}
+
 hh_result_t hh_runtime_controls_command(hh_command_type_t type, int argument)
 {
    settings_t *settings = config_get_ptr();
@@ -88,6 +168,7 @@ hh_result_t hh_runtime_controls_command(hh_command_type_t type, int argument)
    unsigned mask = value & 0xffff;
    unsigned period = (value >> 24) & 63;
    unsigned i;
+   hh_result_t result;
    hh_runtime_controls_t controls;
    char path[PATH_MAX_LENGTH], suffix[PATH_MAX_LENGTH];
    const char *core = runloop_st->system.info.library_name;
@@ -108,10 +189,9 @@ hh_result_t hh_runtime_controls_command(hh_command_type_t type, int argument)
       }
       fill_pathname_join_special_ext(path, settings->paths.directory_input_remapping,
             suffix, argument ? core : path_basename(content), ".rmp", sizeof(path));
-      if (!path_is_empty(RARCH_PATH_CONFIG) && !config_save_file(path_get(RARCH_PATH_CONFIG)))
-         return HH_ERR_SAVE_FAILED;
-      if (!input_remapping_save_file(path))
-         return HH_ERR_SAVE_FAILED;
+      result = hh_runtime_controls_save(path);
+      if (result != HH_OK)
+         return result;
       retroarch_ctl(argument ? RARCH_CTL_SET_REMAPS_CORE_ACTIVE :
             RARCH_CTL_SET_REMAPS_GAME_ACTIVE, NULL);
       input_state_get_ptr()->flags |= INP_FLAG_REMAPPING_CACHE_ACTIVE;
@@ -142,10 +222,8 @@ hh_result_t hh_runtime_controls_command(hh_command_type_t type, int argument)
    for (i = 0; i < 16; i++)
       if ((mask & (1U << i)) && !controls.available[i])
          return HH_ERR_INVALID_ARGUMENT;
-   settings->uints.input_action_mask[player][source] = mask;
-   settings->uints.input_action_period[player][source] = mask ? period : 0;
-   input_state_get_ptr()->input_action_phase[player][source] = 0;
-   BIT256_CLEAR_ALL(input_state_get_ptr()->mapper.buttons[player]);
-   input_state_get_ptr()->flags |= INP_FLAG_REMAPPING_CACHE_ACTIVE;
+   hh_runtime_state.control_draft_masks[player][source] = mask;
+   hh_runtime_state.control_draft_periods[player][source] = mask ? period : 0;
+   hh_runtime_state.control_draft_changed[player] |= 1U << source;
    return HH_OK;
 }

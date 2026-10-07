@@ -8775,6 +8775,10 @@ unsigned menu_displaylist_build_list(
                count++;
             {
                static const menu_displaylist_settings_row_t dl_rows_1[] = {
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+                  { MENU_ENUM_LABEL_INPUT_MENU_ENUM_TOGGLE_GAMEPAD_COMBO, PARSE_ONLY_UINT, false },
+                  { MENU_ENUM_LABEL_GAMEGO_MENU_TOGGLE_MODE, PARSE_ONLY_UINT, false },
+#endif
                   { MENU_ENUM_LABEL_INPUT_HOTKEY_BLOCK_DELAY, PARSE_ONLY_UINT, false },
                   { MENU_ENUM_LABEL_INPUT_HOTKEY_DEVICE_MERGE, PARSE_ONLY_BOOL, false },
                   { MENU_ENUM_LABEL_INPUT_HOTKEY_FOLLOWS_PLAYER1, PARSE_ONLY_BOOL, false },
@@ -12997,6 +13001,17 @@ unsigned menu_displaylist_build_list(
 #endif
 
                {MENU_ENUM_LABEL_QUICK_MENU_SHOW_INFORMATION,            PARSE_ONLY_BOOL},
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_CONTINUE,              PARSE_ONLY_BOOL},
+               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_SAVE,                  PARSE_ONLY_BOOL},
+               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_LOAD,                  PARSE_ONLY_BOOL},
+               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_SHADER,                PARSE_ONLY_BOOL},
+               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_CONTROLS,              PARSE_ONLY_BOOL},
+               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_RESET,                 PARSE_ONLY_BOOL},
+               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_ADVANCED,              PARSE_ONLY_BOOL},
+               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_RECENT,                PARSE_ONLY_BOOL},
+               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_EXIT,                  PARSE_ONLY_BOOL},
+#endif
             };
 
             for (i = 0; i < ARRAY_SIZE(build_list); i++)
@@ -13006,6 +13021,23 @@ unsigned menu_displaylist_build_list(
                         false) == 0)
                   count++;
             }
+         }
+         break;
+      case DISPLAYLIST_GAMEGO_MENU_CONFIG_LIST:
+         {
+            if (menu_entries_append(list,
+                     "唤起按键设置",
+                     MENU_ENUM_LABEL_INPUT_HOTKEY_BINDS_STR,
+                     MENU_ENUM_LABEL_INPUT_HOTKEY_BINDS,
+                     MENU_SETTING_ACTION, 0, 0, NULL))
+               count++;
+
+            if (menu_entries_append(list,
+                     "菜单显示设置",
+                     MENU_ENUM_LABEL_QUICK_MENU_VIEWS_SETTINGS_STR,
+                     MENU_ENUM_LABEL_QUICK_MENU_VIEWS_SETTINGS,
+                     MENU_SETTING_ACTION, 0, 0, NULL))
+               count++;
          }
          break;
       case DISPLAYLIST_CORE_SETTINGS_LIST:
@@ -16009,6 +16041,7 @@ static bool menu_displaylist_ctl_internal(
          case DISPLAYLIST_CORE_SETTINGS_LIST:
          case DISPLAYLIST_SETTINGS_VIEWS_SETTINGS_LIST:
          case DISPLAYLIST_QUICK_MENU_VIEWS_SETTINGS_LIST:
+         case DISPLAYLIST_GAMEGO_MENU_CONFIG_LIST:
          case DISPLAYLIST_MENU_SOUNDS_LIST:
          case DISPLAYLIST_UPDATER_SETTINGS_LIST:
          case DISPLAYLIST_USER_SETTINGS_LIST:
@@ -16514,6 +16547,13 @@ static bool menu_displaylist_ctl_internal(
                               MENU_ENUM_LABEL_CONTENT_SETTINGS,
                               PARSE_ACTION, false) == 0)
                         count++;
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+                  if (!retroarch_ctl(RARCH_CTL_IS_DUMMY_CORE, NULL))
+                     if (MENU_DISPLAYLIST_PARSE_SETTINGS_ENUM(info->list,
+                              MENU_ENUM_LABEL_GAMEGO_MENU_CONFIG,
+                              PARSE_ACTION, false) == 0)
+                        count++;
+#endif
                }
                else
                {

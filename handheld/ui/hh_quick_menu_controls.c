@@ -5,6 +5,81 @@
 
 static const char *hh_control_modes[] = {"原有映射", "普通按键", "按住连发", "组合按键"};
 
+typedef struct hh_control_target
+{
+   unsigned mask;
+   const char *name;
+} hh_control_target_t;
+
+static unsigned hh_control_target_rank(const char *name)
+{
+   static const char *names[] = {"A", "B", "C", "D", "X", "Y",
+      "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
+      "L", "R", "L1", "R1", "L2", "R2", "L3", "R3",
+      "Turbo A", "Turbo B", "Turbo C", "Turbo D", "Turbo X", "Turbo Y",
+      "Turbo L", "Turbo R", "Turbo L1", "Turbo R1", "Turbo L2", "Turbo R2",
+      "AB", "CD", "ABC", "BCD", "ABCD",
+      "Turbo AB", "Turbo CD", "Turbo ABC", "Turbo BCD", "Turbo ABCD",
+      "Select", "Start", "Up", "Down", "Left", "Right"};
+   char key[64];
+   unsigned i, length = 0;
+   if (!strncmp(name, "Button ", 7))
+      name += 7;
+   else if (!strncmp(name, "Buttons ", 8))
+      name += 8;
+   else if (!strncmp(name, "D-Pad ", 6))
+      name += 6;
+   for (i = 0; name[i] && length < sizeof(key) - 1; i++)
+      if (name[i] != '+')
+         key[length++] = name[i];
+   key[length] = '\0';
+   name = key;
+   for (i = 0; i < sizeof(names) / sizeof(names[0]); i++)
+      if (!strcmp(name, names[i]) || (names[i][1] == '\0'
+               && name[0] == names[i][0] && !strncmp(name + 1, " / ", 3)))
+         return i;
+   return i;
+}
+
+static unsigned hh_control_targets(const hh_quick_menu_t *menu,
+      hh_control_target_t *targets)
+{
+   unsigned i, j, rank, count = 0, abcd = 0, buttons = 0;
+   bool has_abcd = false;
+   hh_control_target_t target;
+   for (i = 0; i < 16; i++)
+   {
+      if (!menu->view.controls.available[i])
+         continue;
+      targets[count].mask = 1U << i;
+      targets[count++].name = menu->view.controls.targets[i];
+      rank = hh_control_target_rank(menu->view.controls.targets[i]);
+      if (rank < 4 && !(buttons & (1U << rank)))
+      {
+         abcd |= 1U << i;
+         buttons |= 1U << rank;
+      }
+      if (rank == hh_control_target_rank("ABCD"))
+         has_abcd = true;
+   }
+   if (buttons == 15 && !has_abcd)
+   {
+      targets[count].mask = abcd;
+      targets[count++].name = "Buttons ABCD";
+   }
+   for (i = 1; i < count; i++)
+   {
+      target = targets[i];
+      rank = hh_control_target_rank(target.name);
+      for (j = i; j > 0 && hh_control_target_rank(targets[j - 1].name) > rank; j--)
+      {
+         targets[j] = targets[j - 1];
+      }
+      targets[j] = target;
+   }
+   return count;
+}
+
 bool hh_quick_menu_is_controls_page(const hh_quick_menu_t *menu)
 {
    return menu && (menu->view.page == HH_QUICK_MENU_PAGE_CONTROLS
@@ -13,22 +88,21 @@ bool hh_quick_menu_is_controls_page(const hh_quick_menu_t *menu)
 
 unsigned hh_quick_menu_control_count(const hh_quick_menu_t *menu)
 {
-   unsigned i, count = 3;
+   hh_control_target_t targets[17];
    if (menu->view.page == HH_QUICK_MENU_PAGE_CONTROLS)
       return 20;
-   for (i = 0; i < 16; i++)
-      if (menu->view.controls.available[i])
-         count++;
-   return count;
+   return 2 + hh_control_targets(menu, targets);
 }
 
-static unsigned hh_control_target(const hh_quick_menu_t *menu, unsigned row)
+static bool hh_control_target(const hh_quick_menu_t *menu, unsigned row,
+      hh_control_target_t *target)
 {
-   unsigned i, index = 2;
-   for (i = 0; i < 16; i++)
-      if (menu->view.controls.available[i] && index++ == row)
-         return i;
-   return 16;
+   hh_control_target_t targets[17];
+   unsigned count = hh_control_targets(menu, targets);
+   if (row < 2 || row - 2 >= count)
+      return false;
+   *target = targets[row - 2];
+   return true;
 }
 
 static hh_ui_action_t hh_control_pending(hh_quick_menu_t *menu, hh_ui_action_t action)
@@ -56,28 +130,78 @@ static void hh_control_mode_change(hh_quick_menu_t *menu, int direction)
    }
 }
 
+static void hh_control_move(hh_quick_menu_t *menu,
+      hh_quick_menu_input_t input)
+{
+   hh_quick_menu_layout_t layout;
+   hh_ui_rect_t current, next;
+   unsigned i, selected = menu->view.control_selected;
+   float dx, dy, along, across, score, best = 1000000000.0f;
+   bool horizontal = input == HH_QUICK_MENU_INPUT_LEFT
+      || input == HH_QUICK_MENU_INPUT_RIGHT;
+   bool reverse = input == HH_QUICK_MENU_INPUT_LEFT
+      || input == HH_QUICK_MENU_INPUT_UP;
+   if (selected < 2 && input == HH_QUICK_MENU_INPUT_UP)
+   {
+      menu->view.control_selected = selected == 0 ? 1 : 18;
+      hh_quick_menu_clear_feedback(menu);
+      return;
+   }
+   hh_quick_menu_compute_layout(1920, 1080, &layout);
+   if (!hh_quick_menu_control_bounds(&layout, selected, &current))
+      return;
+   for (i = 0; i < 20; i++)
+   {
+      hh_quick_menu_control_bounds(&layout, i, &next);
+      dx = next.x + next.width / 2 - current.x - current.width / 2;
+      dy = next.y + next.height / 2 - current.y - current.height / 2;
+      along = horizontal ? dx : dy;
+      across = horizontal ? dy : dx;
+      if (reverse)
+         along = -along;
+      if (along <= 1)
+         continue;
+      score = along * along + across * across * 4;
+      if (score < best)
+      {
+         best = score;
+         selected = i;
+      }
+   }
+   menu->view.control_selected = selected;
+   menu->view.control_first = 0;
+   hh_quick_menu_clear_feedback(menu);
+}
+
 hh_ui_action_t hh_quick_menu_controls_input(hh_quick_menu_t *menu,
       hh_quick_menu_input_t input)
 {
    hh_quick_menu_view_t *v = &menu->view;
    unsigned count = hh_quick_menu_control_count(menu);
    unsigned row = v->control_selected;
-   unsigned target, i;
+   unsigned i;
+   hh_control_target_t target;
    bool edit = v->page == HH_QUICK_MENU_PAGE_CONTROL_EDIT;
    int direction = input == HH_QUICK_MENU_INPUT_LEFT ? -1 : 1;
    if (input == HH_QUICK_MENU_INPUT_BACK)
    {
       v->page = edit ? HH_QUICK_MENU_PAGE_CONTROLS : HH_QUICK_MENU_PAGE_MAIN;
       v->control_selected = edit ? v->control_source + 2 : 0;
-      v->control_first = v->control_selected >= HH_QUICK_MENU_CONTROL_ROWS ? v->control_selected - HH_QUICK_MENU_CONTROL_ROWS + 1 : 0;
+      v->control_first = 0;
+      return HH_UI_ACTION_NONE;
+   }
+   if (!edit && (input == HH_QUICK_MENU_INPUT_UP
+            || input == HH_QUICK_MENU_INPUT_DOWN
+            || ((input == HH_QUICK_MENU_INPUT_LEFT
+                  || input == HH_QUICK_MENU_INPUT_RIGHT) && row >= 2)))
+   {
+      hh_control_move(menu, input);
       return HH_UI_ACTION_NONE;
    }
    if (input == HH_QUICK_MENU_INPUT_UP || input == HH_QUICK_MENU_INPUT_DOWN)
    {
-      if (input == HH_QUICK_MENU_INPUT_UP && row)
-         v->control_selected--;
-      else if (input == HH_QUICK_MENU_INPUT_DOWN && row + 1 < count)
-         v->control_selected++;
+      v->control_selected = input == HH_QUICK_MENU_INPUT_UP
+         ? (row ? row - 1 : count - 1) : (row + 1) % count;
       if (v->control_selected < v->control_first)
          v->control_first = v->control_selected;
       else if (v->control_selected >= v->control_first + HH_QUICK_MENU_CONTROL_ROWS)
@@ -138,30 +262,38 @@ hh_ui_action_t hh_quick_menu_controls_input(hh_quick_menu_t *menu,
             break;
       v->control_period = periods[i >= 5 ? 2 : (i + (direction > 0 ? 1 : 4)) % 5];
    }
-   else if (row + 1 == count)
-   {
-      if (input != HH_QUICK_MENU_INPUT_CONFIRM)
-         return HH_UI_ACTION_NONE;
-      if (v->control_mode && !v->control_mask)
-      {
-         v->feedback = HH_QUICK_MENU_ACTION_ERROR;
-         strcpy(v->message, "请选择至少一个游戏按键");
-         return HH_UI_ACTION_NONE;
-      }
-      return hh_control_pending(menu, HH_UI_ACTION_CONTROLS_SET);
-   }
    else if (row >= 2 && v->control_mode)
    {
-      target = hh_control_target(menu, row);
-      if (target < 16)
+      if (hh_control_target(menu, row, &target))
       {
          if (v->control_mode == 3)
-            v->control_mask ^= 1U << target;
+         {
+            if ((v->control_mask & target.mask) == target.mask)
+            {
+               if (!(v->control_mask & ~target.mask))
+               {
+                  v->feedback = HH_QUICK_MENU_ACTION_ERROR;
+                  strcpy(v->message, "至少保留一个按键");
+                  return HH_UI_ACTION_NONE;
+               }
+               v->control_mask &= ~target.mask;
+            }
+            else
+               v->control_mask |= target.mask;
+         }
          else
-            v->control_mask = 1U << target;
+         {
+            v->control_mask = target.mask;
+            if (v->control_mode == 1 && (target.mask & (target.mask - 1U)))
+               v->control_mode = 3;
+         }
       }
+      else
+         return HH_UI_ACTION_NONE;
    }
-   return HH_UI_ACTION_NONE;
+   else
+      return HH_UI_ACTION_NONE;
+   return hh_control_pending(menu, HH_UI_ACTION_CONTROLS_SET);
 }
 
 void hh_quick_menu_control_label(const hh_quick_menu_t *menu, unsigned row,
@@ -170,6 +302,7 @@ void hh_quick_menu_control_label(const hh_quick_menu_t *menu, unsigned row,
    const hh_quick_menu_view_t *v = &menu->view;
    unsigned i, source, mask;
    char action[256];
+   hh_control_target_t target;
    size_t length;
    if (v->page == HH_QUICK_MENU_PAGE_CONTROL_EDIT)
    {
@@ -177,30 +310,29 @@ void hh_quick_menu_control_label(const hh_quick_menu_t *menu, unsigned row,
          snprintf(label, size, "行为：%s  < >", hh_control_modes[v->control_mode]);
       else if (row == 1)
          snprintf(label, size, v->control_mode == 2 ? "连发周期：%u 帧  < >" : "连发速度：仅连发模式可用", v->control_period);
-      else if (row + 1 == hh_quick_menu_control_count(menu))
-         snprintf(label, size, "应用并返回（随后可保存到游戏）");
       else
       {
-         i = hh_control_target(menu, row);
-         snprintf(label, size, "%s %s", i < 16 && (v->control_mask & (1U << i)) ? "[已选]" : "[未选]",
-               i < 16 ? v->controls.targets[i] : "");
+         bool valid = hh_control_target(menu, row, &target);
+         snprintf(label, size, "%s %s", valid
+               && (v->control_mask & target.mask) == target.mask ? "[已选]" : "[未选]",
+               valid ? target.name : "");
       }
       return;
    }
    if (!row)
-      snprintf(label, size, "玩家：%u / %u  < >", v->control_player + 1, v->controls.player_count);
+      snprintf(label, size, "玩家 %u", v->control_player + 1);
    else if (!v->controls_valid)
       snprintf(label, size, "当前玩家的设备类型不支持按键配置");
    else if (row == 1)
    {
-      const char *name = "未检测到手柄（请按一下手柄按键）";
+      const char *name = "请按一下手柄按键";
       for (i = 0; i < v->controls.device_count; i++)
          if (v->controls.device_ids[i] == v->controls.device_index)
             name = v->controls.devices[i];
-      snprintf(label, size, "手柄：%s  < >", name);
+      snprintf(label, size, "手柄：%s", name);
    }
    else if (row >= 18)
-      snprintf(label, size, row == 18 ? "保存到当前游戏" : "保存到当前核心（游戏配置优先）");
+      snprintf(label, size, row == 18 ? "保存当前游戏" : "保存当前核心");
    else
    {
       source = row - 2;

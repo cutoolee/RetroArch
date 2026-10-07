@@ -200,7 +200,7 @@ static void android_seed_quick_menu_icons(AAssetManager *manager,
       "sliders-horizontal.png", "log-out.png", "chevron-right.png",
       "gamepad-2.png", "menu-play.png", "menu-save.png", "menu-folder.png",
       "menu-reset.png", "menu-settings.png", "menu-exit.png",
-      "menu-confirm.png", "menu-back.png", "menu-select.png", "LICENSE"
+      "menu-confirm.png", "menu-back.png", "menu-select.png", "controller-layout-solid.png", "LICENSE"
    };
    char source[DIR_MAX_LENGTH];
    char target[DIR_MAX_LENGTH];

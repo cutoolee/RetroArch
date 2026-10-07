@@ -1,0 +1,6 @@
+GameGo and RetroArch share menu_swap_ok_cancel_buttons.
+Input tests cover both setting states, raw A/B with remap/turbo/combinations, Enter/Backspace/Escape.
+RetroArch gamepad key 96 opens core list; key 97 returns.
+GameGo Enter opens controls and confirms Turbo A/B draft selections; Backspace returns.
+GameGo footer shows A confirm / B back with the device setting true.
+Final APK installed using matching Android Debug signing certificate.

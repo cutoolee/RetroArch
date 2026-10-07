@@ -1,0 +1,14 @@
+Device: Logitech GR0006 / 2419TNW44608 / Android 11 / 1920x1080 / USB
+E2E build, signer, ABI and covering install: PASS
+MainMenuActivity initialization and post-install 10-second wait: PASS
+First content launch yielded no harness status; logs saved in first-launch.log. Second launch passed. Known first-launch crash remains outside scope.
+Controller screenshot: title/subtitle 48/30, smaller controller, compact detail card, top player/device/save buttons, centered footer.
+Control editor: top row UP -> row 17; bottom DOWN -> row 0: PASS
+No Apply row; mode/target mutation submits SET then game SAVE: PASS
+Successful save keeps editor page and selected row, clears DIRTY: PASS
+R1 temporary target Button A, mask 1 persisted to game remap: PASS
+New process reload: R1 mode 1 / mask 1 / DIRTY 0: PASS
+User's original retroarch.cfg and mslug.rmp backed up before mutation and restored after testing.
+Physical gamepad event injection was not used; tested with E2E directions and touch.
+Host sanitizer UI tests, bridge save success/failure tests, menu raw input and controls runtime tests: PASS
+Ordinary dev APK installed, initialized 10 seconds, exact backup bytes restored: PASS
