@@ -2,11 +2,11 @@
 
 ## 版本和源码
 
-GameGo 版本保存在 `GAMEGO_VERSION`，首版候选为 `0.1.0-beta.1`。上游版本保留在 `version.all`。版本标签使用 `gamego-v0.1.0-beta.1`，每次公开发行使用新标签；不要重新指向已经公开的标签。
+本分支版本保存在 `GAMEGO_VERSION`，当前候选为 `0.1.0-beta.2`。上游版本保留在 `version.all`。版本标签使用 `retroarch-v0.1.0-beta.2`，每次公开发行使用新标签；不要重新指向已经公开的标签。
 
 1. 提交所有需要交付的修改，并确保工作区没有未跟踪的源码。
-2. 运行 GameGo 检查和密钥审计，确认外部资源版本。
-3. 在 Actions 手动运行 GameGo Release，保留 create_release 选项；也可推送 `gamego-v` 标签触发。
+2. 运行 GameGo Checks 检查和密钥审计，确认外部资源版本。
+3. 在 Actions 手动运行 RetroArch Release，保留 create_release 选项；也可推送 `retroarch-v` 标签触发。
 4. 工作流生成各端产物、完整源码、许可、SHA256SUMS 和 Release 草稿。
 5. 在候选包上执行平台验收，更新平台状态和已知问题。
 6. 完成验收后公开预发布；稳定版只包含已验证的平台。
@@ -25,7 +25,7 @@ GameGo 版本保存在 `GAMEGO_VERSION`，首版候选为 `0.1.0-beta.1`。上�
 仓库 Actions variables：
 
 - `GAMEGO_ANDROID_APPLICATION_ID`：默认 `com.retroarch.aarch64`，应用名称保留 `RetroArch (AArch64)`。
-- `GAMEGO_ANDROID_VERSION_CODE`：可选覆盖值，整数且大于上一公开版；默认由版本号递增计算，首个 beta.1 为 10021。
+- `GAMEGO_ANDROID_VERSION_CODE`：可选覆盖值，整数且大于上一公开版；默认由版本号递增计算，beta.1 为 10021，beta.2 为 10022。
 
 缺少正式签名时 Android 发布任务失败，不生成伪装成正式包的 Debug 签名 APK。密钥需离线备份；不得提交 Git 或放入公开 artifact。旧开发包与正式发布证书可能不同，迁移方法见安装指南。
 
@@ -35,7 +35,7 @@ GameGo 版本保存在 `GAMEGO_VERSION`，首版候选为 `0.1.0-beta.1`。上�
 
 ## 发布清单
 
-- 源码 commit、GameGo / RetroArch 版本和外部依赖版本一致。
+- 源码 commit、本分支 / RetroArch 上游版本和外部依赖版本一致。
 - 安装包包含字体、图标、着色器、许可和安装说明。
 - 不包含游戏、BIOS、用户数据、测试入口或签名密钥。
 - 完整源码包可用于还原平台工程和构建脚本。

@@ -1,10 +1,10 @@
 name: 问题反馈 / Bug report
-description: 报告 GameGo 前端、安装或升级问题。
+description: 报告 RetroArch 社区修改版 前端、安装或升级问题。
 body:
   - type: input
     id: version
     attributes:
-      label: GameGo 版本或 commit
+      label: RetroArch 社区修改版 版本或 commit
     validations:
       required: true
   - type: input

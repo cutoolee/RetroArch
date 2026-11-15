@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build GameGo release inventories and portable distributions."""
+"""Build RetroArch release inventories and portable distributions."""
 
 import argparse
 import gzip
@@ -69,7 +69,7 @@ def assets(source, destination):
 
 def metadata(destination, platform):
     data = {
-        "product": "GameGo", "version": version(), "platform": platform,
+        "product": "RetroArch", "version": version(), "platform": platform,
         "commit": git("rev-parse", "HEAD").decode().strip(),
         "upstream_version": re.search(r'PACKAGE_VERSION "([^"]+)"', (ROOT / "version.all").read_text()).group(1),
         "frontend_assets": json.loads((ROOT / "handheld/distribution/resources.lock").read_text()),
@@ -97,10 +97,10 @@ def stage(args):
     ]
     (destination / "gamego.cfg").write_text("\n".join(config) + "\n")
     if args.platform == "windows-x64":
-        (destination / "GameGo.cmd").write_text(
+        (destination / "RetroArch.cmd").write_text(
             '@echo off\ncd /d "%~dp0"\n"%~dp0retroarch.exe" --config "%~dp0gamego.cfg" %*\n')
     else:
-        launcher = destination / "GameGo"
+        launcher = destination / "RetroArch"
         launcher.write_text('#!/bin/sh\nset -eu\nbase=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)\n'
                             'cd "$base"\nexport LD_LIBRARY_PATH="$base/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"\n'
                             'exec "$base/retroarch" --config "$base/gamego.cfg" "$@"\n')
@@ -123,10 +123,10 @@ def source(args):
     if git("status", "--porcelain", "--untracked-files=normal").strip():
         raise SystemExit("Commit release sources before creating the corresponding source archive")
     args.output.mkdir(parents=True, exist_ok=True)
-    target = args.output / ("GameGo-" + version() + "-source.tar.gz")
+    target = args.output / ("RetroArch-" + version() + "-source.tar.gz")
     with gzip.open(target, "wb", compresslevel=6) as output:
         process = subprocess.Popen(["git", "-C", str(ROOT), "archive", "--format=tar",
-                                    "--prefix=GameGo-" + version() + "/", "HEAD"], stdout=subprocess.PIPE)
+                                    "--prefix=RetroArch-" + version() + "/", "HEAD"], stdout=subprocess.PIPE)
         with process.stdout:
             shutil.copyfileobj(process.stdout, output)
         if process.wait():

@@ -36,7 +36,7 @@ make -j2 HAVE_GAMEGO_PRODUCT=1
 
 Windows 使用 MSYS2 MINGW64 环境和 MinGW 编译器。打包时必须收集实际依赖 DLL 和其许可。Linux 发行包基于 Ubuntu 22.04 构建，不承诺在更旧 glibc 系统运行。
 
-`tools/gamego-release.py stage` 将可执行文件、前端资源、GameGo 资源、配置、启动器、许可和 BUILD.json 汇总到便携目录。
+`tools/gamego-release.py stage` 将可执行文件、前端资源、快捷菜单资源、配置、启动器、许可和 BUILD.json 汇总到便携目录。
 
 ## macOS / iOS
 

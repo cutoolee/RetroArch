@@ -6,13 +6,15 @@ import os
 
 results = json.loads(os.environ["BUILD_RESULTS"])
 version = os.environ["RELEASE_VERSION"]
-print("# GameGo " + version)
+print("# RetroArch " + version)
+print("\n社区修改版，保留 RetroArch 软件名称；不代表上游官方发行。")
 print("\n公开预览候选。构建成功不代表已完成安装、升级或游戏运行验收。")
 print("\n| 构建任务 | 结果 |\n| --- | --- |")
 for name, result in results.items():
     print("| " + name + " | " + result["result"] + " |")
 print("\n仅附成功生成的产物；失败或跳过的任务不提供安装包。")
 print("\n- Android APK 使用发布证书，实际包名、版本码及证书指纹见 android-signing.txt。")
+print("- 软件显示名为 RetroArch；Android ARM64 保留 RetroArch (AArch64)。macOS 包内为 RetroArch.app。")
 print("- macOS 产物标注 adhoc，未完成 Developer ID 签名或公证。")
 print("- iOS 产物标注 unsigned，需用户自行签名；默认不附带核心，尚不能宣称可直接游玩。")
 print("- Windows/Linux 为便携包；Linux 基于 Ubuntu 22.04，依赖见包内列表。")

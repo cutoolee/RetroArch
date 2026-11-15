@@ -29,18 +29,18 @@ def main():
         stage = Path(directory)
         parent = stage / "Payload" if ios else stage
         parent.mkdir(exist_ok=True)
-        app = parent / "GameGo.app"
+        app = parent / "RetroArch.app"
         shutil.copytree(apps[0], app, symlinks=True)
         resources = app if ios else app / "Contents/Resources"
         shutil.copy2(args.resources / "assets.zip", resources / "assets.zip")
         for name in ("COPYING", "THIRD_PARTY_NOTICES.md", "BUILD.json", "resources.lock"):
             shutil.copy2(args.resources / name, resources / name)
-        shutil.copytree(args.resources / "docs", resources / "GameGo-docs")
+        shutil.copytree(args.resources / "docs", resources / "RetroArch-docs")
         info = app / "Info.plist" if ios else app / "Contents/Info.plist"
         with info.open("rb") as stream:
             plist = plistlib.load(stream)
-        plist["CFBundleDisplayName"] = "GameGo"
-        plist["CFBundleName"] = "GameGo"
+        plist["CFBundleDisplayName"] = "RetroArch"
+        plist["CFBundleName"] = "RetroArch"
         plist["CFBundleIdentifier"] = "com.cutoolee.gamego"
         plist["CFBundleShortVersionString"] = version.split("-")[0]
         with info.open("wb") as stream:
@@ -54,7 +54,7 @@ def main():
             subprocess.run(["codesign", "--force", "--deep", "--sign", "-", str(app)], check=True)
             subprocess.run(["codesign", "--verify", "--deep", "--strict", str(app)], check=True)
             status = "ad-hoc signature; no Developer ID or notarization"
-        name = "GameGo-" + version + "-" + args.platform + ("-unsigned.ipa" if ios else "-adhoc.zip")
+        name = "RetroArch-" + version + "-" + args.platform + ("-unsigned.ipa" if ios else "-adhoc.zip")
         subprocess.run(["ditto", "-c", "-k", "--sequesterRsrc", "--keepParent",
                         str(parent if ios else app), str(args.output / name)], check=True)
         (args.output / (args.platform + "-signing.json")).write_text(json.dumps({

@@ -1,6 +1,6 @@
 ---
 name: 功能建议 / Feature request
-about: 建议改进 GameGo 的操作或平台支持
+about: 建议改进 本 RetroArch 分支 的操作或平台支持
 title: ''
 labels: ''
 assignees: ''

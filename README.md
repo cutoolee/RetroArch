@@ -1,10 +1,10 @@
-# GameGo
+# RetroArch（社区修改版）
 
 面向手柄操作的 RetroArch 衍生项目，提供中文卡片快捷菜单、存档预览、最近游戏、按键配置和着色器设置。
 
-GameGo is a community fork of RetroArch focused on a controller-friendly quick menu. It is not an official RetroArch release. RetroArch and libretro retain their respective copyrights and trademarks.
+This community fork of RetroArch provides a controller-friendly quick menu and retains the RetroArch application name. It is not an official RetroArch release. RetroArch and libretro retain their respective copyrights and trademarks.
 
-![GameGo 快捷菜单，由正式 C 渲染器输出的离线预览](docs/images/gamego-quick-menu.png)
+![RetroArch 快捷菜单，由正式 C 渲染器输出的离线预览](docs/images/gamego-quick-menu.png)
 
 ## 下载与支持状态
 
@@ -25,7 +25,7 @@ GameGo is a community fork of RetroArch focused on a controller-friendly quick m
 1. 从 Releases 下载与你的平台和架构对应的包，按 `SHA256SUMS` 校验。
 2. 按照 [安装指南](docs/release/install.md) 安装或解压。
 3. 使用你有权使用的游戏文件和 BIOS，并安装对应的 libretro 核心。
-4. 游戏中通过配置的菜单快捷键进入 GameGo 卡片菜单；复杂设置可进入高级菜单。
+4. 游戏中通过配置的菜单快捷键进入卡片快捷菜单；复杂设置可进入高级菜单。
 
 发行包不附带商业游戏或 BIOS。首版默认不附带第三方模拟器核心；核心按各自许可证分发，iOS 的限制见安装指南。
 
@@ -50,6 +50,6 @@ GameGo is a community fork of RetroArch focused on a controller-friendly quick m
 
 ## 许可证
 
-RetroArch 和 GameGo 的相应代码遵循仓库 [COPYING](COPYING) 中的 GNU GPLv3 及各文件原有许可声明。第三方库、字体、图标、着色器和核心保留各自许可证，不能一概视为 GPLv3。
+RetroArch 及本分支的相应代码遵循仓库 [COPYING](COPYING) 中的 GNU GPLv3 及各文件原有许可声明。第三方库、字体、图标、着色器和核心保留各自许可证，不能一概视为 GPLv3。
 
-每个二进制版本应附对应完整源码、构建脚本、资源版本和校验信息。GameGo 版本记录在 `GAMEGO_VERSION`，所基于的 RetroArch 版本记录在 `version.all`。
+每个二进制版本应附对应完整源码、构建脚本、资源版本和校验信息。本分支版本记录在 `GAMEGO_VERSION`，所基于的 RetroArch 版本记录在 `version.all`。

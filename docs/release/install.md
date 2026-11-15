@@ -12,15 +12,17 @@
 
 正式包的 applicationId 由发布配置指定，Release 说明列出实际值。本地开发默认仍可使用 `com.retroarch.aarch64`。正式包保留 `RetroArch (AArch64)` 名称和 `com.retroarch.aarch64` 包名。若已有官方同包名应用或旧开发包，但签名不同，无法覆盖安装；必须先导出数据，再处理旧包。正式发布证书不会自动继承开发包证书。
 
-通过系统文件选择器授权游戏目录；核心从高级菜单的核心管理入口安装或手动导入。某些设备还需授予文件管理权限。前端启动入口仍为 `com.retroarch.browser.retroactivity.RetroActivityFuture`；第三方启动器应使用实际 applicationId，不应假定独立 GameGo 等于官方 RetroArch 包。
+通过系统文件选择器授权游戏目录；核心从高级菜单的核心管理入口安装或手动导入。某些设备还需授予文件管理权限。前端启动入口仍为 `com.retroarch.browser.retroactivity.RetroActivityFuture`；第三方启动器应使用实际 applicationId，不应仅根据软件名称判断包名或签名是否与官方一致。
 
 ## Windows / Linux
 
-解压到可写目录，通过 `GameGo.cmd` 或 `./GameGo` 启动。保留目录结构；不要只复制可执行文件。配置、核心和存档使用便携目录。Linux 包不是跨所有发行版通用的 AppImage；最低系统和库要求以 Release 说明为准。
+解压到可写目录，通过 `RetroArch.cmd` 或 `./RetroArch` 启动。保留目录结构；不要只复制可执行文件。配置、核心和存档使用便携目录。Linux 包不是跨所有发行版通用的 AppImage；最低系统和库要求以 Release 说明为准。
 
 ## macOS
 
-解压并将 GameGo.app 放入 Applications。是否完成 Developer ID 签名和公证以 Release 为准。未公证构建可能被 Gatekeeper 阻止；仅在你信任并校验来源后，通过系统提供的安全设置批准打开，不建议全局关闭安全保护。
+解压并将 RetroArch.app 放入 Applications。是否完成 Developer ID 签名和公证以 Release 为准。未公证构建可能被 Gatekeeper 阻止；仅在你信任并校验来源后，通过系统提供的安全设置批准打开，不建议全局关闭安全保护。
+
+从 0.1.0-beta.1 升级时，先退出旧应用，再将旧的 `GameGo.app` 移出 Applications，安装新版 `RetroArch.app`，避免保留两个入口。新版保留原有应用标识和用户数据目录。若已安装其他来源的同名 RetroArch，请先分别备份并确认来源，避免误覆盖。
 
 ## iOS
 

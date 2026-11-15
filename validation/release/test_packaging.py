@@ -52,8 +52,8 @@ class PackagingTest(unittest.TestCase):
             release.source(types.SimpleNamespace(output=output))
             with tarfile.open(next(output.glob("*.tar.gz"))) as archive:
                 names = archive.getnames()
-                self.assertIn("GameGo-0.1.0-beta.1/pkg/platform/project.txt", names)
-                self.assertIn("GameGo-0.1.0-beta.1/.github/workflows/build.yml", names)
+                self.assertIn("RetroArch-0.1.0-beta.1/pkg/platform/project.txt", names)
+                self.assertIn("RetroArch-0.1.0-beta.1/.github/workflows/build.yml", names)
         finally:
             import shutil
             shutil.rmtree(output, ignore_errors=True)
@@ -84,8 +84,9 @@ class PackagingTest(unittest.TestCase):
         self.assertTrue((output / "assets/COPYING").is_file())
         self.assertTrue((output / "shaders/gamego/test.glsl").is_file())
         self.assertTrue((output / "docs/install.md").is_file())
-        self.assertIn('--config "$base/gamego.cfg"', (output / "GameGo").read_text())
+        self.assertIn('--config "$base/gamego.cfg"', (output / "RetroArch").read_text())
         build = json.loads((output / "BUILD.json").read_text())
+        self.assertEqual(build["product"], "RetroArch")
         self.assertEqual(build["upstream_version"], "1.22.2")
         self.assertEqual(build["bundled_cores"], [])
         self.assertEqual(build["runtime_acceptance"], "not-verified-by-packaging")

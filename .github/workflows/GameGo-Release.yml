@@ -1,8 +1,8 @@
-name: GameGo Release
+name: RetroArch Release
 
 on:
   push:
-    tags: ['gamego-v*']
+    tags: ['retroarch-v*']
   workflow_dispatch:
     inputs:
       create_release:
@@ -35,7 +35,7 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "version_code=$(python3 tools/gamego-release.py version-code)" >> "$GITHUB_OUTPUT"
           if [[ "$RELEASE_REF" == refs/tags/* ]]; then
-            test "$RELEASE_REF" = "refs/tags/gamego-v$version"
+            test "$RELEASE_REF" = "refs/tags/retroarch-v$version"
           fi
       - name: Release gates
         run: |
@@ -56,6 +56,7 @@ jobs:
       - name: Complete corresponding source
         run: |
           python3 tools/gamego-release.py source --output dist/releases
+          python3 tools/retroarch-verify-package.py dist/releases/RetroArch-*
           cp COPYING THIRD_PARTY_NOTICES.md dist/releases/
           cp handheld/distribution/resources.lock dist/releases/
       - uses: actions/upload-artifact@v4
@@ -115,13 +116,14 @@ jobs:
           apk=pkg/android/phoenix/build/outputs/apk/aarch64/release/phoenix-aarch64-release.apk
           tools="$ANDROID_HOME/build-tools/36.0.0"
           test "$("$tools/aapt2" dump packagename "$apk")" = "$APPLICATION_ID"
+          "$tools/aapt2" dump badging "$apk" | grep -Fx "application-label:'RetroArch (AArch64)'"
           "$tools/apksigner" verify --verbose --print-certs "$apk"
           expected=$(openssl x509 -in handheld/distribution/android-release-certificate.pem -noout -fingerprint -sha256 | cut -d= -f2 | tr -d ':' | tr '[:upper:]' '[:lower:]')
           actual=$("$tools/apksigner" verify --print-certs "$apk" | awk '/Signer #1 certificate SHA-256 digest:/ { print $NF }')
           test "$actual" = "$expected"
           mkdir -p dist/releases
           handheld/distribution/verify_android_apk_assets.sh "$apk" handheld/distribution/resources.lock dist/releases/android-assets.txt
-          cp "$apk" "dist/releases/GameGo-$VERSION-android-arm64.apk"
+          cp "$apk" "dist/releases/RetroArch-$VERSION-android-arm64.apk"
           "$tools/apksigner" verify --print-certs "$apk" > dist/releases/android-signing.txt
           printf 'applicationId=%s\nversionCode=%s\ncommit=%s\n' "$APPLICATION_ID" "$VERSION_CODE" "$GITHUB_SHA" >> dist/releases/android-signing.txt
       - uses: actions/upload-artifact@v4
@@ -144,7 +146,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential pkg-config zlib1g-dev libfreetype6-dev libgl1-mesa-dev libegl1-mesa-dev libx11-dev libx11-xcb-dev libxext-dev libxv-dev libxxf86vm-dev libudev-dev libasound2-dev libpulse-dev libsdl2-dev libusb-1.0-0-dev
-      - name: Build GameGo
+      - name: Build RetroArch
         run: |
           ./configure --disable-qt --disable-ffmpeg --disable-vulkan
           make -j2 HAVE_GAMEGO_PRODUCT=1
@@ -159,11 +161,12 @@ jobs:
         env:
           VERSION: ${{ needs.preflight.outputs.version }}
         run: |
-          folder="GameGo-$VERSION-linux-x64"
+          folder="RetroArch-$VERSION-linux-x64"
           python3 tools/gamego-release.py stage --platform linux-x64 --binary retroarch --assets "$RUNNER_TEMP/frontend/assets" --output "$RUNNER_TEMP/$folder"
           cp "$RUNNER_TEMP/linux-libraries.txt" "$RUNNER_TEMP/$folder/"
           mkdir -p dist/releases
           tar -czf "dist/releases/$folder.tar.gz" -C "$RUNNER_TEMP" "$folder"
+          python3 tools/retroarch-verify-package.py dist/releases/RetroArch-*
       - uses: actions/upload-artifact@v4
         with:
           name: gamego-linux
@@ -188,7 +191,7 @@ jobs:
             git make zip mingw-w64-x86_64-gcc mingw-w64-x86_64-pkgconf
             mingw-w64-x86_64-SDL2 mingw-w64-x86_64-freetype
             mingw-w64-x86_64-zlib mingw-w64-x86_64-python
-      - name: Build GameGo
+      - name: Build RetroArch
         run: |
           ./configure --disable-qt --disable-ffmpeg --disable-vulkan
           make -j2 HAVE_GAMEGO_PRODUCT=1
@@ -203,7 +206,7 @@ jobs:
           VERSION: ${{ needs.preflight.outputs.version }}
         run: |
           set -euo pipefail
-          folder="GameGo-$VERSION-windows-x64"
+          folder="RetroArch-$VERSION-windows-x64"
           stage="$(cygpath -u "$RUNNER_TEMP")/$folder"
           python3 tools/gamego-release.py stage --platform windows-x64 --binary retroarch.exe --assets "$(cygpath -u "$RUNNER_TEMP")/frontend/assets" --output "$stage"
           ldd retroarch.exe > "$stage/windows-libraries.txt"
@@ -214,6 +217,7 @@ jobs:
           mkdir -p dist/releases
           workspace=$(cygpath -u "$GITHUB_WORKSPACE")
           (cd "$(cygpath -u "$RUNNER_TEMP")" && zip -qr "$workspace/dist/releases/$folder.zip" "$folder")
+          python3 tools/retroarch-verify-package.py dist/releases/RetroArch-*
       - uses: actions/upload-artifact@v4
         with:
           name: gamego-windows
@@ -259,7 +263,7 @@ jobs:
           cp "$RUNNER_TEMP/gamego-resources/assets.zip" pkg/apple/assets.zip
           cp "$RUNNER_TEMP/gamego-resources/assets.zip" pkg/apple/OSX/assets.zip
           echo "GAMEGO_ASSETS_ZIP=$RUNNER_TEMP/gamego-resources/assets.zip" >> "$GITHUB_ENV"
-      - name: Build GameGo application
+      - name: Build RetroArch application
         env:
           DESTINATION: ${{ matrix.destination }}
           SCHEME: ${{ matrix.scheme }}
@@ -279,6 +283,7 @@ jobs:
         run: |
           python3 tools/gamego-apple-package.py --products "$RUNNER_TEMP/GameGo-DerivedData/Build/Products" \
             --resources "$RUNNER_TEMP/gamego-resources" --platform "$PLATFORM" --output dist/releases
+          python3 tools/retroarch-verify-package.py dist/releases/RetroArch-*
       - uses: actions/upload-artifact@v4
         with:
           name: gamego-${{ matrix.platform }}
@@ -287,7 +292,7 @@ jobs:
           retention-days: 14
 
   draft:
-    if: always() && !cancelled() && (startsWith(github.ref, 'refs/tags/gamego-v') || inputs.create_release) && needs.preflight.result == 'success' && needs.source.result == 'success'
+    if: always() && !cancelled() && (startsWith(github.ref, 'refs/tags/retroarch-v') || inputs.create_release) && needs.preflight.result == 'success' && needs.source.result == 'success'
     needs: [preflight, source, android, linux, windows, apple]
     runs-on: ubuntu-22.04
     permissions:
@@ -310,7 +315,7 @@ jobs:
       - name: Create release draft
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: gamego-v${{ needs.preflight.outputs.version }}
+          RELEASE_TAG: retroarch-v${{ needs.preflight.outputs.version }}
           RELEASE_VERSION: ${{ needs.preflight.outputs.version }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
@@ -318,5 +323,5 @@ jobs:
             exit 1
           fi
           gh release create "$RELEASE_TAG" --target "$GITHUB_SHA" --draft --prerelease \
-            --title "GameGo $RELEASE_VERSION" --notes-file "$RUNNER_TEMP/release-notes.md"
+            --title "RetroArch $RELEASE_VERSION" --notes-file "$RUNNER_TEMP/release-notes.md"
           gh release upload "$RELEASE_TAG" dist/releases/*

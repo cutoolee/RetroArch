@@ -531,7 +531,7 @@ static void hh_quick_menu_paint_controller(const hh_quick_menu_t *menu,
       rect = hh_quick_menu_rect(x + 476 * s, y + 306 * s, 48 * s, 6 * s);
       p->rect(p->userdata, rect, t->focus, 0, 3 * s, 0);
       hh_control_text(p, hh_quick_menu_rect(x + 350 * s, y + 326 * s, 300 * s, 40 * s),
-            "GameGo", 0x688ab0ffUL, 28 * s, true);
+            "RetroArch", 0x688ab0ffUL, 28 * s, true);
    }
    for (i = 0; i < 16; i++)
    {

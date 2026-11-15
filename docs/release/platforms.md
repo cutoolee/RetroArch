@@ -4,13 +4,13 @@
 
 | 目标 | 产品接入方式 | 构建 | 运行验收 |
 | --- | --- | --- | --- |
-| Android arm64-v8a | Gradle + NDK，GameGo 资源首次安装 | 以对应 Release 的构建记录为准 | 需对发布候选包重新验收 |
-| Windows x64 | Makefile，GameGo 便携启动器 | 以对应 Release 的构建记录为准 | 未验证 |
-| Linux x64 | Makefile，GameGo 便携启动器 | 以对应 Release 的构建记录为准 | 未验证 |
+| Android arm64-v8a | Gradle + NDK，快捷菜单资源首次安装 | 以对应 Release 的构建记录为准 | 需对发布候选包重新验收 |
+| Windows x64 | Makefile，RetroArch 便携启动器 | 以对应 Release 的构建记录为准 | 未验证 |
+| Linux x64 | Makefile，RetroArch 便携启动器 | 以对应 Release 的构建记录为准 | 未验证 |
 | macOS arm64 / x64 | Apple 工程 + GameGo.xcconfig | 以对应 Release 的构建记录为准 | 未验证；Developer ID / 公证待配置 |
 | iOS arm64 | Apple 工程 + GameGo.xcconfig | 以对应 Release 的构建记录为准 | 未验证；IPA 需自行签名，默认不附带核心 |
 
-Android ARMv7、Windows ARM64、其他主机平台未纳入首发发布矩阵。上游工程仍保留，不表示 GameGo 已支持。
+Android ARMv7、Windows ARM64、其他主机平台未纳入首发发布矩阵。上游工程仍保留，不表示本分支已支持。
 
 ## 每个平台的发布验收
 
