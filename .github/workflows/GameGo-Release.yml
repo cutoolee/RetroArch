@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: gamego-release-${{ github.ref }}
+  group: gamego-release
   cancel-in-progress: false
 
 jobs:
@@ -287,7 +287,7 @@ jobs:
           retention-days: 14
 
   draft:
-    if: always() && (startsWith(github.ref, 'refs/tags/gamego-v') || inputs.create_release) && needs.preflight.result == 'success' && needs.source.result == 'success'
+    if: always() && !cancelled() && (startsWith(github.ref, 'refs/tags/gamego-v') || inputs.create_release) && needs.preflight.result == 'success' && needs.source.result == 'success'
     needs: [preflight, source, android, linux, windows, apple]
     runs-on: ubuntu-22.04
     permissions:
@@ -313,6 +313,10 @@ jobs:
           RELEASE_TAG: gamego-v${{ needs.preflight.outputs.version }}
           RELEASE_VERSION: ${{ needs.preflight.outputs.version }}
         run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG already exists; use a new version." >&2
+            exit 1
+          fi
           gh release create "$RELEASE_TAG" --target "$GITHUB_SHA" --draft --prerelease \
             --title "GameGo $RELEASE_VERSION" --notes-file "$RUNNER_TEMP/release-notes.md"
-          gh release upload "$RELEASE_TAG" dist/releases/* --clobber
+          gh release upload "$RELEASE_TAG" dist/releases/*
