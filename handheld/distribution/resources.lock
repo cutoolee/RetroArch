@@ -1,0 +1,8 @@
+{
+  "resource_name": "retroarch-assets",
+  "source_url": "https://github.com/libretro/retroarch-assets/archive/73106363e14e34c08a5854b4cfbc29f184e3b783.tar.gz",
+  "expected_sha256": "9a1ea65345b62aac6d20d19e21b3132f66770c65ad976f8badb0178219a135d7",
+  "version": "73106363e14e34c08a5854b4cfbc29f184e3b783",
+  "resolved_at": "2026-09-12",
+  "purpose": "RetroArch frontend assets, including Ozone fonts/icons and language fallback fonts"
+}

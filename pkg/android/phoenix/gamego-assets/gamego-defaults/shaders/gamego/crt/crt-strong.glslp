@@ -1,0 +1,4 @@
+#reference "zfast_crt_nogeo.glslp"
+parameters = "SCANLINE_WEIGHT;MASK_DARK"
+SCANLINE_WEIGHT = "12.0"
+MASK_DARK = "0.6"

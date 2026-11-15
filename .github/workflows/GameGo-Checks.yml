@@ -1,0 +1,58 @@
+name: GameGo Checks
+
+on:
+  push:
+    branches: [master, 'codex/gamego-*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gamego-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  host:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit working tree
+        run: python3 tools/gamego-release.py audit --report "$RUNNER_TEMP/audit.json"
+      - name: Release packaging tests
+        run: python3 -m unittest discover -s validation/release -v
+      - name: Validate release workflows
+        run: docker run --rm -v "$GITHUB_WORKSPACE:/repo" -w /repo rhysd/actionlint:1.7.7 -color .github/workflows/GameGo-Checks.yml .github/workflows/GameGo-Release.yml
+      - name: Quick menu, bridge and controller regression
+        run: |
+          bash validation/p2/tests/test_quick_menu.sh
+          sh validation/p2.1/tests/test_bridge.sh
+          sh validation/p2.1/tests/test_reset.sh
+          bash validation/p2.1/tests/test_resume.sh
+          CC=clang bash validation/controllers/tests/test_input_action.sh
+          bash validation/p2.1/tests/test_recent_metadata.sh
+          bash validation/p2.1/tests/test_recent_playlist.sh
+      - name: Save-state I/O regression
+        run: |
+          make -C samples/tasks/save_state -j2
+          samples/tasks/save_state/save_state_io_test
+      - name: Package identity and asset contracts
+        run: |
+          sh validation/p2-1/scripts/check-gamego-package.sh
+          python3 validation/release/check_assets.py
+
+  history:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,4 @@
+#reference "sameboy-lcd.glslp"
+parameters = "COLOR_LOW;SCANLINE_DEPTH"
+COLOR_LOW = "0.65"
+SCANLINE_DEPTH = "0.2"

@@ -1,0 +1,5 @@
+#include "GitHubCI.xcconfig"
+
+OTHER_CFLAGS = $(inherited) -DHAVE_GAMEGO_PRODUCT -DHAVE_HANDHELD_RUNTIME=1 -DHAVE_HANDHELD_QUICK_MENU=1
+PRODUCT_BUNDLE_IDENTIFIER = com.cutoolee.gamego
+INFOPLIST_KEY_CFBundleDisplayName = GameGo

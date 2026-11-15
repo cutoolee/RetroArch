@@ -1,0 +1,39 @@
+name: 问题反馈 / Bug report
+description: 报告 GameGo 前端、安装或升级问题。
+body:
+  - type: input
+    id: version
+    attributes:
+      label: GameGo 版本或 commit
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: 系统、架构和设备
+      placeholder: Android 版本 / arm64 / 设备型号
+    validations:
+      required: true
+  - type: input
+    id: core
+    attributes:
+      label: 核心名称与版本
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤、预期和实际结果
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 截图或已脱敏日志
+      description: 不要上传游戏、BIOS、签名密钥、令牌、私人路径或设备序列号。
+  - type: checkboxes
+    id: migration
+    attributes:
+      label: 安装情况
+      options:
+        - label: 全新安装
+        - label: 旧版覆盖升级
+        - label: 与官方同包名应用存在签名冲突

@@ -1,0 +1,339 @@
+buildscript {
+  repositories {
+    google()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath 'com.android.tools.build:gradle:9.1.0'
+  }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    Properties props = new Properties()
+    props.load(new FileInputStream(new File(project.rootDir, "retroarch.properties")))
+    props.each { prop ->
+        project.ext.set(prop.key, prop.value)
+    }
+}
+
+apply plugin: 'com.android.application'
+
+def handheldRuntimeFlag = project.findProperty("HAVE_HANDHELD_RUNTIME")
+if (handheldRuntimeFlag == null) {
+  handheldRuntimeFlag = System.getenv("HAVE_HANDHELD_RUNTIME") ?: "1"
+}
+if (!(handheldRuntimeFlag in ["0", "1"])) {
+  throw new GradleException("HAVE_HANDHELD_RUNTIME must be 0 or 1")
+}
+
+def handheldQuickMenuFlag = project.findProperty("HAVE_HANDHELD_QUICK_MENU")
+if (handheldQuickMenuFlag == null) {
+  handheldQuickMenuFlag = System.getenv("HAVE_HANDHELD_QUICK_MENU") ?: (handheldRuntimeFlag == "1" ? "1" : "0")
+}
+if (!(handheldQuickMenuFlag in ["0", "1"])) {
+  throw new GradleException("HAVE_HANDHELD_QUICK_MENU must be 0 or 1")
+}
+if (handheldQuickMenuFlag == "1" && handheldRuntimeFlag != "1") {
+  throw new GradleException("HAVE_HANDHELD_QUICK_MENU requires HAVE_HANDHELD_RUNTIME=1")
+}
+
+def handheldRuntimeHarnessFlag = project.findProperty("HAVE_HANDHELD_RUNTIME_TEST_HARNESS")
+if (handheldRuntimeHarnessFlag == null) {
+  handheldRuntimeHarnessFlag = System.getenv("HAVE_HANDHELD_RUNTIME_TEST_HARNESS") ?: "0"
+}
+if (!(handheldRuntimeHarnessFlag in ["0", "1"])) {
+  throw new GradleException("HAVE_HANDHELD_RUNTIME_TEST_HARNESS must be 0 or 1")
+}
+if (handheldRuntimeHarnessFlag == "1" && handheldRuntimeFlag != "1") {
+  throw new GradleException("HAVE_HANDHELD_RUNTIME_TEST_HARNESS requires HAVE_HANDHELD_RUNTIME=1")
+}
+
+def gamegoProductFlag = project.findProperty("GAMEGO_PRODUCT")
+if (gamegoProductFlag == null) {
+  gamegoProductFlag = System.getenv("GAMEGO_PRODUCT") ?: "0"
+}
+if (!(gamegoProductFlag in ["0", "1"])) {
+  throw new GradleException("GAMEGO_PRODUCT must be 0 or 1")
+}
+
+def p1b2ValidationApkFlag = project.findProperty("P1B2_VALIDATION_APK")
+if (p1b2ValidationApkFlag == null) {
+  p1b2ValidationApkFlag = System.getenv("P1B2_VALIDATION_APK") ?: "0"
+}
+if (!(p1b2ValidationApkFlag in ["0", "1"])) {
+  throw new GradleException("P1B2_VALIDATION_APK must be 0 or 1")
+}
+if (p1b2ValidationApkFlag == "1" && handheldRuntimeHarnessFlag != "1") {
+  throw new GradleException("P1B2_VALIDATION_APK requires HAVE_HANDHELD_RUNTIME_TEST_HARNESS=1")
+}
+if (gamegoProductFlag == "1" && p1b2ValidationApkFlag == "1") {
+  throw new GradleException("GAMEGO_PRODUCT cannot use P1B2_VALIDATION_APK")
+}
+
+def gamegoE2eHarnessFlag = project.findProperty("HAVE_GAMEGO_E2E_HARNESS")
+if (gamegoE2eHarnessFlag == null) {
+  gamegoE2eHarnessFlag = System.getenv("HAVE_GAMEGO_E2E_HARNESS") ?: "0"
+}
+if (!(gamegoE2eHarnessFlag in ["0", "1"])) {
+  throw new GradleException("HAVE_GAMEGO_E2E_HARNESS must be 0 or 1")
+}
+if (gamegoE2eHarnessFlag == "1" && gamegoProductFlag != "1") {
+  throw new GradleException("HAVE_GAMEGO_E2E_HARNESS requires GAMEGO_PRODUCT=1")
+}
+
+def gamegoRelease = project.findProperty("GAMEGO_RELEASE") == "1"
+def gamegoVersion = new File(rootDir, "../../../GAMEGO_VERSION").text.trim()
+if (gamegoRelease) {
+  if (gamegoProductFlag != "1" || handheldRuntimeFlag != "1" || handheldQuickMenuFlag != "1"
+      || handheldRuntimeHarnessFlag != "0" || gamegoE2eHarnessFlag != "0") {
+    throw new GradleException("GameGo releases require product/runtime/menu enabled and test harnesses disabled")
+  }
+  if (!project.hasProperty("RELEASE_STORE_FILE") || !project.hasProperty("GAMEGO_VERSION_CODE")) {
+    throw new GradleException("GameGo releases require a release keystore and GAMEGO_VERSION_CODE")
+  }
+}
+
+android {
+  namespace "com.retroarch"
+
+  compileSdkVersion 36
+  buildToolsVersion "36.0.0"
+
+  buildFeatures {
+    buildConfig true
+    resValues true
+  }
+
+  ndkVersion "29.0.14206865"
+
+  flavorDimensions "variant"
+
+  defaultConfig {
+    minSdkVersion 21
+    targetSdkVersion 36
+    externalNativeBuild {
+      ndkBuild {
+        arguments "-j${Runtime.runtime.availableProcessors()}",
+                  "HAVE_HANDHELD_RUNTIME=${handheldRuntimeFlag}",
+                  "HAVE_HANDHELD_QUICK_MENU=${handheldQuickMenuFlag}",
+                  "HAVE_GAMEGO_PRODUCT=${gamegoProductFlag}",
+                  "HAVE_HANDHELD_RUNTIME_TEST_HARNESS=${handheldRuntimeHarnessFlag}",
+                  "HAVE_GAMEGO_E2E_HARNESS=${gamegoE2eHarnessFlag}"
+      }
+    }
+    manifestPlaceholders.p1b2HarnessEnabled = handheldRuntimeHarnessFlag == "1" ? "true" : "false"
+    manifestPlaceholders.gamegoE2eHarnessEnabled = gamegoE2eHarnessFlag == "1" ? "true" : "false"
+    versionCode = (System.currentTimeMillis() / 1000).toInteger()
+    versionName "${getManifestAttribute("versionName")}_GIT"
+    if (gamegoRelease) {
+      versionCode project.property("GAMEGO_VERSION_CODE").toInteger()
+      versionName gamegoVersion
+    }
+  }
+
+  android {
+    packagingOptions {
+      jniLibs {
+        useLegacyPackaging = true
+      }
+    }
+  }
+
+  productFlavors {
+    normal {
+      resValue "string", "app_name", "RetroArch"
+      buildConfigField "boolean", "PLAY_STORE_BUILD", "false"
+
+      dimension "variant"
+    }
+    aarch64 {
+      if (gamegoProductFlag == "1")
+        applicationId project.findProperty("GAMEGO_APPLICATION_ID") ?: "com.retroarch.aarch64"
+      else
+        applicationIdSuffix p1b2ValidationApkFlag == "1" ? '.aarch64.p1b2' : '.aarch64'
+      resValue "string", "app_name", "RetroArch (AArch64)"
+      buildConfigField "boolean", "PLAY_STORE_BUILD", "false"
+
+      dimension "variant"
+      ndk {
+        if (gamegoRelease)
+          abiFilters 'arm64-v8a'
+        else
+          abiFilters 'arm64-v8a', 'x86_64'
+      }
+    }
+    ra32 {
+      applicationIdSuffix '.ra32'
+      resValue "string", "app_name", "RetroArch (32-bit)"
+      buildConfigField "boolean", "PLAY_STORE_BUILD", "false"
+
+      dimension "variant"
+      ndk {
+        abiFilters 'armeabi-v7a', 'x86'
+      }
+    }
+    playStoreNormal {
+      minSdkVersion 21
+      targetSdkVersion 36
+      versionCode getPlayStoreVersionCode()
+      versionName getPlayStoreVersionName()
+
+      resValue "string", "app_name", "RetroArch"
+      buildConfigField "boolean", "PLAY_STORE_BUILD", "true"
+
+      dimension "variant"
+
+      ndk {
+        abiFilters 'arm64-v8a', 'x86_64', 'armeabi-v7a'
+      }
+
+      externalNativeBuild {
+        ndkBuild {
+          arguments "-j${Runtime.runtime.availableProcessors()}", "PLAY_STORE_BUILD=1"
+        }
+      }
+    }
+    playStorePlus {
+      minSdkVersion 26
+      targetSdkVersion 36
+      versionCode getPlayStoreVersionCode()
+      versionName getPlayStoreVersionName()
+
+      applicationIdSuffix '.aarch64'
+      resValue "string", "app_name", "RetroArch Plus"
+      buildConfigField "boolean", "PLAY_STORE_BUILD", "true"
+
+      dimension "variant"
+
+      ndk {
+        abiFilters 'arm64-v8a', 'x86_64', 'armeabi-v7a'
+      }
+
+      externalNativeBuild {
+        ndkBuild {
+          arguments "-j${Runtime.runtime.availableProcessors()}", "PLAY_STORE_BUILD=1"
+        }
+      }
+    }
+  }
+
+  sourceSets {
+    main {
+      manifest.srcFile 'AndroidManifest.xml'
+      assets.srcDirs = ['assets']
+      if (gamegoProductFlag == "1")
+        assets.srcDirs += ['gamego-assets']
+      java.srcDirs = ['src', '../phoenix-common/src', '../../../libretro-common/vfs/saf/src']
+      jniLibs.srcDir '../phoenix-common/libs'
+      jni.srcDirs = []
+      res.srcDirs = ['res', '../phoenix-common/res']
+    }
+    debug {
+      manifest.srcFile 'src/debug/AndroidManifest.xml'
+      java.srcDirs += ['src/debug']
+    }
+    normal {
+      java.srcDirs += ['../play-core-stub']
+    }
+    aarch64 {
+      java.srcDirs += ['../play-core-stub']
+      res.srcDirs = ['res', 'res64']
+    }
+    ra32 {
+      java.srcDirs += ['../play-core-stub']
+    }
+    playStoreNormal {
+      java.srcDirs += ['../play-core-impl']
+    }
+    playStorePlus {
+      java.srcDirs += ['../play-core-impl']
+    }
+  }
+
+  externalNativeBuild {
+    ndkBuild {
+      path '../phoenix-common/jni/Android.mk'
+    }
+  }
+
+  signingConfigs {
+    if (project.hasProperty("RELEASE_STORE_FILE")) {
+      release {
+        storeFile file(RELEASE_STORE_FILE)
+        storePassword RELEASE_STORE_PASSWORD
+        keyAlias RELEASE_KEY_ALIAS
+        keyPassword RELEASE_KEY_PASSWORD
+      }
+    }
+  }
+
+  buildTypes {
+    if (project.hasProperty("RELEASE_STORE_FILE")) {
+      release {
+        signingConfig signingConfigs.release
+      }
+    }
+    else {
+      release {
+        signingConfig signingConfigs.debug
+      }
+    }
+  }
+}
+
+def playFeatureDelivery = 'com.google.android.play:feature-delivery:2.1.0'
+def playAssetDelivery = 'com.google.android.play:asset-delivery:2.2.2'
+
+dependencies {
+  playStoreNormalImplementation playFeatureDelivery
+  playStoreNormalImplementation playAssetDelivery
+  playStorePlusImplementation playFeatureDelivery
+  playStorePlusImplementation playAssetDelivery
+}
+
+dependencies {
+  constraints {
+    playStoreNormalImplementation 'androidx.activity:activity:1.10.1'
+    playStoreNormalImplementation 'androidx.fragment:fragment:1.8.6'
+    playStorePlusImplementation 'androidx.activity:activity:1.10.1'
+    playStorePlusImplementation 'androidx.fragment:fragment:1.8.6'
+  }
+}
+
+def dynamicFeatures = file("dynamic_features.gradle")
+if(dynamicFeatures.exists()) {
+  apply from: "dynamic_features.gradle"
+}
+
+int getPlayStoreVersionCode() {
+  def baseVersion = getManifestAttribute("versionCode").toInteger()
+  def baseTime = 1609632000
+  def oneDay = 86400
+  def increment = ((System.currentTimeMillis() / 1000).toInteger() - baseTime) / oneDay
+
+  return baseVersion + increment
+}
+
+String getPlayStoreVersionName() {
+  def versionName = getManifestAttribute("versionName")
+  return "$versionName (${new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date())})"
+}
+
+String getManifestAttribute(String attribute) {
+  def manifestFile = file("${project.projectDir}/AndroidManifest.xml")
+  def text = manifestFile.text
+  def matcher = text =~ /android:${attribute}="([^"]+)"/
+  return matcher.find() ? matcher.group(1) : "1"
+}
+
+tasks.register("outputVersionCode") {
+  doLast {
+    println getPlayStoreVersionCode()
+  }
+}

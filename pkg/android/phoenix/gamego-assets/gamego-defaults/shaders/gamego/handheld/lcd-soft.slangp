@@ -1,0 +1,4 @@
+#reference "sameboy-lcd.slangp"
+parameters = "COLOR_LOW;SCANLINE_DEPTH"
+COLOR_LOW = "0.95"
+SCANLINE_DEPTH = "0.05"

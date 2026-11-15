@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 安装与存档迁移
+    url: https://github.com/cutoolee/RetroArch/blob/master/docs/release/install.md
+    about: 先查看安装、核心、签名和存档迁移说明。
