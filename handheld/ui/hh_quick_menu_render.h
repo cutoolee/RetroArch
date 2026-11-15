@@ -53,6 +53,8 @@ typedef enum hh_quick_menu_icon
    HH_QUICK_MENU_ICON_BACK,
    HH_QUICK_MENU_ICON_SELECT,
    HH_QUICK_MENU_ICON_CONTROLLER,
+   HH_QUICK_MENU_ICON_SHADER,
+   HH_QUICK_MENU_ICON_RECENT,
    HH_QUICK_MENU_ICON_COUNT
 } hh_quick_menu_icon_t;
 
@@ -83,6 +85,8 @@ typedef struct hh_quick_menu_painter
    void (*text_centered)(void *userdata, hh_ui_rect_t bounds, const char *text,
          unsigned long color, float font_size, bool emphasized);
    bool (*controller)(void *userdata, hh_ui_rect_t bounds);
+   void (*text_right)(void *userdata, hh_ui_rect_t bounds, const char *text,
+         unsigned long color, float font_size, bool emphasized);
 } hh_quick_menu_painter_t;
 
 const hh_quick_menu_theme_t *hh_quick_menu_default_theme(void);

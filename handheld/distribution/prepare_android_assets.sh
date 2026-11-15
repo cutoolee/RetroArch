@@ -66,7 +66,7 @@ if [ ! -d "$frontend_root/ozone/png/icons" ]; then
 fi
 
 mkdir -p "$assets_dir/assets"
-for entry in COPYING glui nxrgui ozone pkg rgui sounds switch xmb; do
+for entry in COPYING glui menu_widgets nxrgui ozone pkg rgui sounds switch xmb; do
    if [ -e "$frontend_root/$entry" ]; then
       cp -R "$frontend_root/$entry" "$assets_dir/assets/"
    fi

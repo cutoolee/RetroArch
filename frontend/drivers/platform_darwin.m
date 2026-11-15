@@ -414,12 +414,20 @@ static void frontend_darwin_get_env(int *argc, char *argv[],
    {
       CFSearchPathForDirectoriesInDomains(documents_dir_buf, sizeof(documents_dir_buf));
       path_resolve_realpath(documents_dir_buf, sizeof(documents_dir_buf), true);
+#ifdef HAVE_GAMEGO_PRODUCT
+      strlcat(documents_dir_buf, "/GameGo", sizeof(documents_dir_buf));
+#else
       strlcat(documents_dir_buf, "/RetroArch", sizeof(documents_dir_buf));
+#endif
    }
 #else
    CFSearchPathForDirectoriesInDomains(documents_dir_buf, sizeof(documents_dir_buf));
    path_resolve_realpath(documents_dir_buf, sizeof(documents_dir_buf), true);
+#ifdef HAVE_GAMEGO_PRODUCT
+   strlcat(documents_dir_buf, "/GameGo", sizeof(documents_dir_buf));
+#else
    strlcat(documents_dir_buf, "/RetroArch", sizeof(documents_dir_buf));
+#endif
    /* iOS and tvOS are going to put everything in the documents dir */
    strlcpy(application_data, documents_dir_buf, sizeof(application_data));
 #endif

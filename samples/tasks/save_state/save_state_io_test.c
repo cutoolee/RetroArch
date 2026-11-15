@@ -129,6 +129,7 @@
 #include <queues/message_queue.h>
 #include <queues/task_queue.h>
 #include <streams/file_stream.h>
+#include <file/file_path.h>
 #include <retro_timers.h>
 
 #include "../../../content.h"
@@ -1038,6 +1039,57 @@ static void test_close_waits_for_save(void)
    filestream_delete(path);
 }
 
+static void test_realtime_recovery(void)
+{
+   char source[256], recovery[256], temporary[272];
+   void *expected = NULL;
+   void *actual = NULL;
+   int64_t expected_size = 0, actual_size = 0;
+   int64_t mtime = 0;
+
+   frontend_reset();
+   core_fill(4096);
+   runloop_get_savestate_path(source, sizeof(source), -1);
+   runloop_get_savestate_path(recovery, sizeof(recovery), -2);
+   snprintf(temporary, sizeof(temporary), "%s.tmp", source);
+   okf(content_auto_save_state(source), "realtime snapshot saves");
+   okf(filestream_read_file(source, &expected, &expected_size),
+         "realtime snapshot is readable");
+   path_set_mtime(source, 1700000000);
+   content_prepare_realtime_state();
+   okf(path_get_mtime(recovery, &mtime) && mtime == 1700000000,
+         "recovery retains the original save time");
+   memset(core_mem, 42, core_len);
+   okf(content_auto_save_state(source), "current session updates its snapshot");
+   okf(filestream_read_file(recovery, &actual, &actual_size)
+         && actual_size == expected_size
+         && memcmp(actual, expected, (size_t)expected_size) == 0,
+         "new gameplay cannot overwrite the previous session recovery");
+   free(actual);
+   actual = NULL;
+   free(expected);
+   expected = NULL;
+   okf(filestream_read_file(source, &expected, &expected_size),
+         "latest snapshot remains readable");
+   core_ser_fails = 1;
+   okf(!content_auto_save_state(source), "failed serialization is rejected");
+   core_ser_fails = 0;
+   okf(filestream_write_file(temporary, "partial", 7),
+         "simulate a crash during the next write");
+   content_prepare_realtime_state();
+   okf(filestream_read_file(recovery, &actual, &actual_size)
+         && actual_size == expected_size
+         && memcmp(actual, expected, (size_t)expected_size) == 0,
+         "restart recovers the complete snapshot despite an interrupted write");
+   free(actual);
+   free(expected);
+   filestream_delete(source);
+   filestream_delete(recovery);
+   filestream_delete(temporary);
+   free(core_mem);
+   core_mem = NULL;
+}
+
 static int run_default_lane(void)
 {
    printf("== task_save.c I/O regression oracle ==\n");
@@ -1086,7 +1138,9 @@ static int run_threaded_lane(void)
 
 int main(int argc, char *argv[])
 {
-   if (argc > 1 && strcmp(argv[1], "conc") == 0)
+   if (argc > 1 && strcmp(argv[1], "auto") == 0)
+      test_realtime_recovery();
+   else if (argc > 1 && strcmp(argv[1], "conc") == 0)
       run_threaded_lane();
    else
       run_default_lane();

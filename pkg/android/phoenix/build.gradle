@@ -87,6 +87,18 @@ if (gamegoE2eHarnessFlag == "1" && gamegoProductFlag != "1") {
   throw new GradleException("HAVE_GAMEGO_E2E_HARNESS requires GAMEGO_PRODUCT=1")
 }
 
+def gamegoRelease = project.findProperty("GAMEGO_RELEASE") == "1"
+def gamegoVersion = new File(rootDir, "../../../GAMEGO_VERSION").text.trim()
+if (gamegoRelease) {
+  if (gamegoProductFlag != "1" || handheldRuntimeFlag != "1" || handheldQuickMenuFlag != "1"
+      || handheldRuntimeHarnessFlag != "0" || gamegoE2eHarnessFlag != "0") {
+    throw new GradleException("GameGo releases require product/runtime/menu enabled and test harnesses disabled")
+  }
+  if (!project.hasProperty("RELEASE_STORE_FILE") || !project.hasProperty("GAMEGO_VERSION_CODE")) {
+    throw new GradleException("GameGo releases require a release keystore and GAMEGO_VERSION_CODE")
+  }
+}
+
 android {
   namespace "com.retroarch"
 
@@ -119,6 +131,10 @@ android {
     manifestPlaceholders.gamegoE2eHarnessEnabled = gamegoE2eHarnessFlag == "1" ? "true" : "false"
     versionCode = (System.currentTimeMillis() / 1000).toInteger()
     versionName "${getManifestAttribute("versionName")}_GIT"
+    if (gamegoRelease) {
+      versionCode project.property("GAMEGO_VERSION_CODE").toInteger()
+      versionName gamegoVersion
+    }
   }
 
   android {
@@ -138,7 +154,7 @@ android {
     }
     aarch64 {
       if (gamegoProductFlag == "1")
-        applicationId "com.retroarch.aarch64"
+        applicationId project.findProperty("GAMEGO_APPLICATION_ID") ?: "com.retroarch.aarch64"
       else
         applicationIdSuffix p1b2ValidationApkFlag == "1" ? '.aarch64.p1b2' : '.aarch64'
       resValue "string", "app_name", "RetroArch (AArch64)"
@@ -146,7 +162,10 @@ android {
 
       dimension "variant"
       ndk {
-        abiFilters 'arm64-v8a', 'x86_64'
+        if (gamegoRelease)
+          abiFilters 'arm64-v8a'
+        else
+          abiFilters 'arm64-v8a', 'x86_64'
       }
     }
     ra32 {

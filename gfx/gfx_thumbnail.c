@@ -3726,7 +3726,8 @@ void gfx_savestate_thumbnail_get_path(
    }
    else if (state_slot < 0)
    {
-      _len = fill_pathname_join_delim(s, state_name, "auto", '.', len);
+      _len = fill_pathname_join_delim(s, state_name,
+            state_slot == -2 ? "recovery" : "auto", '.', len);
       if (_len >= len)
          _len = len - 1;
    }

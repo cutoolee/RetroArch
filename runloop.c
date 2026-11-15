@@ -4804,6 +4804,10 @@ static bool event_init_content(
 
    runloop_path_init_savefile(runloop_st);
 
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   content_prepare_realtime_state();
+#endif
+
    if (!event_load_save_files(runloop_st->flags & RUNLOOP_FLAG_IS_SRAM_LOAD_DISABLED))
       RARCH_LOG("[SRAM] %s\n", msg_hash_to_str(MSG_SKIPPING_SRAM_LOAD));
 
@@ -6176,7 +6180,11 @@ static void runloop_pause_toggle(
          runloop_st->paused_hotkey = !(runloop_st->flags & RUNLOOP_FLAG_PAUSED);
          command_event(CMD_EVENT_PAUSE_TOGGLE, NULL);
       }
-      else if (!old_focus)
+      else if (!old_focus
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+            && !hh_bridge_is_open(&hh_bridge_global)
+#endif
+            )
          command_event(CMD_EVENT_UNPAUSE, NULL);
    }
    else if (old_focus)
@@ -6289,6 +6297,88 @@ static enum runloop_state_enum runloop_check_state(
 
    input_driver_collect_system_input(input_st, settings, &current_bits);
 
+#ifdef HAVE_MENU
+   last_input = current_bits;
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   {
+      static bool gamego_old_pressed = false;
+      static bool gamego_hold_fired = false;
+      static bool gamego_double_waiting = false;
+      static unsigned gamego_old_mode = 0;
+      static retro_time_t gamego_press_started = 0;
+      static retro_time_t gamego_first_press = 0;
+      unsigned mode = settings->uints.gamego_menu_toggle_mode;
+      bool active = (runloop_st->flags & RUNLOOP_FLAG_CORE_RUNNING)
+         && runloop_st->current_core_type != CORE_TYPE_DUMMY
+         && !(menu_st->flags & (MENU_ST_FLAG_ALIVE | MENU_ST_FLAG_IS_BINDING))
+         && memcmp(settings->arrays.menu_driver, "null", 5) != 0;
+      bool pressed = input_st->gamego_menu_toggle_pressed
+         && !(input_st->flags & INP_FLAG_MENU_PRESS_CANCEL);
+      bool pressed_edge;
+      bool toggle = false;
+
+      if (!active || mode != gamego_old_mode)
+      {
+         gamego_old_pressed = false;
+         gamego_hold_fired = false;
+         gamego_double_waiting = false;
+      }
+      pressed_edge = pressed && !gamego_old_pressed;
+      if (!pressed)
+         gamego_hold_fired = false;
+      if (pressed_edge)
+         gamego_press_started = current_time;
+
+      if (active && (mode == 1 || mode == 2))
+      {
+         /* The normal menu toggle is a release pulse, not a held key. */
+         BIT256_CLEAR(current_bits, RARCH_MENU_TOGGLE);
+         if (hh_bridge_is_open(&hh_bridge_global))
+         {
+            toggle = pressed_edge;
+            if (toggle)
+               gamego_hold_fired = true;
+            gamego_double_waiting = false;
+         }
+         else if (mode == 1)
+         {
+            if (pressed && !gamego_hold_fired
+                  && current_time - gamego_press_started >= 600000)
+            {
+               toggle = true;
+               gamego_hold_fired = true;
+            }
+         }
+         else if (pressed_edge)
+         {
+            if (gamego_double_waiting
+                  && current_time - gamego_first_press <= 350000)
+            {
+               toggle = true;
+               gamego_double_waiting = false;
+            }
+            else
+            {
+               gamego_first_press = current_time;
+               gamego_double_waiting = true;
+            }
+         }
+         if (toggle)
+            BIT256_SET(current_bits, RARCH_MENU_TOGGLE);
+      }
+      gamego_old_pressed = active && pressed;
+      gamego_old_mode = mode;
+   }
+#endif
+   /* Preset combos already include their own hold timing. */
+   if (     menu_toggle_gamepad_combo != INPUT_COMBO_NONE
+         && input_driver_button_combo(
+               menu_toggle_gamepad_combo,
+               current_time,
+               &last_input))
+      BIT256_SET(current_bits, RARCH_MENU_TOGGLE);
+#endif
+
 #if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
    /* The handheld overlay owns the frame's input while visible. Keep the
     * toggle bit so the menu hotkey handler can close it. */
@@ -6332,14 +6422,6 @@ static enum runloop_state_enum runloop_check_state(
 #endif
 
 #ifdef HAVE_MENU
-   last_input                       = current_bits;
-   if (     menu_toggle_gamepad_combo != INPUT_COMBO_NONE
-         && input_driver_button_combo(
-               menu_toggle_gamepad_combo,
-               current_time,
-               &last_input))
-      BIT256_SET(current_bits, RARCH_MENU_TOGGLE);
-
    if (menu_st->input_driver_flushing_input > 0)
    {
       bool input_active = bits_any_set(current_bits.data, ARRAY_SIZE(current_bits.data));
@@ -6718,28 +6800,12 @@ static enum runloop_state_enum runloop_check_state(
    /* Check menu hotkey */
    {
       static bool old_pressed = false;
-#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
-      static bool gamego_hold_fired = false;
-      static bool gamego_double_waiting = false;
-      static uint64_t gamego_press_started = 0;
-      static uint64_t gamego_first_press = 0;
-#endif
       bool pressed            = BIT256_GET(current_bits, RARCH_MENU_TOGGLE)
          && memcmp(settings->arrays.menu_driver, "null", 5) != 0;
-      bool pressed_edge       = pressed && !old_pressed;
       bool core_type_is_dummy = runloop_st->current_core_type == CORE_TYPE_DUMMY;
       bool handheld_handled  = false;
 
-#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
-      if (pressed_edge)
-         gamego_press_started = (uint64_t)current_time;
-      if (!pressed)
-         gamego_hold_fired = false;
-      if (settings->uints.gamego_menu_toggle_mode != 2)
-         gamego_double_waiting = false;
-#endif
-
-      if (pressed || pressed_edge)
+      if (pressed && !old_pressed)
       {
          bool core_is_running    = runloop_st->flags & RUNLOOP_FLAG_CORE_RUNNING;
 
@@ -6748,58 +6814,19 @@ static enum runloop_state_enum runloop_check_state(
                && !(menu_st->flags & MENU_ST_FLAG_ALIVE))
          {
             if (hh_bridge_is_open(&hh_bridge_global))
-            {
-               if (pressed_edge)
-                  hh_bridge_close(&hh_bridge_global);
-               handheld_handled = true;
-            }
+               hh_bridge_close(&hh_bridge_global);
             else
-            {
-               bool open_menu = false;
-               switch (settings->uints.gamego_menu_toggle_mode)
-               {
-                  case 1:
-                     if (pressed && !gamego_hold_fired
-                           && (uint64_t)current_time - gamego_press_started >= 600000)
-                     {
-                        open_menu = true;
-                        gamego_hold_fired = true;
-                     }
-                     break;
-                  case 2:
-                     if (pressed_edge)
-                     {
-                        if (gamego_double_waiting
-                              && (uint64_t)current_time - gamego_first_press <= 350000)
-                        {
-                           open_menu = true;
-                           gamego_double_waiting = false;
-                        }
-                        else
-                        {
-                           gamego_first_press = (uint64_t)current_time;
-                           gamego_double_waiting = true;
-                        }
-                     }
-                     break;
-                  default:
-                     open_menu = pressed_edge;
-                     break;
-               }
-               if (open_menu)
-                  hh_bridge_open(&hh_bridge_global);
-               handheld_handled = true;
-            }
+               hh_bridge_open(&hh_bridge_global);
+            handheld_handled = true;
          }
 #endif
 
-         if (!handheld_handled && pressed_edge
-               && (menu_st->flags & MENU_ST_FLAG_ALIVE))
+         if (!handheld_handled && (menu_st->flags & MENU_ST_FLAG_ALIVE))
          {
             if (rarch_is_initialized && !core_type_is_dummy && core_is_running)
                retroarch_menu_running_finished(false);
          }
-         else if (!handheld_handled && pressed_edge)
+         else if (!handheld_handled)
             retroarch_menu_running();
       }
       /* Initial menu toggle on startup */
@@ -8263,7 +8290,11 @@ int runloop_iterate(void)
    bool cheevos_enable                    = settings->bools.cheevos_enable;
 #endif
    bool audio_sync                        = settings->bools.audio_sync;
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   bool savestate_automatic_enable        = true;
+#else
    bool savestate_automatic_enable        = settings->uints.savestate_automatic_interval > 0;
+#endif
 #ifdef HAVE_DISCORD
    discord_state_t *discord_st            = discord_state_get_ptr();
 
@@ -8300,12 +8331,7 @@ int runloop_iterate(void)
       hh_bridge_deinit(&hh_bridge_global);
       hh_bridge_global_ready = false;
    }
-   {
-      bool quick_menu_was_open = hh_bridge_is_open(&hh_bridge_global);
-      hh_bridge_tick(&hh_bridge_global);
-      if (quick_menu_was_open && !hh_bridge_is_open(&hh_bridge_global))
-         menu_state_get_ptr()->input_driver_flushing_input = 2;
-   }
+   hh_bridge_tick(&hh_bridge_global);
 #ifdef HAVE_OVERLAY
    {
       static bool overlay_hidden = false;
@@ -8940,7 +8966,8 @@ bool runloop_get_savestate_path(char *s, size_t len, int state_slot)
       return false;
 
    if (state_slot < 0)
-      fill_pathname_join_delim(s, name_savestate, "auto", '.', len);
+      fill_pathname_join_delim(s, name_savestate,
+            state_slot == -2 ? "recovery" : "auto", '.', len);
    else
    {
       size_t _len = strlcpy(s, name_savestate, len);

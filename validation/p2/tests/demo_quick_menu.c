@@ -61,17 +61,26 @@ static void svg_quad(void *data, const float *v,
 {
    svg_painter_t *svg = (svg_painter_t *)data;
    int id = svg->clip++;
-   fprintf(svg->file, "<defs><linearGradient id='g%d' x1='0' y1='0' x2='0' y2='1'>"
+   float x = (v[0] + v[2]) * 0.5f;
+   float y = (v[1] + v[3]) * 0.5f;
+   float nx = v[1] - v[3];
+   float ny = v[2] - v[0];
+   float length = nx * nx + ny * ny;
+   float distance = length > 0 ?
+      (((v[4] + v[6]) * 0.5f - x) * nx +
+       ((v[5] + v[7]) * 0.5f - y) * ny) / length : 0;
+   fprintf(svg->file, "<defs><linearGradient id='g%d' gradientUnits='userSpaceOnUse' x1='%g' y1='%g' x2='%g' y2='%g'>"
          "<stop stop-color='#%06lx' stop-opacity='%g'/><stop offset='1' "
          "stop-color='#%06lx' stop-opacity='%g'/></linearGradient></defs>"
          "<path d='M%g %gL%g %gL%g %gL%g %gZ' fill='url(#g%d)' shape-rendering='%s'/>\n",
-         id, top >> 8, (top & 255) / 255.0, bottom >> 8, (bottom & 255) / 255.0,
+         id, x, y, x + nx * distance, y + ny * distance,
+         top >> 8, (top & 255) / 255.0, bottom >> 8, (bottom & 255) / 255.0,
          v[0], v[1], v[2], v[3], v[6], v[7], v[4], v[5], id,
          v[0] == v[4] && v[1] == v[5] ? "crispEdges" : "auto");
 }
 
 static void svg_text_aligned(void *data, hh_ui_rect_t r, const char *text,
-      unsigned long color, float size, bool bold, bool centered)
+      unsigned long color, float size, bool bold, int alignment)
 {
    svg_painter_t *svg = (svg_painter_t *)data;
    int clip = svg->clip++;
@@ -80,8 +89,8 @@ static void svg_text_aligned(void *data, hh_ui_rect_t r, const char *text,
    fprintf(svg->file, "<text x='%g' y='%g' fill='#%06lx' font-size='%g' "
          "font-weight='%s' font-family='PingFang SC,Noto Sans CJK SC,sans-serif' "
          "text-anchor='%s' clip-path='url(#c%d)'>",
-         r.x + (centered ? r.width / 2 : 0), r.y + (r.height + size * 0.72) / 2,
-         color >> 8, size, bold ? "600" : "400", centered ? "middle" : "start", clip);
+         r.x + (alignment == 2 ? r.width : alignment == 1 ? r.width / 2 : 0), r.y + (r.height + size * 0.72) / 2,
+         color >> 8, size, bold ? "600" : "400", alignment == 2 ? "end" : alignment == 1 ? "middle" : "start", clip);
    escape(svg->file, text);
    fputs("</text>\n", svg->file);
 }
@@ -98,12 +107,19 @@ static void svg_text_centered(void *data, hh_ui_rect_t r, const char *text,
    svg_text_aligned(data, r, text, color, size, bold, true);
 }
 
+static void svg_text_right(void *data, hh_ui_rect_t r, const char *text,
+      unsigned long color, float size, bool bold)
+{
+   svg_text_aligned(data, r, text, color, size, bold, 2);
+}
+
 static void svg_icon(void *data, hh_ui_rect_t r,
       hh_quick_menu_icon_t icon, unsigned long color)
 {
    static const char *names[] = {"play", "save", "folder-open", "rotate-ccw",
       "sliders-horizontal", "log-out", "chevron-right", "gamepad-2",
-      "menu-confirm", "menu-back", "menu-select"};
+      "menu-confirm", "menu-back", "menu-select", "controller-layout-solid",
+      "monitor", "history"};
    svg_painter_t *svg = (svg_painter_t *)data;
    char path[256];
    char source[4096];
@@ -267,6 +283,7 @@ int main(int argc, char **argv)
    painter.rect = svg_rect;
    painter.text = svg_text;
    painter.text_centered = svg_text_centered;
+   painter.text_right = svg_text_right;
    painter.controller = svg_controller;
    painter.preview = svg_preview;
    painter.icon = svg_icon;

@@ -144,7 +144,11 @@ bool fill_pathname_application_data(char *s, size_t len)
    if (appdata)
    {
       fill_pathname_join(s, appdata,
+#ifdef HAVE_GAMEGO_PRODUCT
+            "Library/Application Support/GameGo", len);
+#else
             "Library/Application Support/RetroArch", len);
+#endif
       return true;
    }
 #endif

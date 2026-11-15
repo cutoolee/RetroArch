@@ -14,6 +14,9 @@ env:
 
 jobs:
   build:
+    if: ${{ !startsWith(github.ref_name, 'gamego-v') && !startsWith(github.event.release.tag_name, 'gamego-v') }}
+    permissions:
+      contents: write
     name: build
     runs-on: ubuntu-latest
     steps:
@@ -24,27 +27,14 @@ jobs:
 
     - name: archive
       id: archive
+      env:
+        RELEASE_TAG: ${{ github.event.release.tag_name || github.ref_name }}
       run: |
-        VERSION=${GITHUB_REF##*/}
-        test -z "$VERSION" && VERSION=${{ github.event.release.tag_name }}
-        VERSION=$(printf "%s\n" "$VERSION" | sed 's/^v//')
-        PKGNAME="retroarch-sourceonly-$VERSION"
-        mkdir -p /tmp/$PKGNAME
-        mv * /tmp/$PKGNAME
-        mv /tmp/$PKGNAME .
-        rm -rf $PKGNAME/pkg || true
-        rm -rf $PKGNAME/wii/libogc || true
-        rm -rf $PKGNAME/deps/glslang/glslang/Test || true
-        rm -rf $PKGNAME/deps/SPIRV-Cross/reference || true
-        rm -rf $PKGNAME/gfx/include/userland || true
-        find $PKGNAME/ -type f -name '*.a' -delete || true
-        find $PKGNAME/ -type f -name '*.lib' -delete || true
-        find $PKGNAME/ -type f -name '*.dylib' -delete || true
-        find $PKGNAME/ -type f -name '*.so.*' -delete || true
-        find $PKGNAME/ -type f -name '*.dll' -delete || true
-        TARBALL=$PKGNAME.tar.xz
-        tar cJf $TARBALL $PKGNAME
-        echo "tarball=$TARBALL" >> $GITHUB_OUTPUT
+        VERSION=${RELEASE_TAG#v}
+        PKGNAME="retroarch-source-$VERSION"
+        TARBALL="$PKGNAME.tar.gz"
+        git archive --format=tar --prefix="$PKGNAME/" HEAD | gzip > "$TARBALL"
+        echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
 
     - name: upload tarball
       uses: softprops/action-gh-release@v2

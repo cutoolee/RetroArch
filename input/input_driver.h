@@ -624,6 +624,10 @@ typedef struct
     * rather than sitting past the input_device_info string tables
     * (~17 KB of cold data) as it used to. */
    unsigned input_hotkey_block_counter;
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   bool gamego_menu_toggle_pressed;
+   uint16_t gamego_menu_release_mask[MAX_USERS];
+#endif
 #ifdef HAVE_ACCESSIBILITY
    unsigned gamepad_input_override;
 #endif

@@ -1,100 +1,39 @@
-name: Bug report
-description: This is not a forum or a help section, this is strictly developer oriented.
+name: 问题反馈 / Bug report
+description: 报告 GameGo 前端、安装或升级问题。
 body:
-  - type: checkboxes
-    attributes:
-      label: Is there an existing issue for this?
-      description: Only RetroArch bugs should be filed here. Not core bugs or game bugs
-      options:
-      - label: This is a bug in RetroArch frontend
-        required: true
-      - label: I have searched the existing issues
-
-  - type: textarea
-    id: description
-    attributes:
-      label: Description
-      description: Description of the actual behavior of the bug
-      placeholder: What is actually happening
-    validations:
-      required: true
-
-  - type: textarea
-    id: expected
-    attributes:
-      label: Expected behavior
-      description: What you expected to happen
-
-  - type: textarea
-    id: reproduce_steps
-    attributes:
-      label: Steps to reproduce the bug
-      description: List all steps to reproduce the problem
-      placeholder: |
-        1. [First step]
-        2. [Second step]
-        3. [and so on...]
-    validations:
-      required: true
-
   - type: input
     id: version
     attributes:
-      label: Version/Commit
-      description: You can find this information under Information/System Information
-      placeholder: 1.20.0 (Git ab3b175)
+      label: GameGo 版本或 commit
     validations:
       required: true
-
-  - type: input
-    id: bisecting
-    attributes:
-      label: Bisect Results
-      description: Did this work with any older RetroArch version? Can you point to a version (or even commit) where it broke?
-      placeholder: 43105ab
-
-  - type: dropdown
-    id: nigthly
-    attributes:
-      label: Present in the nightly version
-      description: Is the issue reproducible with current [nightly builds](https://buildbot.libretro.com/nightly/)?
-      options:
-        - I don't know
-        - Yes, this is reproduced in the nightly build
-        - No, looks like this is already resolved
-      default: 0
-    validations:
-      required: true
-
   - type: input
     id: platform
     attributes:
-      label: Platform & operating system
-      description: The system you're running RetroArch on
-      placeholder: Linux aarch64, Windows 11 23H2, Android 14, PS Vita
+      label: 系统、架构和设备
+      placeholder: Android 版本 / arm64 / 设备型号
     validations:
       required: true
-
   - type: input
-    id: cores
+    id: core
     attributes:
-      label: Affected Cores
-      description: List the affected cores and their versions here, if applicable. If the issue **only occurs with a single core** then the bug may not be with RetroArch; in that case, you should report it in that core's repository instead of here.
-      placeholder: bsnes (115), FCEUmm ((SVN) aebea87), Snes9x (1.63.229933ea)
-
+      label: 核心名称与版本
   - type: textarea
-    id: environment
+    id: reproduce
     attributes:
-      label: Environment information
-      description: Additional information about hardware and software
-      placeholder: |
-        * Window Manager: dwm/X11
-        * Affected video drivers: sdl2, glcore
-        * Installed through Flatpak
-
+      label: 复现步骤、预期和实际结果
+    validations:
+      required: true
   - type: textarea
-    id: logs
+    id: evidence
     attributes:
-      label: Relevant log output
-      description: Paste [RetroArch log](https://docs.libretro.com/guides/generating-retroarch-logs/) and/or [GDB backtrace](https://docs.libretro.com/development/retroarch/debugging/). This will be automatically formatted into code, so no need for backticks.
-      render: shell
+      label: 截图或已脱敏日志
+      description: 不要上传游戏、BIOS、签名密钥、令牌、私人路径或设备序列号。
+  - type: checkboxes
+    id: migration
+    attributes:
+      label: 安装情况
+      options:
+        - label: 全新安装
+        - label: 旧版覆盖升级
+        - label: 与官方同包名应用存在签名冲突

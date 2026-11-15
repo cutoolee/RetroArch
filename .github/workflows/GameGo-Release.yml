@@ -1,0 +1,316 @@
+name: GameGo Release
+
+on:
+  push:
+    branches: ['codex/gamego-open-source']
+    tags: ['gamego-v*']
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: Create a prerelease draft after building (does not publish it)
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gamego-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      version_code: ${{ steps.version.outputs.version_code }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate version and release tag
+        id: version
+        env:
+          RELEASE_REF: ${{ github.ref }}
+        run: |
+          version=$(python3 tools/gamego-release.py version)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "version_code=$(python3 tools/gamego-release.py version-code)" >> "$GITHUB_OUTPUT"
+          if [[ "$RELEASE_REF" == refs/tags/* ]]; then
+            test "$RELEASE_REF" = "refs/tags/gamego-v$version"
+          fi
+      - name: Release gates
+        run: |
+          python3 tools/gamego-release.py audit
+          python3 -m unittest discover -s validation/release -v
+          python3 validation/release/check_assets.py
+          bash validation/p2/tests/test_quick_menu.sh
+          sh validation/p2.1/tests/test_bridge.sh
+          sh validation/p2.1/tests/test_reset.sh
+          sh validation/p2-1/scripts/check-gamego-package.sh
+
+  source:
+    needs: preflight
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Complete corresponding source
+        run: |
+          python3 tools/gamego-release.py source --output dist/releases
+          cp COPYING THIRD_PARTY_NOTICES.md dist/releases/
+          cp handheld/distribution/resources.lock dist/releases/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gamego-source
+          path: dist/releases/
+          if-no-files-found: error
+          retention-days: 14
+
+  android:
+    needs: preflight
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    env:
+      KEYSTORE_B64: ${{ secrets.GAMEGO_ANDROID_KEYSTORE_B64 }}
+      ORG_GRADLE_PROJECT_RELEASE_STORE_PASSWORD: ${{ secrets.GAMEGO_ANDROID_STORE_PASSWORD }}
+      ORG_GRADLE_PROJECT_RELEASE_KEY_ALIAS: ${{ secrets.GAMEGO_ANDROID_KEY_ALIAS }}
+      ORG_GRADLE_PROJECT_RELEASE_KEY_PASSWORD: ${{ secrets.GAMEGO_ANDROID_KEY_PASSWORD }}
+      APPLICATION_ID: ${{ vars.GAMEGO_ANDROID_APPLICATION_ID || 'com.retroarch.aarch64' }}
+      VERSION_CODE: ${{ vars.GAMEGO_ANDROID_VERSION_CODE || needs.preflight.outputs.version_code }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require stable release signing
+        run: |
+          test -n "$KEYSTORE_B64" || { echo 'Configure GAMEGO_ANDROID_* signing secrets; no debug-signed release will be produced.' >&2; exit 1; }
+          test -n "$ORG_GRADLE_PROJECT_RELEASE_STORE_PASSWORD"
+          test -n "$ORG_GRADLE_PROJECT_RELEASE_KEY_ALIAS"
+          test -n "$ORG_GRADLE_PROJECT_RELEASE_KEY_PASSWORD"
+          umask 077
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/gamego-release.jks"
+          echo "ORG_GRADLE_PROJECT_RELEASE_STORE_FILE=$RUNNER_TEMP/gamego-release.jks" >> "$GITHUB_ENV"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Android toolchain
+        run: sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0' 'ndk;29.0.14206865'
+      - name: Frontend assets
+        run: handheld/distribution/prepare_android_assets.sh
+      - name: Build release APK
+        working-directory: pkg/android/phoenix
+        run: |
+          ./gradlew assembleAarch64Release --no-daemon \
+            -PGAMEGO_PRODUCT=1 -PGAMEGO_RELEASE=1 \
+            -PHAVE_HANDHELD_RUNTIME=1 -PHAVE_HANDHELD_QUICK_MENU=1 \
+            -PHAVE_HANDHELD_RUNTIME_TEST_HARNESS=0 -PHAVE_GAMEGO_E2E_HARNESS=0 \
+            -PGAMEGO_APPLICATION_ID="$APPLICATION_ID" -PGAMEGO_VERSION_CODE="$VERSION_CODE"
+      - name: Verify and collect APK
+        env:
+          VERSION: ${{ needs.preflight.outputs.version }}
+        run: |
+          set -euo pipefail
+          apk=pkg/android/phoenix/build/outputs/apk/aarch64/release/phoenix-aarch64-release.apk
+          tools="$ANDROID_HOME/build-tools/36.0.0"
+          test "$("$tools/aapt2" dump packagename "$apk")" = "$APPLICATION_ID"
+          "$tools/apksigner" verify --verbose --print-certs "$apk"
+          expected=$(openssl x509 -in handheld/distribution/android-release-certificate.pem -noout -fingerprint -sha256 | cut -d= -f2 | tr -d ':' | tr '[:upper:]' '[:lower:]')
+          actual=$("$tools/apksigner" verify --print-certs "$apk" | awk '/Signer #1 certificate SHA-256 digest:/ { print $NF }')
+          test "$actual" = "$expected"
+          mkdir -p dist/releases
+          handheld/distribution/verify_android_apk_assets.sh "$apk" handheld/distribution/resources.lock dist/releases/android-assets.txt
+          cp "$apk" "dist/releases/GameGo-$VERSION-android-arm64.apk"
+          "$tools/apksigner" verify --print-certs "$apk" > dist/releases/android-signing.txt
+          printf 'applicationId=%s\nversionCode=%s\ncommit=%s\n' "$APPLICATION_ID" "$VERSION_CODE" "$GITHUB_SHA" >> dist/releases/android-signing.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gamego-android
+          path: dist/releases/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Remove ephemeral signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/gamego-release.jks"
+
+  linux:
+    needs: preflight
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config zlib1g-dev libfreetype6-dev libgl1-mesa-dev libegl1-mesa-dev libx11-dev libxext-dev libxv-dev libxxf86vm-dev libudev-dev libasound2-dev libpulse-dev libsdl2-dev libusb-1.0-0-dev
+      - name: Build GameGo
+        run: |
+          ./configure --disable-qt --disable-ffmpeg --disable-vulkan
+          make -j2 HAVE_GAMEGO_PRODUCT=1
+          ./retroarch --version
+          ldd retroarch | tee "$RUNNER_TEMP/linux-libraries.txt"
+          ! grep -q 'not found' "$RUNNER_TEMP/linux-libraries.txt"
+      - name: Frontend assets
+        env:
+          ANDROID_ASSETS_DIR: ${{ runner.temp }}/frontend
+        run: handheld/distribution/prepare_android_assets.sh
+      - name: Package portable build
+        env:
+          VERSION: ${{ needs.preflight.outputs.version }}
+        run: |
+          folder="GameGo-$VERSION-linux-x64"
+          python3 tools/gamego-release.py stage --platform linux-x64 --binary retroarch --assets "$RUNNER_TEMP/frontend/assets" --output "$RUNNER_TEMP/$folder"
+          cp "$RUNNER_TEMP/linux-libraries.txt" "$RUNNER_TEMP/$folder/"
+          mkdir -p dist/releases
+          tar -czf "dist/releases/$folder.tar.gz" -C "$RUNNER_TEMP" "$folder"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gamego-linux
+          path: dist/releases/
+          if-no-files-found: error
+          retention-days: 14
+
+  windows:
+    needs: preflight
+    runs-on: windows-2022
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git make zip mingw-w64-x86_64-gcc mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-SDL2 mingw-w64-x86_64-freetype
+            mingw-w64-x86_64-zlib mingw-w64-x86_64-python
+      - name: Build GameGo
+        run: |
+          ./configure --disable-qt --disable-ffmpeg --disable-vulkan
+          make -j2 HAVE_GAMEGO_PRODUCT=1
+          ./retroarch.exe --version
+      - name: Frontend assets
+        run: |
+          export ANDROID_ASSETS_DIR="$(cygpath -u "$RUNNER_TEMP")/frontend"
+          handheld/distribution/prepare_android_assets.sh
+      - name: Package executable, DLLs and licenses
+        env:
+          VERSION: ${{ needs.preflight.outputs.version }}
+        run: |
+          set -euo pipefail
+          folder="GameGo-$VERSION-windows-x64"
+          stage="$(cygpath -u "$RUNNER_TEMP")/$folder"
+          python3 tools/gamego-release.py stage --platform windows-x64 --binary retroarch.exe --assets "$(cygpath -u "$RUNNER_TEMP")/frontend/assets" --output "$stage"
+          ldd retroarch.exe > "$stage/windows-libraries.txt"
+          ! grep -q 'not found' "$stage/windows-libraries.txt"
+          awk -v prefix="$MINGW_PREFIX/" 'index($3, prefix) == 1 { print $3 }' "$stage/windows-libraries.txt" | while IFS= read -r dll; do cp "$dll" "$stage/"; done
+          cp -R "$MINGW_PREFIX/share/licenses" "$stage/runtime-licenses"
+          pacman -Q > "$stage/toolchain-packages.txt"
+          mkdir -p dist/releases
+          workspace=$(cygpath -u "$GITHUB_WORKSPACE")
+          (cd "$(cygpath -u "$RUNNER_TEMP")" && zip -qr "$workspace/dist/releases/$folder.zip" "$folder")
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gamego-windows
+          path: dist/releases/
+          if-no-files-found: error
+          retention-days: 14
+
+  apple:
+    needs: preflight
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - platform: macos-arm64
+            arch: arm64
+            destination: generic/platform=macOS
+            scheme: RetroArch
+            runner: macos-15
+          - platform: macos-x64
+            arch: x86_64
+            destination: generic/platform=macOS
+            scheme: RetroArch
+            runner: macos-15
+          - platform: ios-arm64
+            arch: arm64
+            destination: generic/platform=iOS
+            scheme: RetroArch iOS Release
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - name: Frontend assets
+        env:
+          ANDROID_ASSETS_DIR: ${{ runner.temp }}/frontend
+        run: handheld/distribution/prepare_android_assets.sh
+      - name: Prepare Apple resource archive
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          python3 tools/gamego-release.py apple-assets --assets "$RUNNER_TEMP/frontend/assets" --platform "$PLATFORM" --output "$RUNNER_TEMP/gamego-resources"
+          cp "$RUNNER_TEMP/gamego-resources/assets.zip" pkg/apple/assets.zip
+          cp "$RUNNER_TEMP/gamego-resources/assets.zip" pkg/apple/OSX/assets.zip
+          echo "GAMEGO_ASSETS_ZIP=$RUNNER_TEMP/gamego-resources/assets.zip" >> "$GITHUB_ENV"
+      - name: Build GameGo application
+        env:
+          DESTINATION: ${{ matrix.destination }}
+          SCHEME: ${{ matrix.scheme }}
+          TARGET_ARCH: ${{ matrix.arch }}
+        run: |
+          xcodebuild -workspace pkg/apple/RetroArch.xcworkspace -scheme "$SCHEME" \
+            -configuration Release -destination "$DESTINATION" \
+            -xcconfig pkg/apple/GameGo.xcconfig -derivedDataPath "$RUNNER_TEMP/GameGo-DerivedData" \
+            -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 \
+            ARCHS="$TARGET_ARCH" ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            PROVISIONING_PROFILE_SPECIFIER=""
+      - name: Package Apple application
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          VERSION: ${{ needs.preflight.outputs.version }}
+        run: |
+          python3 tools/gamego-apple-package.py --products "$RUNNER_TEMP/GameGo-DerivedData/Build/Products" \
+            --resources "$RUNNER_TEMP/gamego-resources" --platform "$PLATFORM" --output dist/releases
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gamego-${{ matrix.platform }}
+          path: dist/releases/
+          if-no-files-found: error
+          retention-days: 14
+
+  draft:
+    if: always() && (startsWith(github.ref, 'refs/tags/gamego-v') || inputs.create_release) && needs.preflight.result == 'success' && needs.source.result == 'success'
+    needs: [preflight, source, android, linux, windows, apple]
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: gamego-*
+          merge-multiple: true
+          path: dist/releases
+      - name: Write checksums and candid build status
+        env:
+          BUILD_RESULTS: ${{ toJSON(needs) }}
+          RELEASE_VERSION: ${{ needs.preflight.outputs.version }}
+        run: |
+          printf '%s\n' "$BUILD_RESULTS" > dist/releases/build-results.json
+          python3 tools/gamego-release.py checksums --output dist/releases
+          python3 tools/gamego-release-notes.py > "$RUNNER_TEMP/release-notes.md"
+      - name: Create release draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: gamego-v${{ needs.preflight.outputs.version }}
+          RELEASE_VERSION: ${{ needs.preflight.outputs.version }}
+        run: |
+          gh release create "$RELEASE_TAG" --target "$GITHUB_SHA" --draft --prerelease \
+            --title "GameGo $RELEASE_VERSION" --notes-file "$RUNNER_TEMP/release-notes.md"
+          gh release upload "$RELEASE_TAG" dist/releases/* --clobber

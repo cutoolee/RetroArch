@@ -297,6 +297,18 @@ param.sfo
 
 # Local GameGo Android development output
 /dist/local/
+/dist/releases/
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+/.release-secrets/
+!/docs/release/
+!/docs/release/**
+!/validation/release/
+!/validation/release/**
+__pycache__/
+*.pyc
 
 # Clazy
 *.clazy.yaml

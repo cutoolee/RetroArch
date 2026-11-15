@@ -64,7 +64,8 @@ static void test_dialogs(void)
       assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_NONE);
       assert(m.state == HH_QUICK_MENU_CONFIRM_DIALOG);
       assert(m.view.dialog.visible && !m.view.dialog.confirm_selected);
-      assert(strcmp(m.view.dialog.detail, "未保存的游戏进度可能丢失。") == 0);
+      assert(strcmp(m.view.dialog.detail, i == HH_QUICK_MENU_ITEM_EXIT
+               ? "退出时将保存实时存档。" : "未保存的游戏进度可能丢失。") == 0);
       assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_NONE);
       assert(m.state == HH_QUICK_MENU_OPEN && !m.view.dialog.visible);
       INPUT(&m, CONFIRM);
@@ -100,8 +101,11 @@ static void test_slots(void)
    assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_NONE);
    assert(m.view.page == HH_QUICK_MENU_PAGE_SAVE);
    INPUT(&m, UP);
-   assert(m.view.state_slot == 0);
-   for (i = 0; i < 10; i++)
+   assert(m.view.state_slot == HH_QUICK_MENU_SLOT_COUNT - 1);
+   assert(hh_quick_menu_slot_disabled(&m, m.view.state_slot));
+   assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_NONE);
+   INPUT(&m, RIGHT);
+   for (i = 0; i < HH_QUICK_MENU_SLOT_COUNT - 1; i++)
    {
       assert(m.view.state_slot == i && m.view.slots[i].index == i);
       assert(!hh_quick_menu_slot_disabled(&m, i));
@@ -117,11 +121,16 @@ static void test_slots(void)
       assert(!m.view.slots[i].occupied);
       INPUT(&m, DOWN);
    }
-   assert(m.view.state_slot == 9);
+   assert(m.view.state_slot == HH_QUICK_MENU_SLOT_COUNT - 1);
+   assert(hh_quick_menu_slot_disabled(&m, m.view.state_slot));
    INPUT(&m, RIGHT);
-   assert(m.view.state_slot == 9);
+   assert(m.view.state_slot == 0);
    INPUT(&m, LEFT);
-   assert(m.view.state_slot == 8);
+   assert(m.view.state_slot == HH_QUICK_MENU_SLOT_COUNT - 1);
+   INPUT(&m, LEFT);
+   assert(m.view.state_slot == HH_QUICK_MENU_SLOT_COUNT - 2);
+   INPUT(&m, RIGHT);
+   assert(m.view.state_slot == HH_QUICK_MENU_SLOT_COUNT - 1);
    INPUT(&m, BACK);
    assert(m.view.page == HH_QUICK_MENU_PAGE_MAIN && m.view.selected_index == 1);
    INPUT(&m, DOWN);
@@ -145,7 +154,13 @@ static void test_slots(void)
    hh_quick_menu_set_slot(&m, &slot);
    assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_NONE);
    assert(hh_quick_menu_slot_disabled(&m, -1));
-   assert(hh_quick_menu_slot_disabled(&m, 10));
+   assert(hh_quick_menu_slot_disabled(&m, HH_QUICK_MENU_SLOT_COUNT));
+   slot.index = 0;
+   slot.disabled = false;
+   hh_quick_menu_set_slot(&m, &slot);
+   m.view.state_slot = 0;
+   assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_LOAD);
+   assert(m.view.pending_slot == 0);
 }
 
 static void test_capabilities_feedback(void)
@@ -179,6 +194,7 @@ static void test_capabilities_feedback(void)
    m.view.capabilities.save_enabled = false;
    assert(INPUT(&m, CONFIRM) == HH_UI_ACTION_NONE);
    m.view.capabilities.save_enabled = true;
+   INPUT(&m, RIGHT);
    INPUT(&m, CONFIRM);
    assert(hh_quick_menu_item_state(&m, 1) == HH_QUICK_MENU_ITEM_PENDING);
    hh_quick_menu_action_result(&m, HH_QUICK_MENU_ACTION_ERROR, "保存失败，请重试");
@@ -217,6 +233,7 @@ static void test_duplicate_all_actions(void)
       select_item(&m, i);
       if (i == 2) m.view.slots[0].occupied = true;
       INPUT(&m, CONFIRM);
+      if (i == 1) INPUT(&m, RIGHT);
       if (i == 1 || i == 2) INPUT(&m, CONFIRM);
       if (i == HH_QUICK_MENU_ITEM_RESET || i == HH_QUICK_MENU_ITEM_EXIT)
       {
@@ -227,7 +244,7 @@ static void test_duplicate_all_actions(void)
       for (j = 0; j < 6; j++)
          assert(hh_quick_menu_input(&m, (hh_quick_menu_input_t)j) == HH_UI_ACTION_NONE);
       assert(m.state == HH_QUICK_MENU_ACTION_PENDING);
-      assert(m.view.selected_index == (size_t)i && m.view.state_slot == 0);
+      assert(m.view.selected_index == (size_t)i && m.view.state_slot == (i == 1 ? 1 : 0));
    }
 }
 
@@ -362,7 +379,7 @@ static void test_slot_touch(void)
       assert(hh_quick_menu_compute_layout(sizes[i][0], sizes[i][1], &l));
       select_item(&m, 1);
       INPUT(&m, CONFIRM);
-      for (j = 0; j < 10; j++)
+      for (j = 0; j < HH_QUICK_MENU_SLOT_COUNT; j++)
       {
          for (k = 0; k <= 9; k += 9)
          {
@@ -395,10 +412,10 @@ static void test_slot_touch(void)
          assert(input == (j == 0 ? HH_QUICK_MENU_INPUT_CONFIRM :
                   j == 1 ? HH_QUICK_MENU_INPUT_BACK : HH_QUICK_MENU_INPUT_NONE));
       }
-      for (k = 0; k < 10; k++)
+      for (k = 0; k < HH_QUICK_MENU_SLOT_COUNT; k++)
       {
          visible = 0;
-         for (j = 0; j < 10; j++)
+         for (j = 0; j < HH_QUICK_MENU_SLOT_COUNT; j++)
          {
             if (!hh_quick_menu_slot_card_bounds(&l, hh_quick_menu_slot_scroll(k), j, &card))
                continue;
@@ -421,7 +438,7 @@ static void test_slot_touch(void)
             assert(m.view.state_slot == j && input == HH_QUICK_MENU_INPUT_CONFIRM);
             assert(m.view.pending_action == HH_UI_ACTION_NONE);
          }
-         assert(visible >= 6 && visible <= 7);
+         assert(visible >= 5 && visible <= 7);
       }
    }
 }
@@ -577,7 +594,7 @@ static void test_layout_render(void)
             + l.items[HH_QUICK_MENU_ITEM_COUNT - 1].width > l.viewport.width);
       assert(l.items[HH_QUICK_MENU_ITEM_COUNT - 1].y + l.items[HH_QUICK_MENU_ITEM_COUNT - 1].height < l.feedback.y);
       assert(l.feedback.y + l.feedback.height < l.footer.y);
-      for (j = 0; j < 10; j++)
+      for (j = 0; j < HH_QUICK_MENU_SLOT_COUNT; j++)
       {
          within(l.slot_dots[j], l.viewport);
          within(l.slot_cards[j], l.viewport);
@@ -595,7 +612,7 @@ static void test_layout_render(void)
       rec.carousel = true;
       hh_quick_menu_render(&m, sizes[i][0], sizes[i][1], NULL, &painter);
       assert(rec.pause_bars == 4 && rec.edge_cards > 0);
-      assert(rec.regular_dots == 8 && rec.saved_dots == 1 && rec.current_dots == 1);
+      assert(rec.regular_dots == 9 && rec.saved_dots == 1 && rec.current_dots == 1);
       assert(rec.previews == 1 && rec.placeholders > 0);
       rec.preview_result = true;
       hh_quick_menu_render(&m, sizes[i][0], sizes[i][1], NULL, &painter);
@@ -607,6 +624,7 @@ static void test_layout_render(void)
       m.view.capabilities.screenshot_enabled = false;
       hh_quick_menu_render(&m, sizes[i][0], sizes[i][1], NULL, &painter);
       assert(rec.previews == 2 && rec.placeholders > 0);
+      INPUT(&m, RIGHT);
       INPUT(&m, CONFIRM);
       hh_quick_menu_render(&m, sizes[i][0], sizes[i][1], NULL, &painter);
       assert(rec.pending > 0);
@@ -763,7 +781,7 @@ static void test_slot_animation(void)
    INPUT(&m, BACK);
    m.view.state_slot = 9;
    INPUT(&m, CONFIRM);
-   assert(m.slot_scroll == 5);
+   assert(m.slot_scroll == 6);
 }
 
 static void test_recent(void)

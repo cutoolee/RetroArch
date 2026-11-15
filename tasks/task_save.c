@@ -1725,6 +1725,9 @@ static void task_push_load_and_save_state(const char *path, void *data,
 bool content_auto_save_state(const char *path)
 {
    size_t _len;
+   char temporary_path[PATH_MAX_LENGTH];
+   bool written;
+   int close_result;
    settings_t *settings = config_get_ptr();
    void *serial_data    = NULL;
    intfstream_t *file   = NULL;
@@ -1744,12 +1747,20 @@ bool content_auto_save_state(const char *path)
    if (!serial_data)
       return false;
 
+   if (strlcpy(temporary_path, path, sizeof(temporary_path))
+         + sizeof(".tmp") > sizeof(temporary_path))
+   {
+      free(serial_data);
+      return false;
+   }
+   strlcat(temporary_path, ".tmp", sizeof(temporary_path));
+
 #if defined(HAVE_COMPRESSION)
    if (settings->bools.savestate_file_compression)
-      file = intfstream_open_rzip_file(path, RETRO_VFS_FILE_ACCESS_WRITE);
+      file = intfstream_open_rzip_file(temporary_path, RETRO_VFS_FILE_ACCESS_WRITE);
    else
 #endif
-      file = intfstream_open_file(path, RETRO_VFS_FILE_ACCESS_WRITE,
+      file = intfstream_open_file(temporary_path, RETRO_VFS_FILE_ACCESS_WRITE,
                                   RETRO_VFS_FILE_ACCESS_HINT_NONE);
 
    if (!file)
@@ -1758,17 +1769,16 @@ bool content_auto_save_state(const char *path)
       return false;
    }
 
-   if (_len != (size_t)intfstream_write(file, serial_data, _len))
-   {
-      intfstream_close(file);
-      free(serial_data);
-      free(file);
-      return false;
-   }
-
-   intfstream_close(file);
+   written = _len == (size_t)intfstream_write(file, serial_data, _len);
+   close_result = intfstream_close(file);
    free(serial_data);
    free(file);
+   if (!written || close_result != 0
+         || filestream_rename(temporary_path, path) != 0)
+   {
+      filestream_delete(temporary_path);
+      return false;
+   }
 
 #ifdef HAVE_SCREENSHOTS
    if (settings->bools.savestate_thumbnail_enable)
@@ -1791,7 +1801,8 @@ bool content_auto_save_state(const char *path)
  *
  * Returns: true if successful, false otherwise.
  **/
-bool content_save_state(const char *path, bool save_to_disk)
+static bool content_save_state_internal(const char *path, bool save_to_disk,
+      bool autosave)
 {
    size_t _len;
    void *data  = NULL;
@@ -1882,12 +1893,17 @@ bool content_save_state(const char *path, bool save_to_disk)
       /* TODO/FIXME - Use msg_hash_to_str here */
       RARCH_LOG("[State] %s...\n",
             msg_hash_to_str(MSG_FILE_ALREADY_EXISTS_SAVING_TO_BACKUP_BUFFER));
-      task_push_load_and_save_state(path, data, _len, true, false);
+      task_push_load_and_save_state(path, data, _len, true, autosave);
    }
    else
-      task_push_save_state(path, data, _len, false, HH_STATE_ATTACH());
+      task_push_save_state(path, data, _len, autosave, HH_STATE_ATTACH());
 
    return true;
+}
+
+bool content_save_state(const char *path, bool save_to_disk)
+{
+   return content_save_state_internal(path, save_to_disk, false);
 }
 
 /**
@@ -2262,6 +2278,41 @@ void set_save_state_disable_undo(bool disable)
    save_state_disable_undo = disable;
 }
 
+void content_prepare_realtime_state(void)
+{
+   char source[PATH_MAX_LENGTH];
+   char recovery[PATH_MAX_LENGTH];
+   void *data = NULL;
+   int64_t size = 0;
+   int64_t mtime;
+
+   last_savestate_automatic_time = time(NULL);
+   if (!runloop_get_savestate_path(source, sizeof(source), -1)
+         || !runloop_get_savestate_path(recovery, sizeof(recovery), -2))
+      return;
+   if (filestream_read_file(source, &data, &size))
+   {
+      if (!filestream_write_file_atomic(recovery, data, size))
+         RARCH_WARN("[State] Could not preserve recovery state.\n");
+      else if (path_get_mtime(source, &mtime))
+         path_set_mtime(recovery, mtime);
+      free(data);
+   }
+   else
+      filestream_delete(recovery);
+   strlcat(source, ".png", sizeof(source));
+   strlcat(recovery, ".png", sizeof(recovery));
+   data = NULL;
+   if (filestream_read_file(source, &data, &size))
+   {
+      if (!filestream_write_file_atomic(recovery, data, size))
+         filestream_delete(recovery);
+      free(data);
+   }
+   else
+      filestream_delete(recovery);
+}
+
 bool content_save_state_automatic(void)
 {
    time_t current_time;
@@ -2270,6 +2321,11 @@ bool content_save_state_automatic(void)
    unsigned savestate_automatic_interval = 
       settings->uints.savestate_automatic_interval;
    
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   if (savestate_automatic_interval == 0 || savestate_automatic_interval > 10)
+      savestate_automatic_interval = 10;
+#endif
+
    /* Return early if automatic savestate is disabled,
       safety checks already happen in content_auto_save_state() */
    if (savestate_automatic_interval == 0)
@@ -2296,8 +2352,10 @@ bool content_save_state_automatic(void)
          msg_hash_to_str(MSG_SAVING_STATE),
          savestate_path);
    
-   /* Update the last savestate time, rinse/repeat */
+   if (content_save_state_in_progress(NULL) || load_state_task_pending)
+      return false;
+   if (!content_save_state_internal(savestate_path, true, true))
+      return false;
    last_savestate_automatic_time = current_time;
-   
-   return content_auto_save_state(savestate_path);
+   return true;
 }

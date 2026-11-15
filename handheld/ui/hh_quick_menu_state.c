@@ -86,7 +86,11 @@ void hh_quick_menu_slot_prev(hh_quick_menu_t *menu)
 {
    if (!menu || menu->state != HH_QUICK_MENU_OPEN || menu->view.busy)
       return;
-   if (menu->view.state_slot > 0)
+   if (menu->view.state_slot == HH_QUICK_MENU_SLOT_COUNT - 1)
+      menu->view.state_slot = HH_QUICK_MENU_SLOT_COUNT - 2;
+   else if (menu->view.state_slot == 0)
+      menu->view.state_slot = HH_QUICK_MENU_SLOT_COUNT - 1;
+   else
       menu->view.state_slot--;
 }
 
@@ -94,7 +98,11 @@ void hh_quick_menu_slot_next(hh_quick_menu_t *menu)
 {
    if (!menu || menu->state != HH_QUICK_MENU_OPEN || menu->view.busy)
       return;
-   if (menu->view.state_slot < HH_QUICK_MENU_SLOT_COUNT - 1)
+   if (menu->view.state_slot == HH_QUICK_MENU_SLOT_COUNT - 1)
+      menu->view.state_slot = 0;
+   else if (menu->view.state_slot == HH_QUICK_MENU_SLOT_COUNT - 2)
+      menu->view.state_slot = HH_QUICK_MENU_SLOT_COUNT - 1;
+   else
       menu->view.state_slot++;
 }
 
@@ -138,7 +146,8 @@ bool hh_quick_menu_slot_disabled(const hh_quick_menu_t *menu, int slot)
    if (menu->view.page == HH_QUICK_MENU_PAGE_LOAD)
       return !menu->view.capabilities.load_enabled
          || !menu->view.slots[slot].occupied;
-   return !menu->view.capabilities.save_enabled;
+   return slot == HH_QUICK_MENU_SLOT_COUNT - 1
+      || !menu->view.capabilities.save_enabled;
 }
 
 hh_ui_action_t hh_quick_menu_input(hh_quick_menu_t *menu,

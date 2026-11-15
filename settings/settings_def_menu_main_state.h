@@ -55,8 +55,16 @@ S_ACTION(CONTENT_SETTINGS,
 #if (defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU) || defined(SETTINGS_DEF_STRINGS_PASS)
 S_ACTION(GAMEGO_MENU_CONFIG,
       "gamego_menu_config",
-      "GameGo菜单配置",
-      "配置 GameGo 快捷菜单。")
+      "GameGo Menu Configuration",
+      "Configure the GameGo quick menu and its activation shortcut.")
+S_ACTION(GAMEGO_MENU_SHORTCUT_SETTINGS,
+      "gamego_menu_shortcut_settings",
+      "Hotkeys",
+      "Configure the GameGo menu activation shortcut.")
+S_ACTION(GAMEGO_MENU_SHOW_SETTINGS,
+      "gamego_menu_show_settings",
+      "GameGo Menu Visibility",
+      "Choose which buttons are shown in the GameGo menu.")
 #endif
 S_ACTION(XMB_MAIN_MENU_ENABLE_SETTINGS,
       "xmb_main_menu_enable_settings",

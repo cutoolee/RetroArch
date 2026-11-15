@@ -3,6 +3,29 @@ DEPS_DIR          := $(ROOT_DIR)/deps
 LIBRETRO_COMM_DIR := $(ROOT_DIR)/libretro-common
 WANT_WGL           = 0
 
+ifeq ($(HAVE_GAMEGO_PRODUCT), 1)
+   DEFINES += -DHAVE_GAMEGO_PRODUCT -DHAVE_HANDHELD_RUNTIME=1 -DHAVE_HANDHELD_QUICK_MENU=1
+   OBJ += handheld/runtime/hh_runtime.o \
+          handheld/runtime/hh_runtime_error.o \
+          handheld/runtime/hh_runtime_metadata.o \
+          handheld/runtime/hh_runtime_recent.o \
+          handheld/runtime/hh_runtime_query.o \
+          handheld/runtime/hh_runtime_shader.o \
+          handheld/runtime/hh_runtime_controls.o \
+          handheld/runtime/hh_runtime_command.o \
+          handheld/runtime/hh_runtime_save.o \
+          handheld/runtime/hh_runtime_menu.o \
+          handheld/runtime/hh_runtime_task.o \
+          handheld/runtime/hh_runtime_queue.o \
+          handheld/ui/hh_quick_menu.o \
+          handheld/ui/hh_quick_menu_actions.o \
+          handheld/ui/hh_quick_menu_layout.o \
+          handheld/ui/hh_quick_menu_render.o \
+          handheld/ui/hh_quick_menu_state.o \
+          handheld/ui/hh_quick_menu_controls.o \
+          handheld/bridge/hh_bridge.o
+endif
+
 ifeq ($(HAVE_STACK_USAGE), 1)
    DEF_FLAGS += -fstack-usage
 endif

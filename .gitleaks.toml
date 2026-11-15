@@ -1,0 +1,11 @@
+title = "GameGo secret scanning"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Upstream public crypto examples and PEM format strings; working-tree audit also pins their content hashes"
+paths = [
+  '''^deps/bearssl-0\.6/samples/key-(ee|ica|root)-(ec|rsa)\.pem$''',
+  '''^deps/mbedtls/(certs|pkparse|pkwrite)\.c$''',
+]

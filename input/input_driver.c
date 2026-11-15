@@ -1970,6 +1970,11 @@ static int16_t input_state_device(
                      res = ret;
                }
 
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+               if (id < 16 && (input_st->gamego_menu_release_mask[port] & (1U << id)))
+                  res = 0;
+#endif
+
                if (BIT256_GET(handle->buttons[port], id))
                   res = 1;
 
@@ -1979,6 +1984,9 @@ static int16_t input_state_device(
                if (  (port == 0)
                    && input_st->overlay_ptr
                    && (input_st->overlay_ptr->flags & INPUT_OVERLAY_ALIVE)
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+                   && !(id < 16 && (input_st->gamego_menu_release_mask[port] & (1U << id)))
+#endif
                    && BIT256_GET(input_st->overlay_ptr->overlay_state.buttons, id))
                {
 #ifdef HAVE_MENU
@@ -2529,6 +2537,12 @@ static int16_t input_state_internal(
             }
          }
       }
+
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+      if (device == RETRO_DEVICE_ANALOG && idx == RETRO_DEVICE_INDEX_ANALOG_BUTTON
+            && id < 16 && (input_st->gamego_menu_release_mask[mapped_port] & (1U << id)))
+         ret = 0;
+#endif
 
       if (!input_blocked)
       {
@@ -6897,6 +6911,13 @@ static void input_keys_pressed(
    bool block_hotkey[RARCH_BIND_LIST_END];
    bool enable_hotkey_pressed     = false;
    bool any_pressed               = false;
+#if defined(HAVE_MENU) && defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   runloop_state_t *runloop_st     = runloop_state_get_ptr();
+   bool gamego_menu_input         =
+      (runloop_st->flags & RUNLOOP_FLAG_CORE_RUNNING)
+      && runloop_st->current_core_type != CORE_TYPE_DUMMY
+      && !(menu_state_get_ptr()->flags & MENU_ST_FLAG_ALIVE);
+#endif
    bool libretro_hotkey_set       =
             binds_norm->joykey  != NO_BTN
          || binds_norm->joyaxis != AXIS_NONE
@@ -6992,6 +7013,14 @@ static void input_keys_pressed(
     * frame this narrows 0xFFFF down to what is actually held. */
    input_st->wait_release_mask[port] &= held_now;
 
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   if (is_menu && hh_bridge_is_open(hh_bridge_active()))
+      input_st->gamego_menu_release_mask[port] = held_now
+         & ((1U << RETRO_DEVICE_ID_JOYPAD_A) | (1U << RETRO_DEVICE_ID_JOYPAD_B));
+   else
+      input_st->gamego_menu_release_mask[port] &= held_now;
+#endif
+
    /* Allow menu toggle to bypass 'enable_hotkey' when it is
     * not part of the usual buttons, unless 'enable_hotkey'
     * is set in autoconf. */
@@ -7038,6 +7067,10 @@ static void input_keys_pressed(
                input_st->flags &= ~INP_FLAG_MENU_PRESS_CANCEL;
 
             input_st->flags |= INP_FLAG_MENU_PRESS_PENDING;
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+            if (port == hotkey_port)
+               input_st->gamego_menu_toggle_pressed = true;
+#endif
          }
          else if (input_st->flags & INP_FLAG_MENU_PRESS_PENDING)
             /* Also set 'enable_hotkey' to prevent hotkey delay untrigger */
@@ -7064,7 +7097,13 @@ static void input_keys_pressed(
                   !!(input_st->flags & INP_FLAG_KB_MAPPING_BLOCKED),
                   port, RETRO_DEVICE_KEYBOARD, 0,
                   RETRO_KEYBIND_KEY(&input_config_binds[port][i])))
+      {
          input_st->flags |= INP_FLAG_MENU_PRESS_PENDING;
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+         if (port == hotkey_port)
+            input_st->gamego_menu_toggle_pressed = true;
+#endif
+      }
       else if (input_st->flags & INP_FLAG_MENU_PRESS_PENDING)
          /* Also set 'enable_hotkey' to prevent hotkey delay untrigger */
          BIT256_SET_PTR(p_new_state, RARCH_ENABLE_HOTKEY);
@@ -7232,13 +7271,20 @@ static void input_keys_pressed(
          if (libretro_hotkey_set || keyboard_hotkey_set)
          {
             /* Do not block "other source" (input overlay) presses */
-            if (block_hotkey[i] && !other_pressed)
+            if (block_hotkey[i] && !other_pressed
+#if defined(HAVE_MENU) && defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+                  && !(i == RARCH_MENU_TOGGLE && gamego_menu_input)
+#endif
+                  )
                continue;
          }
 
          /* Set menu toggle on release */
          if (i == RARCH_MENU_TOGGLE)
          {
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+            input_st->gamego_menu_toggle_pressed = true;
+#endif
             if (!(input_st->flags & INP_FLAG_MENU_PRESS_PENDING))
             {
                input_st->flags |=  INP_FLAG_MENU_PRESS_PENDING;
@@ -7264,6 +7310,9 @@ static void input_keys_pressed(
             /* Untrigger menu if press was shorter than hotkey block delay */
             if (      (input_st->flags & INP_FLAG_MENU_PRESS_PENDING)
                   && !(input_st->flags & INP_FLAG_MENU_PRESS_CANCEL)
+#if defined(HAVE_MENU) && defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+                  && !gamego_menu_input
+#endif
                   && !BIT256_GET_PTR(p_new_state, RARCH_ENABLE_HOTKEY)
                   && input_st->input_hotkey_block_counter
                   && input_st->input_hotkey_block_counter < input_hotkey_block_delay)
@@ -7596,6 +7645,10 @@ void input_driver_poll(void)
                         (unsigned)i, RETRO_DEVICE_JOYPAD,
                         0, RETRO_DEVICE_ID_JOYPAD_MASK);
 
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+                  ret &= ~input_st->gamego_menu_release_mask[i];
+#endif
+
                   for (k = 0; k < RARCH_FIRST_CUSTOM_BIND; k++)
                   {
                      if (ret & (1 << k))
@@ -7689,6 +7742,10 @@ void input_driver_poll(void)
                   }
 #endif
                   /* Press */
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+                  if (j < 16 && (input_st->gamego_menu_release_mask[i] & (1U << j)))
+                     current_button_value = 0;
+#endif
                   if ((current_button_value == 1)
                         && !MAPPER_GET_KEY(handle, remap_key))
                   {
@@ -7745,6 +7802,10 @@ void input_driver_poll(void)
                      if (ol_state)
                         current_button_value |= BIT256_GET(ol_state->buttons, j);
                   }
+#endif
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+                  if (input_st->gamego_menu_release_mask[i] & (1U << j))
+                     current_button_value = 0;
 #endif
                   if (settings->uints.input_action_mask[i][j])
                   {
@@ -8264,6 +8325,9 @@ void input_driver_collect_system_input(input_driver_state_t *input_st,
    menu_input_active = menu_input_active || handheld_menu_is_alive;
 #endif
    joypad_info.axis_threshold          = settings->floats.input_axis_threshold;
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+   input_st->gamego_menu_toggle_pressed = false;
+#endif
 
    /* Gather input from each (enabled) joypad */
    for (port = 0; port < (int)max_users; port++)

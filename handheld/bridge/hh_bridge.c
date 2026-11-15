@@ -48,13 +48,15 @@ static void hh_bridge_refresh_slots(hh_bridge_t *bridge)
       memset(state_path, 0, sizeof(state_path));
       memset(thumbnail_path, 0, sizeof(thumbnail_path));
       slot->occupied = runloop_get_savestate_path(state_path,
-            sizeof(state_path), i) && stat(state_path, &state_stat) == 0;
+            sizeof(state_path), i == HH_QUICK_MENU_SLOT_COUNT - 1
+               ? -2 : i) && stat(state_path, &state_stat) == 0;
       slot->timestamp[0] = '\0';
       if (slot->occupied && rtime_localtime(&state_stat.st_mtime, &saved_time))
          strftime(slot->timestamp, sizeof(slot->timestamp),
                "%Y-%m-%d %H:%M", &saved_time);
       gfx_savestate_thumbnail_get_path(thumbnail_path,
-            sizeof(thumbnail_path), savestate_base, i);
+            sizeof(thumbnail_path), savestate_base,
+            i == HH_QUICK_MENU_SLOT_COUNT - 1 ? -2 : i);
       slot->preview_available = slot->occupied
          && hh_bridge_file_exists(thumbnail_path);
    }
@@ -203,7 +205,7 @@ static void hh_bridge_apply_snapshot(hh_bridge_t *bridge,
    if (bridge->menu.state == HH_QUICK_MENU_CLOSED
          || bridge->menu.view.page == HH_QUICK_MENU_PAGE_MAIN)
       bridge->menu.view.state_slot = snapshot->state_slot < 0
-         ? 0 : snapshot->state_slot % HH_QUICK_MENU_SLOT_COUNT;
+         ? 0 : snapshot->state_slot % (HH_QUICK_MENU_SLOT_COUNT - 1);
 }
 
 static const char *hh_bridge_error_message(hh_result_t result)
@@ -756,8 +758,11 @@ bool hh_bridge_input(hh_bridge_t *bridge, hh_quick_menu_input_t input)
    }
    if (action == HH_UI_ACTION_SAVE || action == HH_UI_ACTION_LOAD)
    {
-      result = hh_runtime_submit_command(HH_CMD_SET_STATE_SLOT,
-            bridge->menu.view.state_slot, &request_id);
+      result = HH_OK;
+      if (action != HH_UI_ACTION_LOAD
+            || bridge->menu.view.state_slot != HH_QUICK_MENU_SLOT_COUNT - 1)
+         result = hh_runtime_submit_command(HH_CMD_SET_STATE_SLOT,
+               bridge->menu.view.state_slot, &request_id);
       if (result != HH_OK)
       {
          hh_quick_menu_action_result(&bridge->menu,
@@ -766,7 +771,10 @@ bool hh_bridge_input(hh_bridge_t *bridge, hh_quick_menu_input_t input)
       }
       bridge->pending_slot = bridge->menu.view.state_slot;
       result = hh_runtime_submit_command(action == HH_UI_ACTION_SAVE
-            ? HH_CMD_SAVE_STATE : HH_CMD_LOAD_STATE, 0, &request_id);
+            ? HH_CMD_SAVE_STATE : HH_CMD_LOAD_STATE,
+            action == HH_UI_ACTION_LOAD
+               && bridge->menu.view.state_slot == HH_QUICK_MENU_SLOT_COUNT - 1
+               ? -2 : 0, &request_id);
       if (result != HH_OK)
       {
          hh_quick_menu_action_result(&bridge->menu,

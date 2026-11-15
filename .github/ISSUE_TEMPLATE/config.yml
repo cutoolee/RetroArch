@@ -1,14 +1,5 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
-  - name: Libretro Forums
-    url: https://forums.libretro.com
-    about: A place to discuss all things libretro
-  - name: Discord
-    url: https://ra-link.web.app/discord
-    about: Join our Discord server for help
-  - name: RetroArch/libretro subreddit
-    url: https://www.reddit.com/r/RetroArch
-    about: Subreddit dedicated to RetroArch and the libretro API framework
-  - name: Documentation
-    url: https://docs.libretro.com
-    about: Official RetroArch documentation for users and developers
+  - name: 安装与存档迁移
+    url: https://github.com/cutoolee/RetroArch/blob/master/docs/release/install.md
+    about: 先查看安装、核心、签名和存档迁移说明。

@@ -5,14 +5,18 @@
 #include "input/input_driver.h"
 #include "menu/menu_driver.h"
 #include "handheld/bridge/hh_bridge.h"
+#include "runloop.h"
 
 static settings_t settings;
 static struct menu_state menu_st;
+static runloop_state_t runloop_st;
 static bool handheld_open;
+static bool menu_key;
 static unsigned buttons, keyboard_key;
 
 settings_t *config_get_ptr(void) { return &settings; }
 struct menu_state *menu_state_get_ptr(void) { return &menu_st; }
+runloop_state_t *runloop_state_get_ptr(void) { return &runloop_st; }
 bool menu_input_dialog_get_display_kb(void) { return false; }
 void menu_entry_get(menu_entry_t *entry, size_t stack, size_t index, void *userdata, bool use_representation)
 { (void)stack; (void)index; (void)userdata; (void)use_representation; memset(entry, 0, sizeof(*entry)); }
@@ -32,8 +36,12 @@ static int16_t test_input(void *data, const input_device_driver_t *joypad,
    if (device == RETRO_DEVICE_KEYBOARD)
       return id == keyboard_key && keyboard_key != 0;
    if (device == RETRO_DEVICE_JOYPAD)
+   {
+      if (id == RARCH_MENU_TOGGLE)
+         return menu_key || keyboard_key == RETROK_F1;
       return id == RETRO_DEVICE_ID_JOYPAD_MASK ? (int16_t)buttons :
          id < 16 && (buttons & (1U << id)) ? 1 : 0;
+   }
    return 0;
 }
 
@@ -99,6 +107,105 @@ int main(void)
       }
       keyboard_key = 0;
    }
+   handheld_open = false;
+   menu_st.flags = 0;
+   input_st->flags = 0;
+   buttons = 0;
+   runloop_st.flags = RUNLOOP_FLAG_CORE_RUNNING;
+   runloop_st.current_core_type = (enum rarch_core_type)(CORE_TYPE_DUMMY + 1);
+   for (frontend = 0; frontend < 2; frontend++)
+   {
+      for (i = 0; i < 60; i++)
+      {
+         menu_key = frontend == 0;
+         keyboard_key = frontend == 1 ? RETROK_F1 : 0;
+         BIT256_CLEAR_ALL_PTR(&bits);
+         input_driver_collect_system_input(input_st, &settings, &bits);
+         assert(input_st->gamego_menu_toggle_pressed);
+         assert(!BIT256_GET(bits, RARCH_MENU_TOGGLE));
+      }
+      menu_key = false;
+      keyboard_key = 0;
+      BIT256_CLEAR_ALL_PTR(&bits);
+      input_driver_collect_system_input(input_st, &settings, &bits);
+      assert(!input_st->gamego_menu_toggle_pressed);
+      assert(BIT256_GET(bits, RARCH_MENU_TOGGLE));
+      BIT256_CLEAR_ALL_PTR(&bits);
+      input_driver_collect_system_input(input_st, &settings, &bits);
+      assert(!BIT256_GET(bits, RARCH_MENU_TOGGLE));
+   }
+   puts("PASS: GameGo receives held menu input while RetroArch keeps its release pulse");
+   input_config_binds[0][RARCH_ENABLE_HOTKEY].joykey = 110;
+   input_config_binds[0][RARCH_MENU_TOGGLE].joykey = 111;
+   settings.uints.input_hotkey_block_delay = 5;
+   buttons = 1U << RETRO_DEVICE_ID_JOYPAD_A;
+   for (i = 0; i < 20; i++)
+   {
+      menu_key = true;
+      BIT256_CLEAR_ALL_PTR(&bits);
+      input_driver_collect_system_input(input_st, &settings, &bits);
+      assert(input_st->gamego_menu_toggle_pressed);
+      assert(!BIT256_GET(bits, RARCH_MENU_TOGGLE));
+      menu_key = false;
+      BIT256_CLEAR_ALL_PTR(&bits);
+      input_driver_collect_system_input(input_st, &settings, &bits);
+      assert(BIT256_GET(bits, RARCH_MENU_TOGGLE));
+   }
+   menu_st.flags = MENU_ST_FLAG_ALIVE;
+   menu_key = true;
+   BIT256_CLEAR_ALL_PTR(&bits);
+   input_driver_collect_system_input(input_st, &settings, &bits);
+   assert(!input_st->gamego_menu_toggle_pressed);
+   menu_key = false;
+   BIT256_CLEAR_ALL_PTR(&bits);
+   input_driver_collect_system_input(input_st, &settings, &bits);
+   assert(!BIT256_GET(bits, RARCH_MENU_TOGGLE));
+   puts("PASS: GameGo menu hotkey works during gameplay without Hotkey Enable; RetroArch menu gating preserved");
+   menu_st.flags = 0;
+   input_st->flags = 0;
+   settings.bools.input_remap_binds_enable = false;
+   input_config_set_device(0, RETRO_DEVICE_JOYPAD);
+   settings.uints.input_remap_port_map[0][0] = 0;
+   settings.uints.input_remap_port_map[0][1] = MAX_USERS;
+   input_st->libretro_input_binds[0] = &input_config_binds[0];
+   BIT256_CLEAR_ALL(input_st->mapper.buttons[0]);
+   for (i = 0; i < 16; i++)
+   {
+      settings.uints.input_remap_ids[0][i] = i;
+      settings.uints.input_action_mask[0][i] = 0;
+   }
+   for (frontend = 0; frontend < 2; frontend++)
+   {
+      unsigned closing_button = frontend ? RETRO_DEVICE_ID_JOYPAD_B : RETRO_DEVICE_ID_JOYPAD_A;
+      handheld_open = true;
+      buttons = (1U << closing_button) | (1U << RETRO_DEVICE_ID_JOYPAD_LEFT);
+      BIT256_CLEAR_ALL_PTR(&bits);
+      input_driver_collect_system_input(input_st, &settings, &bits);
+      assert(BIT256_GET(bits, closing_button));
+      assert(input_st->gamego_menu_release_mask[0] == (1U << closing_button));
+      handheld_open = false;
+      for (i = 0; i < 60; i++)
+      {
+         BIT256_CLEAR_ALL_PTR(&bits);
+         input_driver_collect_system_input(input_st, &settings, &bits);
+         assert(input_st->gamego_menu_release_mask[0] == (1U << closing_button));
+         memset(input_st->joypad_state_cache_valid, 0, sizeof(input_st->joypad_state_cache_valid));
+         assert(!input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0, closing_button));
+         assert(input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT));
+         assert(!(input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0,
+                     RETRO_DEVICE_ID_JOYPAD_MASK) & (1U << closing_button)));
+      }
+      buttons &= ~(1U << closing_button);
+      BIT256_CLEAR_ALL_PTR(&bits);
+      input_driver_collect_system_input(input_st, &settings, &bits);
+      assert(!input_st->gamego_menu_release_mask[0]);
+      buttons |= 1U << closing_button;
+      BIT256_CLEAR_ALL_PTR(&bits);
+      input_driver_collect_system_input(input_st, &settings, &bits);
+      memset(input_st->joypad_state_cache_valid, 0, sizeof(input_st->joypad_state_cache_valid));
+      assert(input_driver_state_wrapper(0, RETRO_DEVICE_JOYPAD, 0, closing_button));
+   }
+   puts("PASS: GameGo closing A/B stay blocked until release, other buttons and fresh presses pass to the core");
    puts("PASS: GameGo and RetroArch menus share OK/cancel setting and keep raw input with remap/turbo/combinations");
    return 0;
 }

@@ -1,26 +1,7 @@
-# Security Policy
+# Security
 
-## Reasonable expectations
+GameGo 尚处于预览阶段。安全修复优先针对最新公开版本和默认分支；不承诺为旧预览版本长期回移。
 
-RetroArch is a frontend for the libretro API. The main functionality is fulfilled by invoking other binary libraries ("cores") which are not restricted by RetroArch in any way. Cores are able to read/write/delete files, spawn processes, communicate over the network. Also, source for cores is not necessarily in control by libretro team, and core binaries / RetroArch binaries are not signed. For this reason, it is a bad idea to use RetroArch or any other libretro frontend on security critical systems.
+请通过本仓库 GitHub Security 页面中的 “Report a vulnerability” 私密报告漏洞（需要仓库启用该功能）。若该入口不可用，请先提交不含复现细节的 Issue 请求私密联系渠道，不要公开令牌、密钥、用户数据或可直接利用的漏洞细节。
 
-Also, RetroArch and cores have been packaged in several ways. Content on the [official download site](https://buildbot.libretro.com/) is built from a direct mirror of the original RetroArch and core repositories, no binaries are reused. Note that source for the core repositories may be outside libretro team control.
-
-## Supported Versions
-
-For most delivery channels, libretro team does not have control over the version. The exceptions are:
-- [official download site](https://buildbot.libretro.com/)
-- Steam release
-- Apple App Store release
-- various Android app store releases
-- note that Google Play Store version is years behind and can not be updated
-
-You may report vulnerability against any recent version, but be reasonable.
-
-## Reporting a Vulnerability
-
-Please report security vulnerabilities at libretro@gmail.com
-
-## Possible remediation
-
-Due to the variety of delivery channels, RetroArch team can not recall any given version universally. Security fixes are accepted for next release, and notice may be posted in the channels controlled by RetroArch team, depending on the severity assessed by RetroArch team.
+普通崩溃和兼容性问题请使用 Bug 模板。安装包以本仓库 Releases 的文件和 SHA256 校验值为准。

@@ -1,0 +1,11 @@
+{
+  "deps/bearssl-0.6/samples/key-ee-ec.pem": "1555392511bbaf98698bbdd6703b727a0997ce66f6886aee4079ef4a146916f1",
+  "deps/bearssl-0.6/samples/key-ee-rsa.pem": "7cc638e7db7ad2a7a235dff37d81a2954b8434029f72399d4a841e0766374c16",
+  "deps/bearssl-0.6/samples/key-ica-ec.pem": "587500c7a313bb1e0a3a39784251c0cdd1aee819164c3bd6ebd03d0dd515f568",
+  "deps/bearssl-0.6/samples/key-ica-rsa.pem": "679a31dd761fbf72b852a411689dadafe1ff0c876a6bf8fb169df3f6deb375ab",
+  "deps/bearssl-0.6/samples/key-root-ec.pem": "dbee712433e85291968170bcd723ae0aac6f0ea73197823fcf10aaacf8937c93",
+  "deps/bearssl-0.6/samples/key-root-rsa.pem": "01fe424f7ec8e5e663f62ba47f37cbb8504f4912c692d58902ecd397d946c837",
+  "deps/mbedtls/certs.c": "77b0d23f08523280f300c4caba7b0b5e261f774b559d77cd16c181b7492931a5",
+  "deps/mbedtls/pkparse.c": "a2e61a9a671aee41bc291afe5bc8c8c1424d84604efb58cd0b4fc40bcc7b7863",
+  "deps/mbedtls/pkwrite.c": "5fdfd70f4fd5ef9a2198ce66791ad40676b9e78bfc6e8c38bc4e0265390f28d0"
+}

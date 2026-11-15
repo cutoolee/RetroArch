@@ -1,8 +1,24 @@
 #include <assert.h>
 #include <string.h>
 
+#include "configuration.h"
 #include "handheld/bridge/hh_bridge.h"
 #include "handheld/ui/hh_quick_menu_render.h"
+
+settings_t *config_get_ptr(void)
+{
+   static settings_t settings;
+   settings.bools.gamego_menu_show_continue = true;
+   settings.bools.gamego_menu_show_save = true;
+   settings.bools.gamego_menu_show_load = true;
+   settings.bools.gamego_menu_show_shader = true;
+   settings.bools.gamego_menu_show_controls = true;
+   settings.bools.gamego_menu_show_reset = true;
+   settings.bools.gamego_menu_show_advanced = true;
+   settings.bools.gamego_menu_show_recent = true;
+   settings.bools.gamego_menu_show_exit = true;
+   return &settings;
+}
 
 static hh_runtime_event_callback_t callback;
 static void *callback_data;
@@ -10,6 +26,7 @@ static uint64_t next_id = 1;
 static hh_command_type_t last_command;
 static bool fake_ra_menu_open;
 static int last_argument;
+static int last_state_slot;
 static hh_result_t submit_result = HH_OK;
 static int shader_active_id;
 
@@ -49,7 +66,10 @@ hh_result_t hh_runtime_get_snapshot(hh_runtime_snapshot_t *s)
 { memset(s, 0, sizeof(*s)); s->initialized = true; s->content_loaded = true; s->ra_menu_open = fake_ra_menu_open; s->runtime_mode = HH_RUNTIME_MODE_CONTENT_RUNNING; return HH_OK; }
 bool hh_runtime_has_capability(hh_capability_t c) { return c != HH_CAP_SCREENSHOT; }
 hh_result_t hh_runtime_submit_command(hh_command_type_t c, int arg, uint64_t *id)
-{ last_argument = arg; last_command = c; *id = next_id++; return submit_result; }
+{
+   if (c == HH_CMD_SET_STATE_SLOT) last_state_slot = arg;
+   last_argument = arg; last_command = c; *id = next_id++; return submit_result;
+}
 hh_result_t hh_runtime_get_recent_count(size_t *count)
 { *count = 8; return HH_OK; }
 hh_result_t hh_runtime_get_recent_game(size_t index, bool thumbnail,
@@ -107,7 +127,7 @@ int main(void)
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_DOWN);
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_CONFIRM);
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_CONFIRM);
-   assert(last_command == HH_CMD_SAVE_STATE);
+   assert(last_command == HH_CMD_SAVE_STATE && last_state_slot == 0);
    assert(bridge.pending_request_id != 0);
    emit(bridge.pending_request_id, HH_EVENT_STATE_SAVE_ACCEPTED, HH_OK);
    assert(bridge.menu.state == HH_QUICK_MENU_ACTION_PENDING);
@@ -118,11 +138,19 @@ int main(void)
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_BACK);
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_DOWN);
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_CONFIRM);
+   bridge.menu.view.state_slot = 0;
    bridge.menu.view.slots[0].occupied = true;
    hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_CONFIRM);
-   assert(last_command == HH_CMD_LOAD_STATE);
+   assert(last_command == HH_CMD_LOAD_STATE && last_argument == 0
+         && last_state_slot == 0);
    emit(bridge.pending_request_id, HH_EVENT_STATE_LOAD_COMPLETED, HH_ERR_LOAD_FAILED);
    assert(bridge.menu.view.feedback == HH_QUICK_MENU_ACTION_ERROR);
+   bridge.menu.view.state_slot = HH_QUICK_MENU_SLOT_COUNT - 1;
+   bridge.menu.view.slots[HH_QUICK_MENU_SLOT_COUNT - 1].occupied = true;
+   hh_bridge_input(&bridge, HH_QUICK_MENU_INPUT_CONFIRM);
+   assert(last_command == HH_CMD_LOAD_STATE && last_argument == -2
+         && last_state_slot == 0);
+   emit(bridge.pending_request_id, HH_EVENT_STATE_LOAD_COMPLETED, HH_OK);
    hh_bridge_deinit(&bridge);
 
    hh_bridge_init(&bridge);

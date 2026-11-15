@@ -175,29 +175,51 @@ static void hh_quick_menu_card_edge(hh_ui_rect_t r, float skew,
    *y += r.y;
 }
 
+static void hh_quick_menu_card_ring(const hh_quick_menu_painter_t *p,
+      hh_ui_rect_t r, float skew, float radius, float outer, float inner,
+      unsigned long outside, unsigned long inside)
+{
+   hh_ui_rect_t a = hh_quick_menu_expand(r, outer);
+   hh_ui_rect_t b = hh_quick_menu_expand(r, inner);
+   float points[8];
+   int i;
+   for (i = 0; i < 36; i++)
+   {
+      hh_quick_menu_card_edge(a, skew * a.height / r.height,
+            radius + outer, i, &points[0], &points[1]);
+      hh_quick_menu_card_edge(a, skew * a.height / r.height,
+            radius + outer, i + 1, &points[2], &points[3]);
+      hh_quick_menu_card_edge(b, skew * b.height / r.height,
+            radius + inner, i, &points[4], &points[5]);
+      hh_quick_menu_card_edge(b, skew * b.height / r.height,
+            radius + inner, i + 1, &points[6], &points[7]);
+      p->quad(p->userdata, points, outside, inside);
+   }
+}
+
 static void hh_quick_menu_paint_card(const hh_quick_menu_painter_t *p,
       hh_ui_rect_t r, float skew, float radius, float stroke,
       unsigned long fill, unsigned long border)
 {
-   hh_ui_rect_t inner = hh_quick_menu_expand(r, -stroke);
-   float points[8];
-   int i;
+   float feather = skew > 0 ? (stroke < 1.0f ? stroke : 1.0f) * 0.5f : 0;
+   hh_ui_rect_t inner = hh_quick_menu_expand(r, -stroke - feather);
    if (!p->quad)
    {
       p->rect(p->userdata, r, fill, border, radius, stroke);
       return;
    }
-   hh_quick_menu_card_fill(p, inner, skew, radius - stroke, fill, fill);
-   for (i = 0; i < 36; i++)
+   hh_quick_menu_card_fill(p, inner, skew * inner.height / r.height,
+         radius - stroke - feather, fill, fill);
+   if (feather > 0)
    {
-      hh_quick_menu_card_edge(r, skew, radius, i, &points[0], &points[1]);
-      hh_quick_menu_card_edge(r, skew, radius, i + 1, &points[2], &points[3]);
-      hh_quick_menu_card_edge(inner, skew, radius - stroke,
-            i, &points[4], &points[5]);
-      hh_quick_menu_card_edge(inner, skew, radius - stroke,
-            i + 1, &points[6], &points[7]);
-      p->quad(p->userdata, points, border, border);
+      hh_quick_menu_card_ring(p, r, skew, radius,
+            feather, -feather, border & 0xffffff00UL, border);
+      hh_quick_menu_card_ring(p, r, skew, radius,
+            -stroke + feather, -stroke - feather, border, fill);
    }
+   if (stroke > feather * 2)
+      hh_quick_menu_card_ring(p, r, skew, radius,
+            -feather, -stroke + feather, border, border);
 }
 
 static void hh_quick_menu_paint_tile(const hh_quick_menu_painter_t *p,
@@ -343,9 +365,9 @@ static void hh_quick_menu_paint_main(const hh_quick_menu_t *menu,
    size_t i;
    static const hh_quick_menu_icon_t icons[] = {
       HH_QUICK_MENU_ICON_CONTINUE, HH_QUICK_MENU_ICON_SAVE,
-      HH_QUICK_MENU_ICON_LOAD, HH_QUICK_MENU_ICON_ADVANCED,
+      HH_QUICK_MENU_ICON_LOAD, HH_QUICK_MENU_ICON_SHADER,
       HH_QUICK_MENU_ICON_GAMEPAD, HH_QUICK_MENU_ICON_RESET,
-      HH_QUICK_MENU_ICON_ADVANCED, HH_QUICK_MENU_ICON_GAMEPAD,
+      HH_QUICK_MENU_ICON_ADVANCED, HH_QUICK_MENU_ICON_RECENT,
       HH_QUICK_MENU_ICON_EXIT
    };
    hh_ui_rect_t rect;
@@ -710,19 +732,28 @@ static void hh_quick_menu_paint_slots(const hh_quick_menu_t *menu,
             focused ? t->surface_focused : t->surface_muted,
             focused ? t->focus : 0x344253ffUL);
       hh_quick_menu_slot_number(number, i);
-      strcpy(label, "存档 ");
-      strcat(label, number);
+      strcpy(label, i == HH_QUICK_MENU_SLOT_COUNT - 1
+            ? "上次退出" : "存档 ");
+      if (i < HH_QUICK_MENU_SLOT_COUNT - 1)
+         strcat(label, number);
       text = hh_quick_menu_rect(rect.x + 18 * s, rect.y + 18 * s,
-            102 * k * s, 40 * s);
+            rect.width * 0.55f - 18 * s, 32 * s);
       hh_quick_menu_paint_text(p, text, label,
             focused ? t->focus : t->text_primary, 28 * k * s, true);
-      text.x += 112 * k * s;
-      text.width = rect.x + rect.width - 18 * s - text.x;
-      hh_quick_menu_paint_text(p, text,
-            slot->occupied ? (slot->timestamp[0] ? slot->timestamp : "已有进度") : "",
-            t->text_secondary, 18 * k * s, false);
+      text.x = rect.x + rect.width * 0.55f;
+      text.y = rect.y + 18 * s;
+      text.width = rect.width * 0.45f - 18 * s;
+      text.height = 32 * s;
+      if (p->text_right)
+         p->text_right(p->userdata, text,
+               slot->occupied ? (slot->timestamp[0] ? slot->timestamp : "已有进度") : "",
+               t->text_secondary, 18 * s, false);
+      else
+         hh_quick_menu_paint_text(p, text,
+               slot->occupied ? (slot->timestamp[0] ? slot->timestamp : "已有进度") : "",
+               t->text_secondary, 18 * s, false);
       preview_rect = hh_quick_menu_rect(rect.x + 18 * s,
-            rect.y + 72 * s, rect.width - 36 * s, rect.height - 90 * s);
+            rect.y + 62 * s, rect.width - 36 * s, rect.height - 80 * s);
       p->rect(p->userdata, preview_rect, 0x0b1018ffUL, 0, 6 * s, 0);
       preview = false;
       if (slot->occupied && slot->preview_available
@@ -819,8 +850,8 @@ static void hh_quick_menu_paint_recent(const hh_quick_menu_t *menu,
          hh_quick_menu_paint_text(p, preview_rect, "暂无预览",
                t->text_secondary, 26 * s, false);
    }
-   dots = menu->view.recent_count < HH_QUICK_MENU_SLOT_COUNT
-      ? menu->view.recent_count : HH_QUICK_MENU_SLOT_COUNT;
+   dots = menu->view.recent_count < HH_QUICK_MENU_SLOT_COUNT - 1
+      ? menu->view.recent_count : HH_QUICK_MENU_SLOT_COUNT - 1;
    first = menu->view.recent_selected > dots / 2
       ? menu->view.recent_selected - dots / 2 : 0;
    if (first + dots > menu->view.recent_count)

@@ -140,7 +140,18 @@ hh_result_t hh_runtime_execute_command(
          command_ok = command_event(CMD_EVENT_SAVE_STATE, NULL);
          break;
       case HH_CMD_LOAD_STATE:
-         command_ok = command_event(CMD_EVENT_LOAD_STATE, NULL);
+         {
+            int previous_slot;
+            settings = config_get_ptr();
+            if (!settings)
+               return HH_ERR_INTERNAL;
+            previous_slot = settings->ints.state_slot;
+            if (int_arg == -2)
+               configuration_set_int(settings, settings->ints.state_slot, -2);
+            command_ok = command_event(CMD_EVENT_LOAD_STATE, NULL);
+            if (int_arg == -2)
+               configuration_set_int(settings, settings->ints.state_slot, previous_slot);
+         }
          break;
       case HH_CMD_SCREENSHOT:
 #ifdef HAVE_SCREENSHOTS

@@ -39,7 +39,8 @@ static void hh_quick_menu_show_dialog(hh_quick_menu_t *menu,
       strncpy(menu->view.dialog.message, "退出当前游戏？",
             HH_QUICK_MENU_MESSAGE_MAX - 1);
    menu->view.dialog.message[HH_QUICK_MENU_MESSAGE_MAX - 1] = '\0';
-   strcpy(menu->view.dialog.detail, "未保存的游戏进度可能丢失。");
+   strcpy(menu->view.dialog.detail, action == HH_UI_ACTION_EXIT
+         ? "退出时将保存实时存档。" : "未保存的游戏进度可能丢失。");
    strcpy(menu->view.dialog.confirm_label,
          action == HH_UI_ACTION_RESET ? "重新开始" : "退出游戏");
    hh_quick_menu_clear_feedback(menu);

@@ -3,7 +3,7 @@ set -eu
 root=$(CDPATH= cd -- "$(dirname "$0")/../../.." && pwd)
 build=$(mktemp -d "${TMPDIR:-/tmp}/hh-reset.XXXXXX")
 trap 'rm -rf "$build"' EXIT
-cc -std=c89 -Wall -Wextra -Werror -I"$root" -I"$root/handheld/ui" \
+cc -std=c89 -Wall -Wextra -Werror -I"$root/libretro-common/include" -I"$root" -I"$root/handheld/ui" \
   "$root/handheld/ui/hh_quick_menu.c" \
   "$root/handheld/ui/hh_quick_menu_actions.c" \
   "$root/handheld/ui/hh_quick_menu_layout.c" \

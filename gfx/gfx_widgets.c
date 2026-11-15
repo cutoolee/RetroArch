@@ -2124,7 +2124,8 @@ static const char *hh_widget_quick_menu_icon_name(hh_quick_menu_icon_t icon)
    static const char *names[] = {
       "play.png", "save.png", "folder-open.png", "rotate-ccw.png",
       "sliders-horizontal.png", "log-out.png", "chevron-right.png", "gamepad-2.png",
-      "menu-confirm.png", "menu-back.png", "menu-select.png", "controller-layout-solid.png"
+      "menu-confirm.png", "menu-back.png", "menu-select.png", "controller-layout-solid.png",
+      "monitor.png", "history.png"
    };
    if (icon < 0 || icon >= (hh_quick_menu_icon_t)ARRAY_SIZE(names))
       return NULL;
@@ -2414,7 +2415,7 @@ static void hh_widget_fit_text(const gfx_widget_font_data_t *font,
 
 static void hh_widget_text_aligned(void *userdata, hh_ui_rect_t bounds,
       const char *text, unsigned long color, float size, bool emphasized,
-      bool centered)
+      enum text_alignment alignment)
 {
    hh_widget_paint_context_t *ctx = (hh_widget_paint_context_t*)userdata;
    gfx_widget_font_data_t *font = emphasized
@@ -2432,7 +2433,8 @@ static void hh_widget_text_aligned(void *userdata, hh_ui_rect_t bounds,
       scale = 1.0f;
    hh_widget_fit_text(font, text, bounds.width, scale,
          fitted, sizeof(fitted));
-   x = bounds.x + (centered ? bounds.width * 0.5f : 0);
+   x = bounds.x + (alignment == TEXT_ALIGN_RIGHT ? bounds.width :
+         alignment == TEXT_ALIGN_CENTER ? bounds.width * 0.5f : 0);
    y = bounds.y + bounds.height * 0.5f
       + font->line_centre_offset * scale;
    /* The language font has no separate bold face. */
@@ -2441,30 +2443,37 @@ static void hh_widget_text_aligned(void *userdata, hh_ui_rect_t bounds,
       float weight = size * 0.025f;
       gfx_display_draw_text(font->font, fitted, x + weight, y,
             (int)ctx->video_info->width, (int)ctx->video_info->height,
-            (uint32_t)color, centered ? TEXT_ALIGN_CENTER : TEXT_ALIGN_LEFT,
+            (uint32_t)color, alignment,
             scale, false, 0.0f, false);
       gfx_display_draw_text(font->font, fitted, x, y + weight * 0.5f,
             (int)ctx->video_info->width, (int)ctx->video_info->height,
-            (uint32_t)color, centered ? TEXT_ALIGN_CENTER : TEXT_ALIGN_LEFT,
+            (uint32_t)color, alignment,
             scale, false, 0.0f, false);
    }
    gfx_display_draw_text(font->font, fitted, x, y,
          (int)ctx->video_info->width, (int)ctx->video_info->height,
          (uint32_t)color,
-         centered ? TEXT_ALIGN_CENTER : TEXT_ALIGN_LEFT, scale, false, 0.0f, false);
+         alignment, scale, false, 0.0f, false);
    font->usage_count++;
 }
 
 static void hh_widget_text(void *userdata, hh_ui_rect_t bounds,
       const char *text, unsigned long color, float size, bool emphasized)
 {
-   hh_widget_text_aligned(userdata, bounds, text, color, size, emphasized, false);
+   hh_widget_text_aligned(userdata, bounds, text, color, size, emphasized, TEXT_ALIGN_LEFT);
 }
 
 static void hh_widget_text_centered(void *userdata, hh_ui_rect_t bounds,
       const char *text, unsigned long color, float size, bool emphasized)
 {
-   hh_widget_text_aligned(userdata, bounds, text, color, size, emphasized, true);
+   hh_widget_text_aligned(userdata, bounds, text, color, size, emphasized, TEXT_ALIGN_CENTER);
+}
+
+static void hh_widget_text_right(void *userdata, hh_ui_rect_t bounds,
+      const char *text, unsigned long color, float size, bool emphasized)
+{
+   hh_widget_text_aligned(userdata, bounds, text, color, size, emphasized,
+         TEXT_ALIGN_RIGHT);
 }
 
 static bool hh_widget_preview(void *userdata, hh_ui_rect_t bounds, int slot)
@@ -2482,13 +2491,13 @@ static bool hh_widget_preview(void *userdata, hh_ui_rect_t bounds, int slot)
    if (!ctx || !ctx->widgets || slot < 0
          || slot >= HH_WIDGET_PREVIEW_SLOT_COUNT)
       return false;
-   if (!runloop_get_savestate_path(state_path, sizeof(state_path), slot))
+   if (!runloop_get_savestate_path(state_path, sizeof(state_path), slot == HH_WIDGET_PREVIEW_SLOT_COUNT - 1 ? -2 : slot))
       return false;
    if (!runloop_get_savestate_path(savestate_base,
             sizeof(savestate_base), 0))
       return false;
    gfx_savestate_thumbnail_get_path(thumbnail_path,
-         sizeof(thumbnail_path), savestate_base, slot);
+         sizeof(thumbnail_path), savestate_base, slot == HH_WIDGET_PREVIEW_SLOT_COUNT - 1 ? -2 : slot);
    if (stat(thumbnail_path, &thumbnail_stat) != 0)
       return false;
 
@@ -2821,6 +2830,7 @@ static void hh_widget_render_quick_menu(video_frame_info_t *video_info,
    painter.rect = hh_widget_rect;
    painter.text = hh_widget_text;
    painter.text_centered = hh_widget_text_centered;
+   painter.text_right = hh_widget_text_right;
    painter.controller = hh_widget_controller;
    painter.icon = hh_widget_icon;
    painter.preview = hh_widget_preview;

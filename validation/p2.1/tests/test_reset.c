@@ -1,8 +1,24 @@
 #include <assert.h>
 #include <string.h>
 
+#include "configuration.h"
 #include "handheld/bridge/hh_bridge.h"
 #include "handheld/ui/hh_quick_menu_render.h"
+
+settings_t *config_get_ptr(void)
+{
+   static settings_t settings;
+   settings.bools.gamego_menu_show_continue = true;
+   settings.bools.gamego_menu_show_save = true;
+   settings.bools.gamego_menu_show_load = true;
+   settings.bools.gamego_menu_show_shader = true;
+   settings.bools.gamego_menu_show_controls = true;
+   settings.bools.gamego_menu_show_reset = true;
+   settings.bools.gamego_menu_show_advanced = true;
+   settings.bools.gamego_menu_show_recent = true;
+   settings.bools.gamego_menu_show_exit = true;
+   return &settings;
+}
 
 static hh_runtime_event_callback_t callback;
 static void *callback_data;

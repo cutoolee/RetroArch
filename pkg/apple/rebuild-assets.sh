@@ -10,6 +10,12 @@ include_shaders=""
 include_xmb=""
 assets_zip="$WD/assets.zip"
 
+if [ -n "${GAMEGO_ASSETS_ZIP:-}" ]; then
+    test -f "$GAMEGO_ASSETS_ZIP" || exit 1
+    cp "$GAMEGO_ASSETS_ZIP" "$assets_zip" || exit 1
+    exit 0
+fi
+
 args=`getopt acdhimosx $*`
 set -- $args
 while :; do

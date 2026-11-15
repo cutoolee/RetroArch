@@ -12772,6 +12772,15 @@ unsigned menu_displaylist_build_list(
                         false) == 0)
                   count++;
             }
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+            if (menu_entries_append(list,
+                     msg_hash_to_str(MENU_ENUM_LABEL_VALUE_GAMEGO_MENU_CONFIG),
+                     MENU_ENUM_LABEL_GAMEGO_MENU_CONFIG_STR,
+                     MENU_ENUM_LABEL_GAMEGO_MENU_CONFIG,
+                     MENU_SETTING_ACTION, 0, 0, NULL))
+               count++;
+#endif
+
          }
          break;
       case DISPLAYLIST_POWER_MANAGEMENT_SETTINGS_LIST:
@@ -13001,17 +13010,6 @@ unsigned menu_displaylist_build_list(
 #endif
 
                {MENU_ENUM_LABEL_QUICK_MENU_SHOW_INFORMATION,            PARSE_ONLY_BOOL},
-#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
-               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_CONTINUE,              PARSE_ONLY_BOOL},
-               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_SAVE,                  PARSE_ONLY_BOOL},
-               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_LOAD,                  PARSE_ONLY_BOOL},
-               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_SHADER,                PARSE_ONLY_BOOL},
-               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_CONTROLS,              PARSE_ONLY_BOOL},
-               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_RESET,                 PARSE_ONLY_BOOL},
-               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_ADVANCED,              PARSE_ONLY_BOOL},
-               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_RECENT,                PARSE_ONLY_BOOL},
-               {MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_EXIT,                  PARSE_ONLY_BOOL},
-#endif
             };
 
             for (i = 0; i < ARRAY_SIZE(build_list); i++)
@@ -13026,18 +13024,64 @@ unsigned menu_displaylist_build_list(
       case DISPLAYLIST_GAMEGO_MENU_CONFIG_LIST:
          {
             if (menu_entries_append(list,
-                     "唤起按键设置",
-                     MENU_ENUM_LABEL_INPUT_HOTKEY_BINDS_STR,
-                     MENU_ENUM_LABEL_INPUT_HOTKEY_BINDS,
+                     msg_hash_to_str(MENU_ENUM_LABEL_VALUE_INPUT_HOTKEY_BINDS),
+                     MENU_ENUM_LABEL_GAMEGO_MENU_SHORTCUT_SETTINGS_STR,
+                     MENU_ENUM_LABEL_GAMEGO_MENU_SHORTCUT_SETTINGS,
                      MENU_SETTING_ACTION, 0, 0, NULL))
                count++;
 
             if (menu_entries_append(list,
-                     "菜单显示设置",
-                     MENU_ENUM_LABEL_QUICK_MENU_VIEWS_SETTINGS_STR,
-                     MENU_ENUM_LABEL_QUICK_MENU_VIEWS_SETTINGS,
+                     msg_hash_to_str(MENU_ENUM_LABEL_VALUE_GAMEGO_MENU_SHOW_SETTINGS),
+                     MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_SETTINGS_STR,
+                     MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_SETTINGS,
                      MENU_SETTING_ACTION, 0, 0, NULL))
                count++;
+         }
+         break;
+      case DISPLAYLIST_GAMEGO_MENU_SHORTCUT_SETTINGS_LIST:
+         {
+            for (i = 0; i < RARCH_BIND_LIST_END; i++)
+               if (input_config_bind_map_get_retro_key(i) == RARCH_MENU_TOGGLE)
+               {
+                  if (MENU_DISPLAYLIST_PARSE_SETTINGS_ENUM(list,
+                           (enum msg_hash_enums)(MENU_ENUM_LABEL_INPUT_HOTKEY_BIND_BEGIN
+                              + i), PARSE_ONLY_BIND, false) == 0)
+                     count++;
+                  break;
+               }
+
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+            if (MENU_DISPLAYLIST_PARSE_SETTINGS_ENUM(list,
+                     MENU_ENUM_LABEL_INPUT_MENU_ENUM_TOGGLE_GAMEPAD_COMBO,
+                     PARSE_ONLY_UINT, false) == 0)
+               count++;
+
+            if (MENU_DISPLAYLIST_PARSE_SETTINGS_ENUM(list,
+                     MENU_ENUM_LABEL_GAMEGO_MENU_TOGGLE_MODE,
+                     PARSE_ONLY_UINT, false) == 0)
+               count++;
+#endif
+         }
+         break;
+      case DISPLAYLIST_GAMEGO_MENU_SHOW_SETTINGS_LIST:
+         {
+            static const enum msg_hash_enums show_settings[] = {
+               MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_CONTINUE,
+               MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_SAVE,
+               MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_LOAD,
+               MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_SHADER,
+               MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_CONTROLS,
+               MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_RESET,
+               MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_ADVANCED,
+               MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_RECENT,
+               MENU_ENUM_LABEL_GAMEGO_MENU_SHOW_EXIT
+            };
+            size_t setting_index;
+            for (setting_index = 0;
+                  setting_index < ARRAY_SIZE(show_settings); setting_index++)
+               if (MENU_DISPLAYLIST_PARSE_SETTINGS_ENUM(list,
+                        show_settings[setting_index], PARSE_ONLY_BOOL, false) == 0)
+                  count++;
          }
          break;
       case DISPLAYLIST_CORE_SETTINGS_LIST:
@@ -16042,6 +16086,8 @@ static bool menu_displaylist_ctl_internal(
          case DISPLAYLIST_SETTINGS_VIEWS_SETTINGS_LIST:
          case DISPLAYLIST_QUICK_MENU_VIEWS_SETTINGS_LIST:
          case DISPLAYLIST_GAMEGO_MENU_CONFIG_LIST:
+         case DISPLAYLIST_GAMEGO_MENU_SHORTCUT_SETTINGS_LIST:
+         case DISPLAYLIST_GAMEGO_MENU_SHOW_SETTINGS_LIST:
          case DISPLAYLIST_MENU_SOUNDS_LIST:
          case DISPLAYLIST_UPDATER_SETTINGS_LIST:
          case DISPLAYLIST_USER_SETTINGS_LIST:
@@ -16547,13 +16593,6 @@ static bool menu_displaylist_ctl_internal(
                               MENU_ENUM_LABEL_CONTENT_SETTINGS,
                               PARSE_ACTION, false) == 0)
                         count++;
-#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
-                  if (!retroarch_ctl(RARCH_CTL_IS_DUMMY_CORE, NULL))
-                     if (MENU_DISPLAYLIST_PARSE_SETTINGS_ENUM(info->list,
-                              MENU_ENUM_LABEL_GAMEGO_MENU_CONFIG,
-                              PARSE_ACTION, false) == 0)
-                        count++;
-#endif
                }
                else
                {

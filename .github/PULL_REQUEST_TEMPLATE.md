@@ -1,22 +1,11 @@
-## Guidelines
+## 问题和结果
 
-1. Rebase before opening a pull request
-2. If you are sending several unrelated fixes or features, use a branch and a separate pull request for each
-3. If possible try squashing everything in a single commit. This is particularly beneficial in the case of feature merges since it allows easy bisecting when a problem arises
-4. RetroArch codebase follows C89 coding rules for portability across many old platforms check using `C89_BUILD=1`
+描述具体问题以及修改后的行为。
 
-## Description
+## 验证
 
-[Description of the pull request, detail any issues you are fixing or any features you are implementing]
+列出实际执行的构建/测试、平台和结果；未验证的目标请明确说明。
 
-## Related Issues
+## 发布影响
 
-[Any issues this pull request may be addressing]
-
-## Related Pull Requests
-
-[Any other PRs from related repositories that might be needed for this pull request to work]
-
-## Reviewers
-
-[If possible @mention all the people that should review your pull request]
+涉及配置、存档、签名、资源或兼容性变化时说明迁移和许可影响。

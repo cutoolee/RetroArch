@@ -144,10 +144,11 @@ bool hh_quick_menu_compute_layout(float width, float height,
    for (i = 0; i < HH_QUICK_MENU_SLOT_COUNT; i++)
    {
       hh_quick_menu_slot_card_bounds(layout,
-            hh_quick_menu_slot_scroll(i < 5 ? 0 : HH_QUICK_MENU_SLOT_COUNT - 1),
+            hh_quick_menu_slot_scroll(i),
             i, &layout->slot_cards[i]);
       layout->slot_dots[i] = hh_quick_menu_rect(
-            width / 2 + (-178 + i * 36) * scale,
+            width / 2 + (-196 + (i == HH_QUICK_MENU_SLOT_COUNT - 1
+               ? 0 : i + 1) * 36) * scale,
             (height - design_height * scale) / 2 + 752 * scale,
             32 * scale, 32 * scale);
    }
@@ -191,7 +192,10 @@ bool hh_quick_menu_compute_layout(float width, float height,
 
 float hh_quick_menu_slot_scroll(int selected)
 {
-   int first = selected - 2;
+   int first;
+   if (selected == HH_QUICK_MENU_SLOT_COUNT - 1)
+      return -1;
+   first = selected - 2;
    if (first < 0)
       first = 0;
    if (first > HH_QUICK_MENU_SLOT_COUNT - 5)
@@ -224,12 +228,13 @@ bool hh_quick_menu_slot_card_bounds(const hh_quick_menu_layout_t *layout,
       float scroll, int slot, hh_ui_rect_t *bounds)
 {
    float s;
-   if (!layout || !bounds || scroll < 0 || scroll > HH_QUICK_MENU_SLOT_COUNT - 5
+   if (!layout || !bounds || scroll < -1 || scroll > HH_QUICK_MENU_SLOT_COUNT - 5
          || slot < 0 || slot >= HH_QUICK_MENU_SLOT_COUNT)
       return false;
    s = layout->scale;
    *bounds = hh_quick_menu_rect(
-         layout->header.x + (slot - scroll) * 320 * s,
+         layout->header.x + ((slot == HH_QUICK_MENU_SLOT_COUNT - 1
+               ? -1 : slot) - scroll) * 320 * s,
          (layout->viewport.height - 1080 * s) / 2 + 450 * s,
          304 * s, 270 * s);
    return bounds->x < layout->viewport.width && bounds->x + bounds->width > 0;

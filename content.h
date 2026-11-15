@@ -108,6 +108,7 @@ bool content_init(void);
 
 /* Resets the state and savefile backup buffers */
 void content_reset_savestate_backups(void);
+void content_prepare_realtime_state(void);
 
 /* Checks if the buffers are empty, or undo feature is disabled */
 bool content_undo_load_buf_is_empty(void);

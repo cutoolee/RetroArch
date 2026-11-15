@@ -4047,7 +4047,11 @@ bool command_event(enum event_command cmd, void *data)
             ram_state_to_file();
 
             /* Save auto state */
-            if (     settings->bools.savestate_auto_save
+            if (     (settings->bools.savestate_auto_save
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+                     || true
+#endif
+                     )
                   && runloop_st->current_core_type != CORE_TYPE_DUMMY)
                command_event_save_auto_state();
 
@@ -4737,7 +4741,11 @@ bool command_event(enum event_command cmd, void *data)
             if (     runloop_st
                   && (runloop_st->flags & RUNLOOP_FLAG_CORE_RUNNING)
                   && !(runloop_st->flags & RUNLOOP_FLAG_SHUTDOWN_INITIATED)
-                  && settings->bools.savestate_auto_save)
+                  && (settings->bools.savestate_auto_save
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+                     || true
+#endif
+                     ))
                command_event_save_auto_state();
 
             /* Wait for any in-flight save / load state tasks before
@@ -9606,7 +9614,11 @@ bool retroarch_main_quit(void)
 
    if (!(runloop_st->flags & RUNLOOP_FLAG_SHUTDOWN_INITIATED))
    {
-      if (   settings->bools.savestate_auto_save
+      if (   (settings->bools.savestate_auto_save
+#if defined(HAVE_HANDHELD_RUNTIME) && HAVE_HANDHELD_RUNTIME && defined(HAVE_HANDHELD_QUICK_MENU) && HAVE_HANDHELD_QUICK_MENU
+                || true
+#endif
+                )
           && runloop_st->current_core_type != CORE_TYPE_DUMMY)
          command_event_save_auto_state();
 

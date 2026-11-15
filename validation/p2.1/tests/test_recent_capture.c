@@ -12,6 +12,8 @@ static char content[128] = "/roms/game.zip";
 static unsigned captures;
 
 settings_t *config_get_ptr(void) { return &settings; }
+char *dir_get_ptr(enum rarch_dir_type type)
+{ (void)type; return "/states"; }
 runloop_state_t *runloop_state_get_ptr(void) { return &loop; }
 struct menu_state *menu_state_get_ptr(void) { return &menu; }
 retro_time_t cpu_features_get_time_usec(void) { return now; }
@@ -25,8 +27,8 @@ void RARCH_LOG(const char *format, ...) { (void)format; }
 bool take_screenshot(const char *directory, const char *path,
       bool silent, bool hardware, bool fullpath, bool threaded)
 {
-   assert(strstr(directory, "/screenshots/gamego-recent/") != NULL);
-   assert(strstr(path, "/screenshots/gamego-recent/") != NULL);
+   assert(strstr(directory, "/states/gamego-recent/") != NULL);
+   assert(strstr(path, "/states/gamego-recent/") != NULL);
    assert(silent && !hardware && fullpath && threaded);
    captures++;
    return true;

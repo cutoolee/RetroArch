@@ -15,11 +15,11 @@ check_text() {
    fi
 }
 
-check_text 'applicationId "com.retroarch.aarch64"' \
+check_text 'applicationId project.findProperty("GAMEGO_APPLICATION_ID") ?: "com.retroarch.aarch64"' \
    "$root/pkg/android/phoenix/build.gradle"
 check_text 'namespace "com.retroarch"' \
    "$root/pkg/android/phoenix/build.gradle"
-check_text 'ANDROID_PRODUCT_DATA_ROOT "GameGo"' \
+check_text 'ANDROID_PRODUCT_DATA_ROOT "retroarch"' \
    "$root/frontend/drivers/platform_unix.c"
 check_text '${applicationId}.documents' \
    "$root/pkg/android/phoenix/AndroidManifest.xml"
@@ -37,6 +37,6 @@ else
 fi
 
 printf 'PACKAGE_ID_GATE=%s\n' "$(test "$fail" -eq 0 && echo PASS || echo FAIL)"
-printf 'DATA_ROOT_GATE=%s\n' "$(grep -F 'ANDROID_PRODUCT_DATA_ROOT "GameGo"' "$root/frontend/drivers/platform_unix.c" >/dev/null && echo PASS || echo FAIL)"
+printf 'DATA_ROOT_GATE=%s\n' "$(grep -F 'ANDROID_PRODUCT_DATA_ROOT "retroarch"' "$root/frontend/drivers/platform_unix.c" >/dev/null && echo PASS || echo FAIL)"
 printf 'AUTHORITY_GATE=%s\n' "$(grep -F '${applicationId}.documents' "$root/pkg/android/phoenix/AndroidManifest.xml" >/dev/null && echo PASS || echo FAIL)"
 exit "$fail"
