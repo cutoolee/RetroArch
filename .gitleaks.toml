@@ -4,7 +4,15 @@ title = "GameGo secret scanning"
 useDefault = true
 
 [allowlist]
-description = "Public cryptographic fixtures verified by the working-tree hash audit"
+description = "Verified public cryptographic fixtures and exact code identifiers"
+regexTarget = "secret"
+regexes = [
+  '''^MBEDTLS_ASN1_OID$''',
+  '''^_mm512_shuffle_epi32$''',
+  '''^_mm256_shuffle_epi32$''',
+  '''^RETRO_SMB2_SEC_NTLMSSP$''',
+  '''^MENU_ENUM_SUBLABEL_DISCORD_ALLOW$''',
+]
 paths = [
   '''^handheld/distribution/public-test-keys\.json$''',
   '''^deps/bearssl-0\.6/samples/key-(ee|ica|root)-(ec|rsa)\.pem$''',
